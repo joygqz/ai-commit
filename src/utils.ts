@@ -5,6 +5,10 @@ import { displayName } from './generated/meta'
 
 export const logger = useLogger(displayName)
 
+export function addPeriodIfMissing(str: string) {
+  return str.replace(/[^.?!。？！…]$/, '$&.')
+}
+
 export class ProgressHandler {
   static async withProgress<T>(
     title: string,
@@ -16,7 +20,6 @@ export class ProgressHandler {
       {
         location: ProgressLocation.Notification,
         title: `${title}`,
-        cancellable: true,
       },
       task,
     )

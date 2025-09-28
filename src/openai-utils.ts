@@ -1,6 +1,5 @@
 import type { ChatCompletionMessageParam } from 'openai/resources'
 import OpenAI from 'openai'
-import { window } from 'vscode'
 import { config } from './config'
 
 function getOpenAIConfig() {
@@ -8,12 +7,10 @@ function getOpenAIConfig() {
   const baseURL = config.DEEPSEEK_BASE_URL
 
   if (!apiKey) {
-    window.showErrorMessage('The DEEPSEEK_API_KEY environment variable is missing or empty.')
     throw new Error('The DEEPSEEK_API_KEY environment variable is missing or empty.')
   }
 
   if (!baseURL) {
-    window.showErrorMessage('The DEEPSEEK_BASE_URL environment variable is missing or empty.')
     throw new Error('The DEEPSEEK_BASE_URL environment variable is missing or empty.')
   }
 
@@ -46,7 +43,6 @@ export async function ChatGPTAPI(messages: ChatCompletionMessageParam[]) {
   const temperature = 0
 
   if (!model) {
-    window.showErrorMessage('The DEEPSEEK_MODEL environment variable is missing or empty.')
     throw new Error('The DEEPSEEK_MODEL environment variable is missing or empty.')
   }
 

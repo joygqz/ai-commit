@@ -5,7 +5,7 @@ import { commands, extensions, window } from 'vscode'
 import { getDiffStaged } from './git-utils'
 import { ChatGPTAPI } from './openai-utils'
 import { getMainCommitPrompt } from './prompts'
-import { ProgressHandler } from './utils'
+import { addPeriodIfMissing, ProgressHandler } from './utils'
 
 export async function getRepo(arg: any) {
   const gitApi = extensions.getExtension('vscode.git')?.exports.getAPI(1)
@@ -53,7 +53,7 @@ const { activate, deactivate } = defineExtension((context) => {
 
     if (error) {
       window.showErrorMessage(`Failed to get staged changes: ${error}.`)
-      throw new Error(`Failed to get staged changes: ${error}.`)
+      return
     }
 
     if (!diff || diff === 'No changes staged.') {
@@ -64,7 +64,7 @@ const { activate, deactivate } = defineExtension((context) => {
     const scmInputBox = repo.inputBox
     if (!scmInputBox) {
       window.showErrorMessage('Unable to find the SCM input box.')
-      throw new Error('Unable to find the SCM input box.')
+      return
     }
 
     const additionalContext = scmInputBox.value.trim()
@@ -73,6 +73,7 @@ const { activate, deactivate } = defineExtension((context) => {
       diff,
       additionalContext,
     )
+
     return ProgressHandler.withProgress('', async (progress) => {
       progress.report({
         message: additionalContext
@@ -87,34 +88,11 @@ const { activate, deactivate } = defineExtension((context) => {
           scmInputBox.value = commitMessage
         }
         else {
-          window.showErrorMessage('Failed to generate commit message.')
           throw new Error('Failed to generate commit message.')
         }
       }
       catch (error: any) {
-        let errorMessage = 'An unexpected error occurred.'
-
-        if (!error.response || !error.response.status) {
-          return
-        }
-
-        switch (error.response.status) {
-          case 401:
-            errorMessage = 'Invalid DeepSeek/OpenAI API key or unauthorized access.'
-            break
-          case 429:
-            errorMessage = 'Rate limit exceeded. Please try again later.'
-            break
-          case 500:
-            errorMessage = 'DeepSeek/OpenAI server error. Please try again later.'
-            break
-          case 503:
-            errorMessage = 'DeepSeek/OpenAI service is temporarily unavailable.'
-            break
-        }
-
-        window.showErrorMessage(`Error generating commit message: ${errorMessage}`)
-        throw new Error(errorMessage)
+        window.showErrorMessage(addPeriodIfMissing(error.toString()))
       }
     })
   })

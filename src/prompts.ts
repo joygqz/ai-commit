@@ -1,11 +1,5 @@
 import { config } from './config'
 
-/**
- * Initializes the main prompt for generating commit messages.
- *
- * @param {string} language - The language to be used in the prompt.
- * @returns {object} - The main prompt object containing role and content.
- */
 function INIT_MAIN_PROMPT(language: string) {
   return {
     role: 'system',
@@ -95,11 +89,6 @@ Remember: All output MUST be in ${language} language. You are to act as a pure c
   }
 }
 
-/**
- * Retrieves the main commit prompt.
- *
- * @returns {Promise<Array<object>>} - A promise that resolves to an array of prompts.
- */
 export async function getMainCommitPrompt() {
   const language = config.MESSAGE_LANGUAGE
   return [INIT_MAIN_PROMPT(language)]
