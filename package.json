@@ -1,0 +1,165 @@
+{
+  "publisher": "joygqz",
+  "name": "commit-genie",
+  "displayName": "Commit Genie",
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.4.1",
+  "description": "AI Commit Message Generator",
+  "author": "joygqz",
+  "license": "MIT",
+  "homepage": "https://github.com/joygqz/commit-genie#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joygqz/commit-genie"
+  },
+  "bugs": {
+    "url": "https://github.com/joygqz/commit-genie/issues"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/index.js",
+  "icon": "images/icon.png",
+  "files": [
+    "LICENSE",
+    "dist/*",
+    "images/*"
+  ],
+  "engines": {
+    "vscode": "^1.97.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "commit-genie.generateCommitMessage",
+        "icon": {
+          "dark": "images/icon.svg",
+          "light": "images/icon.svg"
+        },
+        "title": "Commit Genie: Generate Commit Message"
+      }
+    ],
+    "configuration": {
+      "title": "Commit Genie",
+      "type": "object",
+      "properties": {
+        "commit-genie.MESSAGE_LANGUAGE": {
+          "default": "Simplified Chinese",
+          "description": "Commit message language.",
+          "enum": [
+            "Simplified Chinese",
+            "Traditional Chinese",
+            "Japanese",
+            "Korean",
+            "Czech",
+            "German",
+            "French",
+            "Italian",
+            "Dutch",
+            "Portuguese",
+            "Vietnamese",
+            "English",
+            "Spanish",
+            "Swedish",
+            "Russian",
+            "Bahasa",
+            "Polish",
+            "Turkish",
+            "Thai"
+          ],
+          "enumDescriptions": [
+            "简体中文",
+            "繁體中文",
+            "にほんご",
+            "한국어",
+            "česky",
+            "Deutsch",
+            "française",
+            "italiano",
+            "Nederlands",
+            "português",
+            "tiếng Việt",
+            "english",
+            "español",
+            "Svenska",
+            "русский",
+            "bahasa",
+            "Polski",
+            "Turkish",
+            "ไทย"
+          ],
+          "type": "string"
+        },
+        "commit-genie.DEEPSEEK_API_KEY": {
+          "default": "",
+          "description": "DeepSeek/OpenAI API Key.",
+          "type": "string"
+        },
+        "commit-genie.DEEPSEEK_BASE_URL": {
+          "default": "https://api.deepseek.com",
+          "description": "DeepSeek/OpenAI BASE URL.",
+          "type": "string"
+        },
+        "commit-genie.DEEPSEEK_MODEL": {
+          "default": "deepseek-chat",
+          "description": "DeepSeek/OpenAI Model.",
+          "type": "string"
+        }
+      }
+    },
+    "menus": {
+      "scm/title": [
+        {
+          "command": "commit-genie.generateCommitMessage",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "tsdown src/index.ts --external vscode",
+    "dev": "nr build --watch --sourcemap",
+    "prepare": "nr update",
+    "update": "vscode-ext-gen --output src/generated/meta.ts",
+    "lint": "eslint .",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "vscode:prepublish": "nr build",
+    "release": "bumpp",
+    "ext:package": "vsce package --no-dependencies",
+    "ext:publish": "vsxpub --no-dependencies"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^4.19.0",
+    "@antfu/ni": "^23.3.1",
+    "@types/node": "^22.18.6",
+    "@types/vscode": "^1.97.0",
+    "@vscode/vsce": "^3.6.2",
+    "bumpp": "^10.2.3",
+    "eslint": "^9.36.0",
+    "esno": "^4.8.0",
+    "openai": "^5.23.1",
+    "ovsx": "^0.10.5",
+    "pnpm": "^10.17.1",
+    "reactive-vscode": "^0.2.22",
+    "simple-git": "^3.28.0",
+    "tsdown": "^0.9.9",
+    "typescript": "^5.9.2",
+    "vite": "^6.3.6",
+    "vitest": "^3.2.4",
+    "vscode-ext-gen": "^1.3.0",
+    "vsxpub": "^0.1.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@vscode/vsce-sign",
+      "esbuild",
+      "keytar",
+      "rolldown",
+      "vsxpub"
+    ]
+  }
+}

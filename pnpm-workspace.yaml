@@ -1,0 +1,8 @@
+packages:
+  - playground
+  - examples/*
+onlyBuiltDependencies:
+  - '@vscode/vsce-sign'
+  - esbuild
+  - keytar
+  - vsxpub
