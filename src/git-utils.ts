@@ -7,7 +7,7 @@ export async function getDiffStaged(repo: any): Promise<{ diff: string, error?: 
       = repo?.rootUri?.fsPath || workspace.workspaceFolders?.[0].uri.fsPath
 
     if (!rootPath) {
-      throw new Error('No workspace folder found')
+      throw new Error('No workspace folder found.')
     }
 
     const git = simpleGit(rootPath)
@@ -19,7 +19,6 @@ export async function getDiffStaged(repo: any): Promise<{ diff: string, error?: 
     }
   }
   catch (error: any) {
-    console.error('Error reading Git diff:', error)
     return { diff: '', error: error.message }
   }
 }

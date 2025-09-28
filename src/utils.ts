@@ -15,7 +15,7 @@ export class ProgressHandler {
     return window.withProgress(
       {
         location: ProgressLocation.Notification,
-        title: `[Commit Genie] ${title}`,
+        title: `${title}`,
         cancellable: true,
       },
       task,
