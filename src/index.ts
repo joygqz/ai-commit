@@ -47,41 +47,38 @@ async function generateCommitMessageChatCompletionPrompt(diff: string, additiona
 
 const { activate, deactivate } = defineExtension((context) => {
   const disposable = commands.registerCommand('commit-genie.generateCommitMessage', async () => {
+    const repo = await getRepo(context)
+
+    const { diff, error } = await getDiffStaged(repo)
+
+    if (error) {
+      window.showErrorMessage(`Failed to get staged changes: ${error}`)
+      throw new Error(`Failed to get staged changes: ${error}`)
+    }
+
+    if (!diff || diff === 'No changes staged.') {
+      window.showInformationMessage('No changes staged for commit')
+      throw new Error('No changes staged for commit')
+    }
+
+    const scmInputBox = repo.inputBox
+    if (!scmInputBox) {
+      window.showErrorMessage('Unable to find the SCM input box')
+      throw new Error('Unable to find the SCM input box')
+    }
+
+    const additionalContext = scmInputBox.value.trim()
+
+    const messages = await generateCommitMessageChatCompletionPrompt(
+      diff,
+      additionalContext,
+    )
     return ProgressHandler.withProgress('', async (progress) => {
-      const repo = await getRepo(context)
-
-      progress.report({ message: 'Getting staged changes...' })
-
-      const { diff, error } = await getDiffStaged(repo)
-
-      if (error) {
-        window.showErrorMessage(`Failed to get staged changes: ${error}`)
-        throw new Error(`Failed to get staged changes: ${error}`)
-      }
-
-      if (!diff || diff === 'No changes staged.') {
-        window.showErrorMessage('No changes staged for commit')
-        throw new Error('No changes staged for commit')
-      }
-
-      const scmInputBox = repo.inputBox
-      if (!scmInputBox) {
-        window.showErrorMessage('Unable to find the SCM input box')
-        throw new Error('Unable to find the SCM input box')
-      }
-
-      const additionalContext = scmInputBox.value.trim()
-
       progress.report({
         message: additionalContext
           ? 'Generating commit message with additional context...'
           : 'Generating commit message...',
       })
-
-      const messages = await generateCommitMessageChatCompletionPrompt(
-        diff,
-        additionalContext,
-      )
 
       try {
         const commitMessage = await ChatGPTAPI(messages as ChatCompletionMessageParam[])
