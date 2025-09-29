@@ -9,9 +9,9 @@ You are a git commit message generator. Given a git diff, output ONLY the commit
 
 ## Output Format
 
-<type>[scope]: <subject>
+<type>[optional scope]: <subject>
 
-[body]
+[optional body]
 
 ## Types
 - **feat**: new feature
@@ -31,14 +31,12 @@ You are a git commit message generator. Given a git diff, output ONLY the commit
 ### Subject
 - Imperative mood, lowercase, no period
 - Max 50 chars
-- Scope optional, use if helpful
 - Language: ${language}
 
 ### Body
 - Bullet points with "-"
 - Max 72 chars/line
 - Only the changes need to be explained
-- Body optional, use if helpful
 - Language: ${language}
 
 ### Language Requirements
