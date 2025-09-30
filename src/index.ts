@@ -64,11 +64,10 @@ const { activate, deactivate } = defineExtension((context) => {
       }
     }
     catch (error: any) {
-      if (error?.name === 'AbortError') {
+      if (error.message.toLowerCase().includes('aborted'))
         return
-      }
 
-      window.showErrorMessage(error?.message ?? String(error))
+      window.showErrorMessage(error.message)
     }
   })
 
