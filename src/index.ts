@@ -79,7 +79,15 @@ const { activate, deactivate } = defineExtension((context) => {
       additionalContext,
     )
 
-    return ProgressHandler.withProgress('', async (progress) => {
+    return ProgressHandler.withProgress('', async (progress, token) => {
+      if (token.isCancellationRequested)
+        return
+
+      let isCancelled = false
+      const cancelDisposable = token.onCancellationRequested(() => {
+        isCancelled = true
+      })
+
       progress.report({ message: additionalContext
         ? messages.generatingWithContext
         : messages.generatingCommitMessage })
@@ -87,11 +95,20 @@ const { activate, deactivate } = defineExtension((context) => {
       try {
         scmInputBox.value = ''
         await ChatGPTStreamAPI(messagePrompts as ChatCompletionMessageParam[], (chunk: string) => {
+          if (isCancelled)
+            return
+
           scmInputBox.value += chunk
-        })
+        }, token)
       }
       catch (error: any) {
+        if (isCancelled)
+          return
+
         window.showErrorMessage(error.toString())
+      }
+      finally {
+        cancelDisposable.dispose()
       }
     })
   })

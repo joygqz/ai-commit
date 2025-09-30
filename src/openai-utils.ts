@@ -42,6 +42,7 @@ export function createOpenAIApi() {
 export async function ChatGPTStreamAPI(
   messages: ChatCompletionMessageParam[],
   onChunk: (chunk: string) => void,
+  token?: import('vscode').CancellationToken,
 ): Promise<string> {
   const i18nMessages = getMessages(config.MESSAGE_LANGUAGE)
   const openai = createOpenAIApi()
@@ -52,23 +53,55 @@ export async function ChatGPTStreamAPI(
     throw new Error(i18nMessages.modelMissing)
   }
 
-  const stream = await openai.chat.completions.create({
-    model,
-    messages: messages as ChatCompletionMessageParam[],
-    temperature,
-    stream: true,
-  })
+  const abortController = new AbortController()
+  let cancellationDisposable: import('vscode').Disposable | undefined
 
-  let fullContent = ''
-
-  for await (const chunk of stream) {
-    const content = chunk.choices[0]?.delta?.content || ''
-    if (content) {
-      fullContent += content
-      onChunk(content)
-      await new Promise(resolve => setTimeout(resolve, 10))
+  if (token) {
+    if (token.isCancellationRequested) {
+      abortController.abort()
+      return ''
     }
+
+    cancellationDisposable = token.onCancellationRequested(() => {
+      abortController.abort()
+    })
   }
 
-  return fullContent
+  try {
+    const stream = await openai.chat.completions.create({
+      model,
+      messages: messages as ChatCompletionMessageParam[],
+      temperature,
+      stream: true,
+    }, {
+      signal: abortController.signal,
+    })
+
+    let fullContent = ''
+
+    for await (const chunk of stream) {
+      if (token?.isCancellationRequested) {
+        abortController.abort()
+        break
+      }
+
+      const content = chunk.choices[0]?.delta?.content || ''
+      if (content) {
+        fullContent += content
+        onChunk(content)
+        await new Promise(resolve => setTimeout(resolve, 10))
+      }
+    }
+
+    return fullContent
+  }
+  catch (error) {
+    if (abortController.signal.aborted || token?.isCancellationRequested)
+      return ''
+
+    throw error
+  }
+  finally {
+    cancellationDisposable?.dispose()
+  }
 }
