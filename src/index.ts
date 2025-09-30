@@ -15,7 +15,7 @@ export async function getRepo(arg: any) {
 
   if (!gitApi) {
     window.showErrorMessage(messages.gitExtensionNotFound)
-    throw new Error(messages.gitExtensionNotFound)
+    throw messages.gitExtensionNotFound
   }
 
   if (typeof arg === 'object' && arg.rootUri) {
@@ -66,7 +66,7 @@ const { activate, deactivate } = defineExtension((context) => {
       return
     }
 
-    const scmInputBox = repo.inputBox
+    const scmInputBox = repo?.inputBox
     if (!scmInputBox) {
       window.showErrorMessage(messages.scmInputBoxNotFound)
       return

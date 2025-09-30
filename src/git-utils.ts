@@ -9,7 +9,7 @@ export async function getDiffStaged(repo: any): Promise<{ diff: string, error?: 
     const rootPath = repo?.rootUri?.fsPath || workspace.workspaceFolders?.[0].uri.fsPath
 
     if (!rootPath) {
-      throw new Error(messages.noWorkspaceFound)
+      throw messages.noWorkspaceFound
     }
 
     const git = simpleGit(rootPath)

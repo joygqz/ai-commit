@@ -9,11 +9,11 @@ function getOpenAIConfig() {
   const baseURL = config.BASE_URL
 
   if (!apiKey) {
-    throw new Error(messages.apiKeyMissing)
+    throw messages.apiKeyMissing
   }
 
   if (!baseURL) {
-    throw new Error(messages.baseUrlMissing)
+    throw messages.baseUrlMissing
   }
 
   const _config: {
@@ -50,7 +50,7 @@ export async function ChatGPTStreamAPI(
   const temperature = 0
 
   if (!model) {
-    throw new Error(i18nMessages.modelMissing)
+    throw i18nMessages.modelMissing
   }
 
   const abortController = new AbortController()
