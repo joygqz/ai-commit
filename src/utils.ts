@@ -1,9 +1,5 @@
 import type { Progress } from 'vscode'
-import { useLogger } from 'reactive-vscode'
 import { ProgressLocation, window } from 'vscode'
-import { displayName } from './generated/meta'
-
-export const logger = useLogger(displayName)
 
 export function addPeriodIfMissing(str: string) {
   return str.replace(/[^.?!。？！…]$/, '$&.')
