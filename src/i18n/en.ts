@@ -5,7 +5,6 @@ export const en: LanguageMessages = {
   noStagedChanges: 'No changes staged for commit.',
   scmInputBoxNotFound: 'Unable to find the SCM input box.',
   generatingCommitMessage: 'Generating commit message...',
-  generatingWithContext: 'Generating commit message with additional context...',
   failedToGenerateCommitMessage: 'Failed to generate commit message.',
 
   noWorkspaceFound: 'No workspace folder found.',

@@ -3,7 +3,6 @@ export interface LanguageMessages {
   noStagedChanges: string
   scmInputBoxNotFound: string
   generatingCommitMessage: string
-  generatingWithContext: string
   failedToGenerateCommitMessage: string
 
   noWorkspaceFound: string

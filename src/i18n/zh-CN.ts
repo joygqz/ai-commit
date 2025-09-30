@@ -5,7 +5,6 @@ export const zhCN: LanguageMessages = {
   noStagedChanges: '没有暂存的更改可提交。',
   scmInputBoxNotFound: '无法找到 SCM 输入框。',
   generatingCommitMessage: '正在生成提交信息...',
-  generatingWithContext: '正在根据附加上下文生成提交信息...',
   failedToGenerateCommitMessage: '生成提交信息失败。',
 
   noWorkspaceFound: '未找到工作区文件夹。',

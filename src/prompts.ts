@@ -51,16 +51,18 @@ ${enableEmoji ? '<emoji> ' : ''}<type>[optional scope]: <subject>
 ### Subject
 - Imperative mood, lowercase, no period
 - Max 50 chars
+- There can only be one topic
+- Keep the main changes as concise as possible
 
 ### Body
 - Bullet points with "-"
 - Max 72 chars/line
-- Only the changes need to be explained
+- Just explain the changes and keep it brief
+- Omit the body text if necessary
 
 ### Language Requirements
 - ALL text in ${language}
 - Space between Chinese/English and numbers
-- Single subject line only
 
 ## Example
 

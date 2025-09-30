@@ -8,16 +8,9 @@ import { ChatGPTStreamAPI } from './openai-utils'
 import { getMainCommitPrompt } from './prompts'
 import { ProgressHandler } from './utils'
 
-async function generateCommitMessageChatCompletionPrompt(diff: string, additionalContext?: string) {
+async function generateCommitMessageChatCompletionPrompt(diff: string) {
   const INIT_MESSAGES_PROMPT = await getMainCommitPrompt()
   const chatContextAsCompletionRequest = [...INIT_MESSAGES_PROMPT]
-
-  if (additionalContext) {
-    chatContextAsCompletionRequest.push({
-      role: 'user',
-      content: `Additional context for the changes:\n${additionalContext}`,
-    })
-  }
 
   chatContextAsCompletionRequest.push({
     role: 'user',
@@ -46,11 +39,8 @@ const { activate, deactivate } = defineExtension((context) => {
         throw new Error(messages.scmInputBoxNotFound)
       }
 
-      const additionalContext = scmInputBox.value.trim()
-
       const messagePrompts = await generateCommitMessageChatCompletionPrompt(
         diff,
-        additionalContext,
       )
 
       return ProgressHandler.withProgress('', async (progress, token) => {
@@ -62,9 +52,7 @@ const { activate, deactivate } = defineExtension((context) => {
           isCancelled = true
         })
 
-        progress.report({ message: additionalContext
-          ? messages.generatingWithContext
-          : messages.generatingCommitMessage })
+        progress.report({ message: messages.generatingCommitMessage })
 
         try {
           scmInputBox.value = ''
