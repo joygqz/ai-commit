@@ -2,7 +2,7 @@ import type { ChatCompletionMessageParam } from 'openai/resources'
 import * as fs from 'node:fs'
 import { defineExtension } from 'reactive-vscode'
 import { commands, extensions, window } from 'vscode'
-import { config } from './config'
+import { config, validateConfig } from './config'
 import { getDiffStaged } from './git-utils'
 import { getMessages } from './i18n'
 import { ChatGPTStreamAPI } from './openai-utils'
@@ -51,6 +51,14 @@ async function generateCommitMessageChatCompletionPrompt(diff: string, additiona
 
 const { activate, deactivate } = defineExtension((context) => {
   const disposable = commands.registerCommand('commit-genie.generateCommitMessage', async () => {
+    try {
+      validateConfig()
+    }
+    catch (error: any) {
+      window.showErrorMessage(error.message)
+      return
+    }
+
     const messages = getMessages(config.MESSAGE_LANGUAGE)
     const repo = await getRepo(context)
 
@@ -105,7 +113,7 @@ const { activate, deactivate } = defineExtension((context) => {
         if (isCancelled)
           return
 
-        window.showErrorMessage(error.toString())
+        window.showErrorMessage(error.message)
       }
       finally {
         cancelDisposable.dispose()

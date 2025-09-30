@@ -1,20 +1,10 @@
 import type { ChatCompletionMessageParam } from 'openai/resources'
 import OpenAI from 'openai'
 import { config } from './config'
-import { getMessages } from './i18n'
 
 function getOpenAIConfig() {
-  const messages = getMessages(config.MESSAGE_LANGUAGE)
   const apiKey = config.API_KEY
   const baseURL = config.BASE_URL
-
-  if (!apiKey) {
-    throw messages.apiKeyMissing
-  }
-
-  if (!baseURL) {
-    throw messages.baseUrlMissing
-  }
 
   const _config: {
     apiKey?: string
@@ -44,14 +34,9 @@ export async function ChatGPTStreamAPI(
   onChunk: (chunk: string) => void,
   token?: import('vscode').CancellationToken,
 ): Promise<string> {
-  const i18nMessages = getMessages(config.MESSAGE_LANGUAGE)
   const openai = createOpenAIApi()
   const model = config.MODEL
   const temperature = 0
-
-  if (!model) {
-    throw i18nMessages.modelMissing
-  }
 
   const abortController = new AbortController()
   let cancellationDisposable: import('vscode').Disposable | undefined
