@@ -32,61 +32,28 @@ export function createOpenAIApi() {
 export async function ChatGPTStreamAPI(
   messages: ChatCompletionMessageParam[],
   onChunk: (chunk: string) => void,
-  token?: import('vscode').CancellationToken,
 ): Promise<string> {
   const openai = createOpenAIApi()
   const model = config.MODEL
   const temperature = 0
 
-  const abortController = new AbortController()
-  let cancellationDisposable: import('vscode').Disposable | undefined
+  const stream = await openai.chat.completions.create({
+    model,
+    messages: messages as ChatCompletionMessageParam[],
+    temperature,
+    stream: true,
+  })
 
-  if (token) {
-    if (token.isCancellationRequested) {
-      abortController.abort()
-      return ''
+  let fullContent = ''
+
+  for await (const chunk of stream) {
+    const content = chunk.choices[0]?.delta?.content || ''
+    if (content) {
+      fullContent += content
+      onChunk(content)
+      await new Promise(resolve => setTimeout(resolve, 10))
     }
-
-    cancellationDisposable = token.onCancellationRequested(() => {
-      abortController.abort()
-    })
   }
 
-  try {
-    const stream = await openai.chat.completions.create({
-      model,
-      messages: messages as ChatCompletionMessageParam[],
-      temperature,
-      stream: true,
-    }, {
-      signal: abortController.signal,
-    })
-
-    let fullContent = ''
-
-    for await (const chunk of stream) {
-      if (token?.isCancellationRequested) {
-        abortController.abort()
-        break
-      }
-
-      const content = chunk.choices[0]?.delta?.content || ''
-      if (content) {
-        fullContent += content
-        onChunk(content)
-        await new Promise(resolve => setTimeout(resolve, 10))
-      }
-    }
-
-    return fullContent
-  }
-  catch (error) {
-    if (abortController.signal.aborted || token?.isCancellationRequested)
-      return ''
-
-    throw error
-  }
-  finally {
-    cancellationDisposable?.dispose()
-  }
+  return fullContent
 }

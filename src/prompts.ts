@@ -80,8 +80,19 @@ ${enableEmoji ? '♻️ ' : ''}refactor: optimize server port configuration`,
   }
 }
 
-export async function getMainCommitPrompt() {
+async function getMainCommitPrompt() {
   const language = config.MESSAGE_LANGUAGE
   const enableEmoji = config.ENABLE_EMOJI
   return [INIT_MAIN_PROMPT(language, enableEmoji)]
+}
+
+export async function generateCommitMessageChatCompletionPrompt(diff: string) {
+  const INIT_MESSAGES_PROMPT = await getMainCommitPrompt()
+  const chatContextAsCompletionRequest = [...INIT_MESSAGES_PROMPT]
+
+  chatContextAsCompletionRequest.push({
+    role: 'user',
+    content: diff,
+  })
+  return chatContextAsCompletionRequest
 }

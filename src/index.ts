@@ -5,19 +5,8 @@ import { config, validateConfig } from './config'
 import { getDiffStaged, getRepo } from './git-utils'
 import { getMessages } from './i18n'
 import { ChatGPTStreamAPI } from './openai-utils'
-import { getMainCommitPrompt } from './prompts'
+import { generateCommitMessageChatCompletionPrompt } from './prompts'
 import { ProgressHandler } from './utils'
-
-async function generateCommitMessageChatCompletionPrompt(diff: string) {
-  const INIT_MESSAGES_PROMPT = await getMainCommitPrompt()
-  const chatContextAsCompletionRequest = [...INIT_MESSAGES_PROMPT]
-
-  chatContextAsCompletionRequest.push({
-    role: 'user',
-    content: diff,
-  })
-  return chatContextAsCompletionRequest
-}
 
 const { activate, deactivate } = defineExtension((context) => {
   const disposable = commands.registerCommand('commit-genie.generateCommitMessage', async () => {
@@ -43,34 +32,13 @@ const { activate, deactivate } = defineExtension((context) => {
         diff,
       )
 
-      return ProgressHandler.withProgress('', async (progress, token) => {
-        if (token.isCancellationRequested)
-          return
-
-        let isCancelled = false
-        const cancelDisposable = token.onCancellationRequested(() => {
-          isCancelled = true
-        })
-
+      return ProgressHandler.withProgress('', async (progress) => {
         progress.report({ message: messages.generatingCommitMessage })
 
-        try {
-          scmInputBox.value = ''
-          await ChatGPTStreamAPI(messagePrompts as ChatCompletionMessageParam[], (chunk: string) => {
-            if (isCancelled)
-              return
-
-            scmInputBox.value += chunk
-          }, token)
-        }
-        catch (error: any) {
-          if (isCancelled)
-            return
-          throw error
-        }
-        finally {
-          cancelDisposable.dispose()
-        }
+        scmInputBox.value = ''
+        await ChatGPTStreamAPI(messagePrompts as ChatCompletionMessageParam[], (chunk: string) => {
+          scmInputBox.value += chunk
+        })
       })
     }
     catch (error: any) {
