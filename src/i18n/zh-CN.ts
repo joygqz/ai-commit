@@ -14,7 +14,7 @@ export const zhCN: LanguageMessages = {
   noChangesStaged: '没有暂存的更改。',
 
   // OpenAI utils messages
-  apiKeyMissing: 'DEEPSEEK_API_KEY 环境变量缺失或为空。',
-  baseUrlMissing: 'DEEPSEEK_BASE_URL 环境变量缺失或为空。',
-  modelMissing: 'DEEPSEEK_MODEL 环境变量缺失或为空。',
+  apiKeyMissing: 'API_KEY 配置缺失或为空。',
+  baseUrlMissing: 'BASE_URL 配置缺失或为空。',
+  modelMissing: 'MODEL 配置缺失或为空。',
 }

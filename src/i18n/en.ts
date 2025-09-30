@@ -14,7 +14,7 @@ export const en: LanguageMessages = {
   noChangesStaged: 'No changes staged.',
 
   // OpenAI utils messages
-  apiKeyMissing: 'The DEEPSEEK_API_KEY environment variable is missing or empty.',
-  baseUrlMissing: 'The DEEPSEEK_BASE_URL environment variable is missing or empty.',
-  modelMissing: 'The DEEPSEEK_MODEL environment variable is missing or empty.',
+  apiKeyMissing: 'The API_KEY configuration is missing or empty.',
+  baseUrlMissing: 'The BASE_URL configuration is missing or empty.',
+  modelMissing: 'The MODEL configuration is missing or empty.',
 }

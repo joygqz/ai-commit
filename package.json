@@ -90,17 +90,17 @@
           ],
           "type": "string"
         },
-        "commit-genie.DEEPSEEK_API_KEY": {
+        "commit-genie.API_KEY": {
           "default": "",
           "description": "DeepSeek/OpenAI API Key.",
           "type": "string"
         },
-        "commit-genie.DEEPSEEK_BASE_URL": {
+        "commit-genie.BASE_URL": {
           "default": "https://api.deepseek.com",
           "description": "DeepSeek/OpenAI BASE URL.",
           "type": "string"
         },
-        "commit-genie.DEEPSEEK_MODEL": {
+        "commit-genie.MODEL": {
           "default": "deepseek-chat",
           "description": "DeepSeek/OpenAI Model.",
           "type": "string"
