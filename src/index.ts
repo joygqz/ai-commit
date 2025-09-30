@@ -2,16 +2,20 @@ import type { ChatCompletionMessageParam } from 'openai/resources'
 import * as fs from 'node:fs'
 import { defineExtension } from 'reactive-vscode'
 import { commands, extensions, window } from 'vscode'
+import { config } from './config'
 import { getDiffStaged } from './git-utils'
+import { getMessages } from './i18n'
 import { ChatGPTAPI } from './openai-utils'
 import { getMainCommitPrompt } from './prompts'
 import { addPeriodIfMissing, ProgressHandler } from './utils'
 
 export async function getRepo(arg: any) {
   const gitApi = extensions.getExtension('vscode.git')?.exports.getAPI(1)
+  const messages = getMessages(config.MESSAGE_LANGUAGE)
+
   if (!gitApi) {
-    window.showErrorMessage('Git extension not found.')
-    throw new Error('Git extension not found.')
+    window.showErrorMessage(messages.gitExtensionNotFound)
+    throw new Error(messages.gitExtensionNotFound)
   }
 
   if (typeof arg === 'object' && arg.rootUri) {
@@ -47,29 +51,30 @@ async function generateCommitMessageChatCompletionPrompt(diff: string, additiona
 
 const { activate, deactivate } = defineExtension((context) => {
   const disposable = commands.registerCommand('commit-genie.generateCommitMessage', async () => {
+    const messages = getMessages(config.MESSAGE_LANGUAGE)
     const repo = await getRepo(context)
 
     const { diff, error } = await getDiffStaged(repo)
 
     if (error) {
-      window.showErrorMessage(`Failed to get staged changes: ${error}.`)
+      window.showErrorMessage(`${messages.failedToGetStagedChanges}: ${error}.`)
       return
     }
 
-    if (!diff || diff === 'No changes staged.') {
-      window.showInformationMessage('No changes staged for commit.')
+    if (!diff || diff === messages.noChangesStaged) {
+      window.showInformationMessage(messages.noStagedChanges)
       return
     }
 
     const scmInputBox = repo.inputBox
     if (!scmInputBox) {
-      window.showErrorMessage('Unable to find the SCM input box.')
+      window.showErrorMessage(messages.scmInputBoxNotFound)
       return
     }
 
     const additionalContext = scmInputBox.value.trim()
 
-    const messages = await generateCommitMessageChatCompletionPrompt(
+    const messagePrompts = await generateCommitMessageChatCompletionPrompt(
       diff,
       additionalContext,
     )
@@ -77,18 +82,18 @@ const { activate, deactivate } = defineExtension((context) => {
     return ProgressHandler.withProgress('', async (progress) => {
       progress.report({
         message: additionalContext
-          ? 'Generating commit message with additional context...'
-          : 'Generating commit message...',
+          ? messages.generatingWithContext
+          : messages.generatingCommitMessage,
       })
 
       try {
-        const commitMessage = await ChatGPTAPI(messages as ChatCompletionMessageParam[])
+        const commitMessage = await ChatGPTAPI(messagePrompts as ChatCompletionMessageParam[])
 
         if (commitMessage) {
           scmInputBox.value = commitMessage
         }
         else {
-          throw new Error('Failed to generate commit message.')
+          throw new Error(messages.failedToGenerateCommitMessage)
         }
       }
       catch (error: any) {

@@ -1,17 +1,19 @@
 import type { ChatCompletionMessageParam } from 'openai/resources'
 import OpenAI from 'openai'
 import { config } from './config'
+import { getMessages } from './i18n'
 
 function getOpenAIConfig() {
+  const messages = getMessages(config.MESSAGE_LANGUAGE)
   const apiKey = config.DEEPSEEK_API_KEY
   const baseURL = config.DEEPSEEK_BASE_URL
 
   if (!apiKey) {
-    throw new Error('The DEEPSEEK_API_KEY environment variable is missing or empty.')
+    throw new Error(messages.apiKeyMissing)
   }
 
   if (!baseURL) {
-    throw new Error('The DEEPSEEK_BASE_URL environment variable is missing or empty.')
+    throw new Error(messages.baseUrlMissing)
   }
 
   const _config: {
@@ -38,12 +40,13 @@ export function createOpenAIApi() {
 }
 
 export async function ChatGPTAPI(messages: ChatCompletionMessageParam[]) {
+  const i18nMessages = getMessages(config.MESSAGE_LANGUAGE)
   const openai = createOpenAIApi()
   const model = config.DEEPSEEK_MODEL
   const temperature = 0
 
   if (!model) {
-    throw new Error('The DEEPSEEK_MODEL environment variable is missing or empty.')
+    throw new Error(i18nMessages.modelMissing)
   }
 
   const completion = await openai.chat.completions.create({
