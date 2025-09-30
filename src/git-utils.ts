@@ -6,8 +6,7 @@ import { getMessages } from './i18n'
 export async function getDiffStaged(repo: any): Promise<{ diff: string, error?: string }> {
   try {
     const messages = getMessages(config.MESSAGE_LANGUAGE)
-    const rootPath
-      = repo?.rootUri?.fsPath || workspace.workspaceFolders?.[0].uri.fsPath
+    const rootPath = repo?.rootUri?.fsPath || workspace.workspaceFolders?.[0].uri.fsPath
 
     if (!rootPath) {
       throw new Error(messages.noWorkspaceFound)

@@ -1,10 +1,6 @@
 import type { Progress } from 'vscode'
 import { ProgressLocation, window } from 'vscode'
 
-export function addPeriodIfMissing(str: string) {
-  return str.replace(/[^.?!。？！…]$/, '$&.')
-}
-
 export class ProgressHandler {
   static async withProgress<T>(
     title: string,

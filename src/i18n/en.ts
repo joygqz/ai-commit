@@ -5,7 +5,6 @@ export const en: LanguageMessages = {
   gitExtensionNotFound: 'Git extension not found.',
   noStagedChanges: 'No changes staged for commit.',
   scmInputBoxNotFound: 'Unable to find the SCM input box.',
-  failedToGetStagedChanges: 'Failed to get staged changes',
   generatingCommitMessage: 'Generating commit message...',
   generatingWithContext: 'Generating commit message with additional context...',
   failedToGenerateCommitMessage: 'Failed to generate commit message.',

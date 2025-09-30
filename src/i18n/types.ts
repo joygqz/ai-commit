@@ -3,7 +3,6 @@ export interface LanguageMessages {
   gitExtensionNotFound: string
   noStagedChanges: string
   scmInputBoxNotFound: string
-  failedToGetStagedChanges: string
   generatingCommitMessage: string
   generatingWithContext: string
   failedToGenerateCommitMessage: string

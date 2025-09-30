@@ -7,7 +7,7 @@ import { getDiffStaged } from './git-utils'
 import { getMessages } from './i18n'
 import { ChatGPTStreamAPI } from './openai-utils'
 import { getMainCommitPrompt } from './prompts'
-import { addPeriodIfMissing, ProgressHandler } from './utils'
+import { ProgressHandler } from './utils'
 
 export async function getRepo(arg: any) {
   const gitApi = extensions.getExtension('vscode.git')?.exports.getAPI(1)
@@ -57,7 +57,7 @@ const { activate, deactivate } = defineExtension((context) => {
     const { diff, error } = await getDiffStaged(repo)
 
     if (error) {
-      window.showErrorMessage(`${messages.failedToGetStagedChanges}: ${error}.`)
+      window.showErrorMessage(error)
       return
     }
 
@@ -80,11 +80,9 @@ const { activate, deactivate } = defineExtension((context) => {
     )
 
     return ProgressHandler.withProgress('', async (progress) => {
-      progress.report({
-        message: additionalContext
-          ? messages.generatingWithContext
-          : messages.generatingCommitMessage,
-      })
+      progress.report({ message: additionalContext
+        ? messages.generatingWithContext
+        : messages.generatingCommitMessage })
 
       try {
         scmInputBox.value = ''
@@ -93,7 +91,7 @@ const { activate, deactivate } = defineExtension((context) => {
         })
       }
       catch (error: any) {
-        window.showErrorMessage(addPeriodIfMissing(error.toString()))
+        window.showErrorMessage(error.toString())
       }
     })
   })

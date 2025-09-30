@@ -5,7 +5,6 @@ export const zhCN: LanguageMessages = {
   gitExtensionNotFound: '未找到 Git 扩展。',
   noStagedChanges: '没有暂存的更改可提交。',
   scmInputBoxNotFound: '无法找到 SCM 输入框。',
-  failedToGetStagedChanges: '获取暂存更改失败',
   generatingCommitMessage: '正在生成提交信息...',
   generatingWithContext: '正在根据附加上下文生成提交信息...',
   failedToGenerateCommitMessage: '生成提交信息失败。',
