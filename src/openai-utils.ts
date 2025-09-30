@@ -37,7 +37,7 @@ export async function ChatGPTStreamAPI(
   const { signal } = options
   const openai = createOpenAIApi()
   const model = config.MODEL
-  const temperature = 0
+  const temperature = 1.0
 
   const stream = await openai.chat.completions.create({
     model,
