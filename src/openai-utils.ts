@@ -32,7 +32,9 @@ export function createOpenAIApi() {
 export async function ChatGPTStreamAPI(
   messages: ChatCompletionMessageParam[],
   onChunk: (chunk: string) => void,
+  options: { signal?: AbortSignal } = {},
 ): Promise<string> {
+  const { signal } = options
   const openai = createOpenAIApi()
   const model = config.MODEL
   const temperature = 0
@@ -42,17 +44,28 @@ export async function ChatGPTStreamAPI(
     messages: messages as ChatCompletionMessageParam[],
     temperature,
     stream: true,
-  })
+  }, { signal })
 
   let fullContent = ''
 
-  for await (const chunk of stream) {
-    const content = chunk.choices[0]?.delta?.content || ''
-    if (content) {
-      fullContent += content
-      onChunk(content)
-      await new Promise(resolve => setTimeout(resolve, 10))
+  try {
+    for await (const chunk of stream) {
+      if (signal?.aborted) {
+        break
+      }
+      const content = chunk.choices[0]?.delta?.content || ''
+      if (content) {
+        fullContent += content
+        onChunk(content)
+        await new Promise(resolve => setTimeout(resolve, 10))
+      }
     }
+  }
+  catch (error) {
+    if (signal?.aborted) {
+      return fullContent
+    }
+    throw error
   }
 
   return fullContent
