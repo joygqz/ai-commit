@@ -5,7 +5,7 @@ import { commands, extensions, window } from 'vscode'
 import { config } from './config'
 import { getDiffStaged } from './git-utils'
 import { getMessages } from './i18n'
-import { ChatGPTAPI } from './openai-utils'
+import { ChatGPTStreamAPI } from './openai-utils'
 import { getMainCommitPrompt } from './prompts'
 import { addPeriodIfMissing, ProgressHandler } from './utils'
 
@@ -87,14 +87,10 @@ const { activate, deactivate } = defineExtension((context) => {
       })
 
       try {
-        const commitMessage = await ChatGPTAPI(messagePrompts as ChatCompletionMessageParam[])
-
-        if (commitMessage) {
-          scmInputBox.value = commitMessage
-        }
-        else {
-          throw new Error(messages.failedToGenerateCommitMessage)
-        }
+        scmInputBox.value = ''
+        await ChatGPTStreamAPI(messagePrompts as ChatCompletionMessageParam[], (chunk: string) => {
+          scmInputBox.value += chunk
+        })
       }
       catch (error: any) {
         window.showErrorMessage(addPeriodIfMissing(error.toString()))

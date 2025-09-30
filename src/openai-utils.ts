@@ -39,7 +39,10 @@ export function createOpenAIApi() {
   return new OpenAI(config)
 }
 
-export async function ChatGPTAPI(messages: ChatCompletionMessageParam[]) {
+export async function ChatGPTStreamAPI(
+  messages: ChatCompletionMessageParam[],
+  onChunk: (chunk: string) => void,
+): Promise<string> {
   const i18nMessages = getMessages(config.MESSAGE_LANGUAGE)
   const openai = createOpenAIApi()
   const model = config.DEEPSEEK_MODEL
@@ -49,11 +52,23 @@ export async function ChatGPTAPI(messages: ChatCompletionMessageParam[]) {
     throw new Error(i18nMessages.modelMissing)
   }
 
-  const completion = await openai.chat.completions.create({
+  const stream = await openai.chat.completions.create({
     model,
     messages: messages as ChatCompletionMessageParam[],
     temperature,
+    stream: true,
   })
 
-  return completion.choices[0]!.message?.content
+  let fullContent = ''
+
+  for await (const chunk of stream) {
+    const content = chunk.choices[0]?.delta?.content || ''
+    if (content) {
+      fullContent += content
+      onChunk(content)
+      await new Promise(resolve => setTimeout(resolve, 10))
+    }
+  }
+
+  return fullContent
 }
