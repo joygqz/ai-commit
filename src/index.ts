@@ -43,8 +43,7 @@ const { activate, deactivate } = defineExtension((context) => {
 
       const scmInputBox = repo?.inputBox
       if (!scmInputBox) {
-        window.showErrorMessage(messages.scmInputBoxNotFound)
-        return
+        throw new Error(messages.scmInputBoxNotFound)
       }
 
       const additionalContext = scmInputBox.value.trim()
@@ -79,8 +78,7 @@ const { activate, deactivate } = defineExtension((context) => {
         catch (error: any) {
           if (isCancelled)
             return
-
-          window.showErrorMessage(error.message)
+          throw error
         }
         finally {
           cancelDisposable.dispose()
