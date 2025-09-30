@@ -36,7 +36,7 @@
           "dark": "images/icon.svg",
           "light": "images/icon.svg"
         },
-        "title": "Commit Genie: Generate Commit Message"
+        "title": "Generate Commit Message"
       }
     ],
     "configuration": {
@@ -104,6 +104,11 @@
           "default": "deepseek-chat",
           "description": "DeepSeek/OpenAI Model.",
           "type": "string"
+        },
+        "commit-genie.ENABLE_EMOJI": {
+          "default": false,
+          "description": "Enable emoji prefix in commit messages.",
+          "type": "boolean"
         }
       }
     },

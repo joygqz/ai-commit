@@ -1,6 +1,26 @@
 import { config } from './config'
 
-function INIT_MAIN_PROMPT(language: string) {
+function INIT_MAIN_PROMPT(language: string, enableEmoji: boolean) {
+  const emojiInstructions = enableEmoji
+    ? `
+
+## Emoji Support
+When enabled, add appropriate emoji prefix to commit types:
+- ✨ feat
+- 🐛 fix
+- 📚 docs
+- 💄 style
+- ♻️ refactor
+- ⚡ perf
+- ✅ test
+- 📦 build
+- 👷 ci
+- 🔧 chore
+- 🌐 i18n
+
+Use format: <emoji> <type>[optional scope]: <subject>`
+    : ''
+
   return {
     role: 'system',
     content: `# Git Commit Message Generator
@@ -9,13 +29,13 @@ You are a git commit message generator. Given a git diff, output ONLY the commit
 
 ## Output Format
 
-<type>[optional scope]: <subject>
+${enableEmoji ? '<emoji> ' : ''}<type>[optional scope]: <subject>
 
 [optional body]
 
 ## Types
 - **feat**: new feature
-- **fix**: bug fix  
+- **fix**: bug fix
 - **docs**: documentation
 - **style**: formatting/code style
 - **refactor**: code refactoring
@@ -24,20 +44,18 @@ You are a git commit message generator. Given a git diff, output ONLY the commit
 - **build**: build system
 - **ci**: CI configuration
 - **chore**: maintenance
-- **i18n**: internationalization
+- **i18n**: internationalization${emojiInstructions}
 
 ## Rules
 
 ### Subject
 - Imperative mood, lowercase, no period
 - Max 50 chars
-- Language: ${language}
 
 ### Body
 - Bullet points with "-"
 - Max 72 chars/line
 - Only the changes need to be explained
-- Language: ${language}
 
 ### Language Requirements
 - ALL text in ${language}
@@ -56,11 +74,12 @@ You are a git commit message generator. Given a git diff, output ONLY the commit
 
 **Output:**
 
-refactor: optimize server port configuration`,
+${enableEmoji ? '♻️ ' : ''}refactor: optimize server port configuration`,
   }
 }
 
 export async function getMainCommitPrompt() {
   const language = config.MESSAGE_LANGUAGE
-  return [INIT_MAIN_PROMPT(language)]
+  const enableEmoji = config.ENABLE_EMOJI
+  return [INIT_MAIN_PROMPT(language, enableEmoji)]
 }
