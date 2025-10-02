@@ -1,6 +1,6 @@
 # Commit Genie
 
-Use DeepSeek or OpenAI API to intelligently analyze Git changes and automatically generate standard commit messages.
+Use OpenAI SDK compatible APIs to intelligently analyze Git changes and automatically generate standard commit messages.
 
 ## Commands
 
