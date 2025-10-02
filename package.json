@@ -49,22 +49,25 @@
       "properties": {
         "commit-genie.apiKey": {
           "default": "",
+          "description": "API key for authentication with your AI service provider.",
           "type": "string",
           "order": 0
         },
         "commit-genie.baseURL": {
           "default": "https://api.deepseek.com",
+          "description": "Base URL of the AI service API endpoint.",
           "type": "string",
           "order": 1
         },
         "commit-genie.model": {
           "default": "deepseek-chat",
-          "description": "Enter manually or run \"Commit Genie: Select Available Models\" to pick from available models.",
+          "description": "AI model to use for generating commit messages. Enter manually or run \"Commit Genie: Select Available Models\" to choose from available options.",
           "type": "string",
           "order": 2
         },
         "commit-genie.commitMessageLanguage": {
           "default": "Simplified Chinese",
+          "description": "Language for generated commit messages.",
           "enum": [
             "Simplified Chinese",
             "Traditional Chinese",

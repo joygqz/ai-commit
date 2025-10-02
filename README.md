@@ -17,12 +17,12 @@ Use DeepSeek or OpenAI API to intelligently analyze Git changes and automaticall
 
 <!-- configs -->
 
-| Key                                  | Description                                                                                  | Type      | Default                      |
-| ------------------------------------ | -------------------------------------------------------------------------------------------- | --------- | ---------------------------- |
-| `commit-genie.apiKey`                |                                                                                              | `string`  | `""`                         |
-| `commit-genie.baseURL`               |                                                                                              | `string`  | `"https://api.deepseek.com"` |
-| `commit-genie.model`                 | Enter manually or run "Commit Genie: Select Available Models" to pick from available models. | `string`  | `"deepseek-chat"`            |
-| `commit-genie.commitMessageLanguage` |                                                                                              | `string`  | `"Simplified Chinese"`       |
-| `commit-genie.enableEmojiPrefix`     | Enable emoji prefix.                                                                         | `boolean` | `false`                      |
+| Key                                  | Description                                                                                                                                     | Type      | Default                      |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ---------------------------- |
+| `commit-genie.apiKey`                | API key for authentication with your AI service provider.                                                                                       | `string`  | `""`                         |
+| `commit-genie.baseURL`               | Base URL of the AI service API endpoint.                                                                                                        | `string`  | `"https://api.deepseek.com"` |
+| `commit-genie.model`                 | AI model to use for generating commit messages. Enter manually or run "Commit Genie: Select Available Models" to choose from available options. | `string`  | `"deepseek-chat"`            |
+| `commit-genie.commitMessageLanguage` | Language for generated commit messages.                                                                                                         | `string`  | `"Simplified Chinese"`       |
+| `commit-genie.enableEmojiPrefix`     | Enable emoji prefix.                                                                                                                            | `boolean` | `false`                      |
 
 <!-- configs -->
