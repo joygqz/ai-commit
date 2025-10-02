@@ -71,10 +71,12 @@ const { activate, deactivate } = defineExtension((context) => {
     }
   }))
 
-  // 显示可用模型
   context.subscriptions.push(commands.registerCommand('commit-genie.selectAvailableModel', async () => {
     try {
-      validateConfig()
+      validateConfig([
+        { key: 'server.apiKey', errorMessage: messages => messages.apiKeyMissing },
+        { key: 'server.baseURL', errorMessage: messages => messages.baseUrlMissing },
+      ])
       const messages = getMessages(config['format.commitMessageLanguage'])
       const models = await showModels()
 

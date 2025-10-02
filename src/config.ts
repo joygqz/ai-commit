@@ -7,18 +7,23 @@ export const config = defineConfigObject<Meta.ScopedConfigKeyTypeMap>(
   Meta.scopedConfigs.defaults,
 )
 
-export function validateConfig() {
+interface ValidationField {
+  key: keyof Meta.ScopedConfigKeyTypeMap
+  errorMessage: (messages: ReturnType<typeof getMessages>) => string
+}
+
+const defaultValidationFields: ValidationField[] = [
+  { key: 'server.apiKey', errorMessage: messages => messages.apiKeyMissing },
+  { key: 'server.baseURL', errorMessage: messages => messages.baseUrlMissing },
+  { key: 'server.model', errorMessage: messages => messages.modelMissing },
+]
+
+export function validateConfig(fields: ValidationField[] = defaultValidationFields) {
   const messages = getMessages(config['format.commitMessageLanguage'])
 
-  if (!config['server.apiKey']) {
-    throw new Error(messages.apiKeyMissing)
-  }
-
-  if (!config['server.baseURL']) {
-    throw new Error(messages.baseUrlMissing)
-  }
-
-  if (!config['server.model']) {
-    throw new Error(messages.modelMissing)
+  for (const field of fields) {
+    if (!config[field.key]) {
+      throw new Error(field.errorMessage(messages))
+    }
   }
 }
