@@ -118,8 +118,8 @@ function createSystemMessage(options: PromptOptions): ChatCompletionMessageParam
 
 async function getMainCommitPrompt(): Promise<ChatCompletionMessageParam[]> {
   const options: PromptOptions = {
-    language: config.MESSAGE_LANGUAGE,
-    enableEmoji: config.ENABLE_EMOJI,
+    language: config['format.commitMessageLanguage'],
+    enableEmoji: config['format.enableEmojiPrefix'],
   }
 
   return [createSystemMessage(options)]
