@@ -36,14 +36,36 @@
           "dark": "images/icon.svg",
           "light": "images/icon.svg"
         },
-        "title": "Generate Commit Message"
+        "title": "Commit Genie: Generate Commit Message"
+      },
+      {
+        "command": "commit-genie.selectAvailableModel",
+        "title": "Commit Genie: Select Available Model"
       }
     ],
     "configuration": {
       "title": "Commit Genie",
       "type": "object",
       "properties": {
-        "commit-genie.MESSAGE_LANGUAGE": {
+        "commit-genie.server.apiKey": {
+          "default": "",
+          "description": "DeepSeek/OpenAI API Key.",
+          "type": "string",
+          "order": 0
+        },
+        "commit-genie.server.baseURL": {
+          "default": "https://api.deepseek.com",
+          "description": "DeepSeek/OpenAI BaseURL.",
+          "type": "string",
+          "order": 1
+        },
+        "commit-genie.server.model": {
+          "default": "deepseek-chat",
+          "description": "DeepSeek/OpenAI model name. Enter manually or run \"Commit Genie: Select Available Models\" to pick from available models.",
+          "type": "string",
+          "order": 2
+        },
+        "commit-genie.format.commitMessageLanguage": {
           "default": "Simplified Chinese",
           "description": "Commit message language.",
           "enum": [
@@ -88,27 +110,14 @@
             "Turkish",
             "ไทย"
           ],
-          "type": "string"
+          "type": "string",
+          "order": 3
         },
-        "commit-genie.API_KEY": {
-          "default": "",
-          "description": "DeepSeek/OpenAI API Key.",
-          "type": "string"
-        },
-        "commit-genie.BASE_URL": {
-          "default": "https://api.deepseek.com",
-          "description": "DeepSeek/OpenAI BASE URL.",
-          "type": "string"
-        },
-        "commit-genie.MODEL": {
-          "default": "deepseek-chat",
-          "description": "DeepSeek/OpenAI Model.",
-          "type": "string"
-        },
-        "commit-genie.ENABLE_EMOJI": {
+        "commit-genie.format.enableEmojiPrefix": {
           "default": false,
           "description": "Enable emoji prefix in commit messages.",
-          "type": "boolean"
+          "type": "boolean",
+          "order": 4
         }
       }
     },

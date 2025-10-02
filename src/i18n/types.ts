@@ -11,6 +11,13 @@ export interface LanguageMessages {
   apiKeyMissing: string
   baseUrlMissing: string
   modelMissing: string
+  selectModelTitle: string
+  selectModelPlaceholder: string
+  noModelsAvailable: string
+  modelSelectionCancelled: string
+  modelUpdated: string
+  modelAlreadySelected: string
+  currentModelIndicator: string
 }
 
 export function getLanguageCode(configLanguage: string): 'zh-CN' | 'en' {

@@ -13,4 +13,11 @@ export const zhCN: LanguageMessages = {
   apiKeyMissing: 'API_KEY 配置缺失或为空。',
   baseUrlMissing: 'BASE_URL 配置缺失或为空。',
   modelMissing: 'MODEL 配置缺失或为空。',
+  selectModelTitle: '选择模型',
+  selectModelPlaceholder: '请选择用于生成提交信息的模型。',
+  noModelsAvailable: '当前 API 配置未返回可用模型。',
+  modelSelectionCancelled: '已取消模型选择。',
+  modelUpdated: '模型已更新为 {model}。',
+  modelAlreadySelected: '该模型已经在使用中。',
+  currentModelIndicator: '当前使用',
 }

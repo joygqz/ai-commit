@@ -8,17 +8,17 @@ export const config = defineConfigObject<Meta.ScopedConfigKeyTypeMap>(
 )
 
 export function validateConfig() {
-  const messages = getMessages(config.MESSAGE_LANGUAGE)
+  const messages = getMessages(config['format.commitMessageLanguage'])
 
-  if (!config.API_KEY) {
+  if (!config['server.apiKey']) {
     throw new Error(messages.apiKeyMissing)
   }
 
-  if (!config.BASE_URL) {
+  if (!config['server.baseURL']) {
     throw new Error(messages.baseUrlMissing)
   }
 
-  if (!config.MODEL) {
+  if (!config['server.model']) {
     throw new Error(messages.modelMissing)
   }
 }

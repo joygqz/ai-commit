@@ -13,4 +13,11 @@ export const en: LanguageMessages = {
   apiKeyMissing: 'The API_KEY configuration is missing or empty.',
   baseUrlMissing: 'The BASE_URL configuration is missing or empty.',
   modelMissing: 'The MODEL configuration is missing or empty.',
+  selectModelTitle: 'Select a model',
+  selectModelPlaceholder: 'Pick a model to use for commit message generation.',
+  noModelsAvailable: 'No models are available for the current API configuration.',
+  modelSelectionCancelled: 'Model selection cancelled.',
+  modelUpdated: 'Model updated to {model}.',
+  modelAlreadySelected: 'The selected model is already active.',
+  currentModelIndicator: 'Current model',
 }

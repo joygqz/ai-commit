@@ -4,13 +4,13 @@ import { commands, window } from 'vscode'
 import { config, validateConfig } from './config'
 import { getDiffStaged, getRepo } from './git-utils'
 import { getMessages } from './i18n'
-import { ChatGPTStreamAPI } from './openai-utils'
+import { ChatGPTStreamAPI, showModels } from './openai-utils'
 import { generateCommitMessageChatCompletionPrompt } from './prompts'
 import { ProgressHandler } from './utils'
 
 const { activate, deactivate } = defineExtension((context) => {
   let activeAbortController: AbortController | null = null
-  const disposable = commands.registerCommand('commit-genie.generateCommitMessage', async () => {
+  context.subscriptions.push(commands.registerCommand('commit-genie.generateCommitMessage', async () => {
     try {
       if (activeAbortController) {
         activeAbortController.abort()
@@ -19,7 +19,7 @@ const { activate, deactivate } = defineExtension((context) => {
 
       validateConfig()
 
-      const messages = getMessages(config.MESSAGE_LANGUAGE)
+      const messages = getMessages(config['format.commitMessageLanguage'])
       const repo = await getRepo(context)
 
       const diff = await getDiffStaged(repo)
@@ -69,9 +69,51 @@ const { activate, deactivate } = defineExtension((context) => {
 
       window.showErrorMessage(error.message)
     }
-  })
+  }))
 
-  context.subscriptions.push(disposable)
+  // 显示可用模型
+  context.subscriptions.push(commands.registerCommand('commit-genie.selectAvailableModel', async () => {
+    try {
+      validateConfig()
+      const messages = getMessages(config['format.commitMessageLanguage'])
+      const models = await showModels()
+
+      if (!models.length) {
+        window.showWarningMessage(messages.noModelsAvailable)
+        return
+      }
+
+      const currentModel = config['server.model']
+
+      const items = models.map(model => ({
+        label: model,
+        description: model === currentModel ? messages.currentModelIndicator : undefined,
+      }))
+
+      const picked = await window.showQuickPick(items, {
+        title: messages.selectModelTitle,
+        placeHolder: messages.selectModelPlaceholder,
+        matchOnDescription: true,
+      })
+
+      if (!picked) {
+        window.showInformationMessage(messages.modelSelectionCancelled)
+        return
+      }
+
+      if (picked.label === currentModel) {
+        window.showInformationMessage(messages.modelAlreadySelected)
+        return
+      }
+
+      await config.$update('server.model', picked.label)
+
+      window.showInformationMessage(messages.modelUpdated.replace('{model}', picked.label))
+    }
+    catch (error: any) {
+      window.showErrorMessage(error.message)
+    }
+  }))
 })
 
 export { activate, deactivate }
