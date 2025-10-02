@@ -14,7 +14,6 @@ export interface LanguageMessages {
   selectModelTitle: string
   selectModelPlaceholder: string
   noModelsAvailable: string
-  modelSelectionCancelled: string
   modelUpdated: string
   modelAlreadySelected: string
   currentModelIndicator: string

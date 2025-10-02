@@ -16,7 +16,6 @@ export const en: LanguageMessages = {
   selectModelTitle: 'Select a model',
   selectModelPlaceholder: 'Pick a model to use for commit message generation.',
   noModelsAvailable: 'No models are available for the current API configuration.',
-  modelSelectionCancelled: 'Model selection cancelled.',
   modelUpdated: 'Model updated to {model}.',
   modelAlreadySelected: 'The selected model is already active.',
   currentModelIndicator: 'Current model',

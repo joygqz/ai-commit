@@ -99,7 +99,6 @@ const { activate, deactivate } = defineExtension((context) => {
       })
 
       if (!picked) {
-        window.showInformationMessage(messages.modelSelectionCancelled)
         return
       }
 
