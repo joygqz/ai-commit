@@ -36,11 +36,14 @@
           "dark": "images/icon.svg",
           "light": "images/icon.svg"
         },
-        "title": "Commit Genie: Generate Commit Message"
+        "title": "Generate Commit Message",
+        "category": "Commit Genie",
+        "enablement": "scmProvider === git"
       },
       {
         "command": "commit-genie.selectAvailableModel",
-        "title": "Commit Genie: Select Available Model"
+        "title": "Select Available Model",
+        "category": "Commit Genie"
       }
     ],
     "configuration": {
