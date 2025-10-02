@@ -13,13 +13,13 @@ interface ValidationField {
 }
 
 const defaultValidationFields: ValidationField[] = [
-  { key: 'server.apiKey', errorMessage: messages => messages.apiKeyMissing },
-  { key: 'server.baseURL', errorMessage: messages => messages.baseUrlMissing },
-  { key: 'server.model', errorMessage: messages => messages.modelMissing },
+  { key: 'apiKey', errorMessage: messages => messages.apiKeyMissing },
+  { key: 'baseURL', errorMessage: messages => messages.baseUrlMissing },
+  { key: 'model', errorMessage: messages => messages.modelMissing },
 ]
 
 export function validateConfig(fields: ValidationField[] = defaultValidationFields) {
-  const messages = getMessages(config['format.commitMessageLanguage'])
+  const messages = getMessages(config.commitMessageLanguage)
 
   for (const field of fields) {
     if (!config[field.key]) {

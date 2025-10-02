@@ -47,25 +47,25 @@
       "title": "Commit Genie",
       "type": "object",
       "properties": {
-        "commit-genie.server.apiKey": {
+        "commit-genie.apiKey": {
           "default": "",
           "description": "DeepSeek/OpenAI API Key.",
           "type": "string",
           "order": 0
         },
-        "commit-genie.server.baseURL": {
+        "commit-genie.baseURL": {
           "default": "https://api.deepseek.com",
           "description": "DeepSeek/OpenAI BaseURL.",
           "type": "string",
           "order": 1
         },
-        "commit-genie.server.model": {
+        "commit-genie.model": {
           "default": "deepseek-chat",
           "description": "DeepSeek/OpenAI model name. Enter manually or run \"Commit Genie: Select Available Models\" to pick from available models.",
           "type": "string",
           "order": 2
         },
-        "commit-genie.format.commitMessageLanguage": {
+        "commit-genie.commitMessageLanguage": {
           "default": "Simplified Chinese",
           "description": "Commit message language.",
           "enum": [
@@ -113,7 +113,7 @@
           "type": "string",
           "order": 3
         },
-        "commit-genie.format.enableEmojiPrefix": {
+        "commit-genie.enableEmojiPrefix": {
           "default": false,
           "description": "Enable emoji prefix in commit messages.",
           "type": "boolean",

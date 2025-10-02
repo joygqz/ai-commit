@@ -19,7 +19,7 @@ const { activate, deactivate } = defineExtension((context) => {
 
       validateConfig()
 
-      const messages = getMessages(config['format.commitMessageLanguage'])
+      const messages = getMessages(config.commitMessageLanguage)
       const repo = await getRepo(context)
 
       const diff = await getDiffStaged(repo)
@@ -74,10 +74,10 @@ const { activate, deactivate } = defineExtension((context) => {
   context.subscriptions.push(commands.registerCommand('commit-genie.selectAvailableModel', async () => {
     try {
       validateConfig([
-        { key: 'server.apiKey', errorMessage: messages => messages.apiKeyMissing },
-        { key: 'server.baseURL', errorMessage: messages => messages.baseUrlMissing },
+        { key: 'apiKey', errorMessage: messages => messages.apiKeyMissing },
+        { key: 'baseURL', errorMessage: messages => messages.baseUrlMissing },
       ])
-      const messages = getMessages(config['format.commitMessageLanguage'])
+      const messages = getMessages(config.commitMessageLanguage)
       const models = await showModels()
 
       if (!models.length) {
@@ -85,7 +85,7 @@ const { activate, deactivate } = defineExtension((context) => {
         return
       }
 
-      const currentModel = config['server.model']
+      const currentModel = config.model
 
       const items = models.map(model => ({
         label: model,
@@ -108,7 +108,7 @@ const { activate, deactivate } = defineExtension((context) => {
         return
       }
 
-      await config.$update('server.model', picked.label)
+      await config.$update('model', picked.label)
 
       window.showInformationMessage(messages.modelUpdated.replace('{model}', picked.label))
     }

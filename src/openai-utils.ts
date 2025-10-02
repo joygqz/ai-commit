@@ -3,8 +3,8 @@ import OpenAI from 'openai'
 import { config } from './config'
 
 function getOpenAIConfig() {
-  const apiKey = config['server.apiKey']
-  const baseURL = config['server.baseURL']
+  const apiKey = config.apiKey
+  const baseURL = config.baseURL
 
   const _config: {
     apiKey?: string
@@ -36,7 +36,7 @@ export async function ChatGPTStreamAPI(
 ): Promise<string> {
   const { signal } = options
   const openai = createOpenAIApi()
-  const model = config['server.model']
+  const model = config.model
   const temperature = 0
 
   const stream = await openai.chat.completions.create({

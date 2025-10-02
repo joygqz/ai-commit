@@ -6,7 +6,7 @@ import { getMessages } from './i18n'
 
 export async function getRepo(arg: any) {
   const gitApi = extensions.getExtension('vscode.git')?.exports.getAPI(1)
-  const messages = getMessages(config['format.commitMessageLanguage'])
+  const messages = getMessages(config.commitMessageLanguage)
 
   if (!gitApi) {
     throw new Error(messages.gitExtensionNotFound)
@@ -26,7 +26,7 @@ export async function getRepo(arg: any) {
 }
 
 export async function getDiffStaged(repo: any): Promise<string> {
-  const messages = getMessages(config['format.commitMessageLanguage'])
+  const messages = getMessages(config.commitMessageLanguage)
   const rootPath = repo?.rootUri?.fsPath || workspace.workspaceFolders?.[0].uri.fsPath
 
   if (!rootPath) {
