@@ -17,7 +17,7 @@ const COMMIT_TYPES = [
   { type: 'build', description: 'build system', emoji: '📦' },
   { type: 'ci', description: 'CI configuration', emoji: '👷' },
   { type: 'chore', description: 'maintenance', emoji: '🔧' },
-  { type: 'i18n', description: 'internationalization', emoji: '🌐' },
+  { type: 'revert', description: 'revert previous commit', emoji: '⏪' },
 ] as const
 
 function createCommitTypeSection(enableEmoji: boolean) {
