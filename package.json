@@ -32,13 +32,12 @@
     "commands": [
       {
         "command": "commit-genie.generateCommitMessage",
+        "title": "Generate Commit Message",
+        "category": "Commit Genie",
         "icon": {
           "dark": "images/icon.svg",
           "light": "images/icon.svg"
-        },
-        "title": "Generate Commit Message",
-        "category": "Commit Genie",
-        "enablement": "scmProvider === git"
+        }
       },
       {
         "command": "commit-genie.selectAvailableModel",
@@ -128,7 +127,8 @@
       "scm/title": [
         {
           "command": "commit-genie.generateCommitMessage",
-          "group": "navigation"
+          "group": "navigation",
+          "when": "scmProvider == git"
         }
       ]
     }
