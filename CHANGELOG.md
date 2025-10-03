@@ -1,3 +1,11 @@
+## [0.2.6](https://github.com/joygqz/commit-genie/compare/v0.2.5...v0.2.6) (2025-10-03)
+
+
+
+## [0.2.5](https://github.com/joygqz/commit-genie/compare/v0.2.4...v0.2.5) (2025-10-03)
+
+
+
 ## [0.2.4](https://github.com/joygqz/commit-genie/compare/v0.2.3...v0.2.4) (2025-10-03)
 
 

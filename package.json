@@ -141,7 +141,7 @@
     "update": "vscode-ext-gen --output src/generated/meta.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "vscode:prepublish": "nr build",
     "release": "nr changelog && bumpp",
     "ext:package": "vsce package --no-dependencies",
