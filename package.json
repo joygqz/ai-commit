@@ -142,8 +142,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "vscode:prepublish": "nr build && nr changelog",
-    "release": "bumpp",
+    "vscode:prepublish": "nr build",
+    "release": "nr changelog && bumpp",
     "ext:package": "vsce package --no-dependencies",
     "ext:publish": "vsxpub --no-dependencies"
   },
@@ -175,6 +175,12 @@
       "keytar",
       "rolldown",
       "vsxpub"
+    ]
+  },
+  "bumpp": {
+    "files": [
+      "package.json",
+      "CHANGELOG.md"
     ]
   }
 }
