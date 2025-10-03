@@ -141,7 +141,8 @@
     "update": "vscode-ext-gen --output src/generated/meta.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "vscode:prepublish": "nr build",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
+    "vscode:prepublish": "nr build && nr changelog",
     "release": "bumpp",
     "ext:package": "vsce package --no-dependencies",
     "ext:publish": "vsxpub --no-dependencies"
@@ -153,6 +154,7 @@
     "@types/vscode": "^1.77.0",
     "@vscode/vsce": "^3.6.2",
     "bumpp": "^10.2.3",
+    "conventional-changelog-cli": "^5.0.0",
     "eslint": "^9.36.0",
     "esno": "^4.8.0",
     "openai": "^5.23.1",
