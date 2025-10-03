@@ -10,9 +10,9 @@ export const en: LanguageMessages = {
   noWorkspaceFound: 'No workspace folder found.',
   noChangesStaged: 'No changes staged.',
 
-  apiKeyMissing: 'The Server API Key configuration is missing or empty.',
-  baseUrlMissing: 'The Server Base URL configuration is missing or empty.',
-  modelMissing: 'The Server Model configuration is missing or empty.',
+  apiKeyMissing: 'The API Key configuration is missing or empty.',
+  baseUrlMissing: 'The Base URL configuration is missing or empty.',
+  modelMissing: 'The Model configuration is missing or empty.',
   selectModelTitle: 'Select a model',
   selectModelPlaceholder: 'Pick a model to use for commit message generation.',
   noModelsAvailable: 'No models are available for the current API configuration.',

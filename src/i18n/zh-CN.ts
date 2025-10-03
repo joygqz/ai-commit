@@ -10,9 +10,9 @@ export const zhCN: LanguageMessages = {
   noWorkspaceFound: '未找到工作区文件夹。',
   noChangesStaged: '没有暂存的更改。',
 
-  apiKeyMissing: 'Server API Key 配置缺失或为空。',
-  baseUrlMissing: 'Server Base URL 配置缺失或为空。',
-  modelMissing: 'Server Model 配置缺失或为空。',
+  apiKeyMissing: 'API Key 配置缺失或为空。',
+  baseUrlMissing: 'Base URL 配置缺失或为空。',
+  modelMissing: 'Model 配置缺失或为空。',
   selectModelTitle: '选择模型',
   selectModelPlaceholder: '请选择用于生成提交信息的模型。',
   noModelsAvailable: '当前 API 配置未返回可用模型。',
