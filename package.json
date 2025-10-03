@@ -21,6 +21,7 @@
   "main": "./dist/index.js",
   "icon": "images/icon.png",
   "files": [
+    "CHANGELOG.md",
     "LICENSE",
     "dist/*",
     "images/*"
