@@ -17,7 +17,7 @@ Use OpenAI SDK compatible APIs to intelligently analyze Git changes and automati
 
 <!-- commands -->
 
-## Configs
+## Configurations
 
 <!-- configs -->
 
