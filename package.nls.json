@@ -12,7 +12,5 @@
   "configuration.review.mode.strict": "Strict: Block any issues including minor ones (style, documentation)",
   "configuration.review.customPrompt.description": "Custom prompt to append to the code review system message. Use this to add specific review rules or focus areas.",
   "configuration.commit.enableEmojiPrefix.description": "Add emoji prefix before commit type (e.g., ✨ feat, 🐛 fix).",
-  "configuration.commit.customPrompt.description": "Custom prompt to append to the commit message generation system message. Examples: enforce Jira ticket numbers, use specific format, follow team conventions.",
-  "configuration.debug.enableLogging.description": "Enable logging to the Output panel for troubleshooting. Logs help diagnose issues when reporting bugs.",
-  "configuration.debug.logLevel.description": "Minimum log level to display. Lower levels include all higher levels (e.g., 'info' includes 'warn' and 'error')."
+  "configuration.commit.customPrompt.description": "Custom prompt to append to the commit message generation system message. Examples: enforce Jira ticket numbers, use specific format, follow team conventions."
 }

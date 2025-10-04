@@ -24,7 +24,7 @@ AI-powered code review and commit message generator for VS Code. Automatically r
    - Set `commit-genie.service.apiKey` (your API key)
    - Set `commit-genie.service.baseURL` (default: `https://api.deepseek.com`)
 3. **Select Model**: Run `Commit Genie: Select Available Model` from Command Palette
-4. **Start Using**: Stage your changes and click the ✨ icon in Source Control
+4. **Start Using**: Stage your changes and click the <img src="images/logo.png" width="16" height="16" /> icon in Source Control
 
 ## 📋 Usage
 
@@ -108,15 +108,6 @@ Use imperative mood for all messages
 Keep first line under 50 characters
 ```
 
-### Debug Settings
-
-| Setting | Description | Default |
-|---------|-------------|---------|
-| `debug.enableLogging` | Enable debug logs | `true` |
-| `debug.logLevel` | Log detail level | `warn` |
-
-**Log Levels:** `debug` / `info` / `warn` / `error`
-
 ## 🌍 Supported Languages
 
 Generate commit messages in your preferred language (19 languages supported):
@@ -140,28 +131,6 @@ Generate commit messages in your preferred language (19 languages supported):
 - Polish (Polski)
 - Turkish (Turkish)
 - Thai (ไทย)
-
-## 🐛 Troubleshooting
-
-**"API Key is required"**
-→ Configure `service.apiKey` in Settings
-
-**"No staged changes"**
-→ Stage your changes first in Source Control
-
-**Code review too strict/lenient?**
-→ Adjust `review.mode`: `off` / `lenient` / `standard` / `strict`
-
-**Want to skip code review?**
-→ Set `review.mode` to `off`
-
-**Network/Timeout errors**
-→ Check internet connection and API endpoint
-
-**Need detailed logs?**
-1. Settings → Search "Commit Genie debug"
-2. Set `debug.logLevel` to `"debug"`
-3. View: Output panel → "Commit Genie"
 
 ##  License
 

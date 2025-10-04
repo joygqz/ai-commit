@@ -1,9 +1,4 @@
 {
-  "Issues found:": "Issues found:",
-  "Suggestions:": "Suggestions:",
-  "❌ Code review found errors": "❌ Code review found errors",
-  "⚠️ Code review found warnings": "⚠️ Code review found warnings",
-  "Continue anyway": "Continue anyway",
   "API Key is required. Please configure it in settings.": "API Key is required. Please configure it in settings.",
   "Base URL is required. Please configure it in settings.": "Base URL is required. Please configure it in settings.",
   "Model is required. Please configure it in settings.": "Model is required. Please configure it in settings.",
@@ -17,6 +12,11 @@
   "Select Model": "Select Model",
   "Please select a model to generate commit messages.": "Please select a model to generate commit messages.",
   "Model updated to {0}.": "Model updated to {0}.",
+  "Issues found:": "Issues found:",
+  "Suggestions:": "Suggestions:",
+  "❌ Code review found errors": "❌ Code review found errors",
+  "⚠️ Code review found warnings": "⚠️ Code review found warnings",
+  "Continue anyway": "Continue anyway",
   "Git extension not found.": "Git extension not found.",
   "Workspace folder not found.": "Workspace folder not found.",
   "An unknown error occurred: {0}": "An unknown error occurred: {0}",
@@ -27,5 +27,6 @@
   "Network error. Please check your internet connection and base URL configuration.": "Network error. Please check your internet connection and base URL configuration.",
   "Invalid request. Please check your configuration or try again.": "Invalid request. Please check your configuration or try again.",
   "Server error. The API service may be temporarily unavailable. Please try again later.": "Server error. The API service may be temporarily unavailable. Please try again later.",
-  "An unexpected error occurred.": "An unexpected error occurred."
+  "An unexpected error occurred.": "An unexpected error occurred.",
+  "No staged changes to generate commit message.": "No staged changes to generate commit message."
 }

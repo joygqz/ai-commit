@@ -12,7 +12,5 @@
   "configuration.review.mode.strict": "严格：阻止任何问题，包括轻微问题（代码风格、文档）",
   "configuration.review.customPrompt.description": "追加到代码审查系统消息的自定义提示语。使用此选项添加特定的审查规则或重点关注的问题类型。",
   "configuration.commit.enableEmojiPrefix.description": "在提交信息类型前添加表情符号（如 ✨ feat, 🐛 fix）。",
-  "configuration.commit.customPrompt.description": "追加到提交信息生成系统消息的自定义提示语。例如：强制包含 Jira 工单号、使用特定的提交格式、遵循团队规范等。",
-  "configuration.debug.enableLogging.description": "启用输出面板日志以进行故障排查。日志有助于在报告错误时诊断问题。",
-  "configuration.debug.logLevel.description": "显示的最低日志级别。较低级别包含所有较高级别（例如，'info' 包含 'warn' 和 'error'）。"
+  "configuration.commit.customPrompt.description": "追加到提交信息生成系统消息的自定义提示语。例如：强制包含 Jira 工单号、使用特定的提交格式、遵循团队规范等。"
 }

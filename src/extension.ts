@@ -10,8 +10,6 @@ import { clearOpenAICache } from './utils/openai'
  * @param context 扩展上下文，用于管理扩展的生命周期
  */
 export function activate(context: vscode.ExtensionContext) {
-  // 初始化日志系统
-  logger.initFromConfig()
   logger.info('Commit Genie extension activated')
 
   /**
@@ -22,10 +20,6 @@ export function activate(context: vscode.ExtensionContext) {
       if (e.affectsConfiguration(`${EXTENSION_ID}.service`)) {
         logger.debug('Service configuration changed, clearing OpenAI cache')
         clearOpenAICache()
-      }
-      if (e.affectsConfiguration(`${EXTENSION_ID}.debug`)) {
-        logger.debug('Debug configuration changed, reinitializing logger')
-        logger.initFromConfig()
       }
     }),
   )

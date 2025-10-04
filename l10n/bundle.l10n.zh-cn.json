@@ -1,9 +1,4 @@
 {
-  "Issues found:": "发现的问题：",
-  "Suggestions:": "建议：",
-  "❌ Code review found errors": "❌ 代码审查发现错误",
-  "⚠️ Code review found warnings": "⚠️ 代码审查发现警告",
-  "Continue anyway": "仍然继续",
   "API Key is required. Please configure it in settings.": "需要 API 密钥。请在设置中配置。",
   "Base URL is required. Please configure it in settings.": "需要基础 URL。请在设置中配置。",
   "Model is required. Please configure it in settings.": "需要模型。请在设置中配置。",
@@ -17,6 +12,11 @@
   "Select Model": "选择模型",
   "Please select a model to generate commit messages.": "请选择一个模型来生成提交信息。",
   "Model updated to {0}.": "模型已更新为 {0}。",
+  "Issues found:": "发现的问题：",
+  "Suggestions:": "建议：",
+  "❌ Code review found errors": "❌ 代码审查发现错误",
+  "⚠️ Code review found warnings": "⚠️ 代码审查发现警告",
+  "Continue anyway": "仍然继续",
   "Git extension not found.": "未找到 Git 扩展。",
   "Workspace folder not found.": "未找到工作区文件夹。",
   "An unknown error occurred: {0}": "发生未知错误：{0}",
@@ -27,5 +27,6 @@
   "Network error. Please check your internet connection and base URL configuration.": "网络错误。请检查您的网络连接和基础 URL 配置。",
   "Invalid request. Please check your configuration or try again.": "无效请求。请检查您的配置或重试。",
   "Server error. The API service may be temporarily unavailable. Please try again later.": "服务器错误。API 服务可能暂时不可用。请稍后再试。",
-  "An unexpected error occurred.": "发生意外错误。"
+  "An unexpected error occurred.": "发生意外错误。",
+  "No staged changes to generate commit message.": "没有暂存更改来生成提交信息。"
 }

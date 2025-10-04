@@ -7,11 +7,6 @@ import { EXTENSION_ID } from './constants'
 export type ReviewMode = 'off' | 'lenient' | 'standard' | 'strict'
 
 /**
- * 日志级别类型
- */
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
-
-/**
  * 服务配置接口
  */
 export interface ServiceConfig {
@@ -41,14 +36,6 @@ export interface CommitConfig {
 export interface ReviewConfig {
   mode: ReviewMode
   customPrompt: string
-}
-
-/**
- * 调试配置接口
- */
-export interface DebugConfig {
-  enableLogging: boolean
-  logLevel: LogLevel
 }
 
 /**
@@ -131,17 +118,6 @@ class ConfigManager {
     return {
       mode: this.get<ReviewMode>('review.mode', 'standard'),
       customPrompt: this.get<string>('review.customPrompt', ''),
-    }
-  }
-
-  /**
-   * 获取调试相关配置
-   * @returns 调试配置对象
-   */
-  getDebugConfig(): DebugConfig {
-    return {
-      enableLogging: this.get<boolean>('debug.enableLogging', true),
-      logLevel: this.get<LogLevel>('debug.logLevel', 'warn'),
     }
   }
 }
