@@ -3,7 +3,7 @@
   "command.selectAvailableModel.title": "选择可用模型",
   "configuration.service.apiKey.description": "用于 AI 服务提供商身份验证的 API 密钥。",
   "configuration.service.baseURL.description": "AI 服务 API 端点的基础 URL。",
-  "configuration.service.model.description": "用于生成提交信息的 AI 模型。手动输入或运行 `Commit Genie: 选择可用模型` 命令从可用选项中选择。",
+  "configuration.service.model.description": "用于生成提交信息的 AI 模型。运行 [Commit Genie: 选择可用模型](command:commit-genie.selectAvailableModel) 从可用选项中选择。",
   "configuration.format.commitMessageLanguage.description": "生成的提交信息的语言。",
   "configuration.format.enableEmojiPrefix.description": "启用表情符号前缀。",
   "configuration.format.customPrompt.description": "追加到系统消息的自定义提示语。使用此选项为提交信息生成添加特定的指南或要求。"

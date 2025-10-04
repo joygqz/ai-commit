@@ -3,7 +3,7 @@
   "command.selectAvailableModel.title": "Select Available Model",
   "configuration.service.apiKey.description": "API key for authentication with your AI service provider.",
   "configuration.service.baseURL.description": "Base URL of the AI service API endpoint.",
-  "configuration.service.model.description": "AI model to use for generating commit messages. Enter manually or run `Commit Genie: Select Available Model` command to choose from available options.",
+  "configuration.service.model.description": "AI model to use for generating commit messages. Run [Commit Genie: Select Available Model](command:commit-genie.selectAvailableModel) to choose from available options.",
   "configuration.format.commitMessageLanguage.description": "Language for generated commit messages.",
   "configuration.format.enableEmojiPrefix.description": "Enable emoji prefix.",
   "configuration.format.customPrompt.description": "Custom prompt to append to the system message. Use this to add specific guidelines or requirements for commit message generation."

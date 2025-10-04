@@ -56,25 +56,25 @@
       "properties": {
         "commit-genie.service.baseURL": {
           "default": "https://api.deepseek.com",
-          "description": "%configuration.service.baseURL.description%",
+          "markdownDescription": "%configuration.service.baseURL.description%",
           "type": "string",
           "order": 0
         },
         "commit-genie.service.apiKey": {
           "default": "",
-          "description": "%configuration.service.apiKey.description%",
+          "markdownDescription": "%configuration.service.apiKey.description%",
           "type": "string",
           "order": 1
         },
         "commit-genie.service.model": {
           "default": "deepseek-chat",
-          "description": "%configuration.service.model.description%",
+          "markdownDescription": "%configuration.service.model.description%",
           "type": "string",
           "order": 2
         },
         "commit-genie.format.commitMessageLanguage": {
           "default": "Simplified Chinese",
-          "description": "%configuration.format.commitMessageLanguage.description%",
+          "markdownDescription": "%configuration.format.commitMessageLanguage.description%",
           "enum": [
             "Simplified Chinese",
             "Traditional Chinese",
@@ -122,13 +122,13 @@
         },
         "commit-genie.format.enableEmojiPrefix": {
           "default": false,
-          "description": "%configuration.format.enableEmojiPrefix.description%",
+          "markdownDescription": "%configuration.format.enableEmojiPrefix.description%",
           "type": "boolean",
           "order": 4
         },
         "commit-genie.format.customPrompt": {
           "default": "",
-          "description": "%configuration.format.customPrompt.description%",
+          "markdownDescription": "%configuration.format.customPrompt.description%",
           "type": "string",
           "editPresentation": "multilineText",
           "order": 5
