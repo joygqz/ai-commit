@@ -25,7 +25,8 @@
     "LICENSE",
     "dist/*",
     "images/*",
-    "l10n/*.json"
+    "l10n/*.json",
+    "package.nls*.json"
   ],
   "l10n": "./l10n",
   "engines": {
@@ -54,15 +55,15 @@
       "title": "Commit Genie",
       "type": "object",
       "properties": {
-        "commit-genie.service.apiKey": {
-          "default": "",
-          "description": "%configuration.service.apiKey.description%",
-          "type": "string",
-          "order": 0
-        },
         "commit-genie.service.baseURL": {
           "default": "https://api.deepseek.com",
           "description": "%configuration.service.baseURL.description%",
+          "type": "string",
+          "order": 0
+        },
+        "commit-genie.service.apiKey": {
+          "default": "",
+          "description": "%configuration.service.apiKey.description%",
           "type": "string",
           "order": 1
         },
