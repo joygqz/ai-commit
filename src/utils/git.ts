@@ -26,7 +26,7 @@ export async function getRepo(arg: ExtensionContext | RepoContext) {
   // 如果传入的参数包含 rootUri，则尝试匹配对应的仓库
   if (typeof arg === 'object' && 'rootUri' in arg && arg.rootUri) {
     const resourceUri = arg.rootUri
-    const realResourcePath: string = fs.realpathSync(resourceUri!.fsPath)
+    const realResourcePath: string = fs.realpathSync(resourceUri.fsPath)
     for (let i = 0; i < gitApi.repositories.length; i++) {
       const repo = gitApi.repositories[i]
       if (realResourcePath.startsWith(repo.rootUri.fsPath)) {
