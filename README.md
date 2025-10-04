@@ -30,7 +30,6 @@ Before using Commit Genie, you **must** configure the following settings:
 2. Search for "Commit Genie"
 3. Configure your API Key and Base URL
 4. Run "Commit Genie: Select Available Model" to choose a model
-5. Stage your changes and click the <img src="images/logo.png" width="20" height="20" /> icon in Source Control
 
 ## Commands
 
