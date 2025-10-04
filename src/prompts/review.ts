@@ -115,6 +115,7 @@ ${modeGuidelines}
 }
 
 **CRITICAL: All text in issues[] and suggestions[] arrays MUST be in ${language}**
+**Formatting: Space between Chinese/English/numbers (e.g., "函数 getName 缺少 null 检查")**
 
 Empty/whitespace/comment-only diffs: Pass with empty arrays.`
 
