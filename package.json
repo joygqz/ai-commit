@@ -51,7 +51,6 @@
       }
     ],
     "configuration": {
-      "id": "commitGenie",
       "title": "Commit Genie",
       "type": "object",
       "properties": {
