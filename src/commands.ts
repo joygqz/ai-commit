@@ -11,33 +11,28 @@ import { generateCommitMessageChatCompletionPrompt } from './utils/prompts'
 /**
  * 当前活动的中止控制器
  */
-let activeAbortController: AbortController | null = null
+let abortController: AbortController | null = null
 
 /**
  * 生成 commit 消息命令
  * @param context 扩展上下文
  */
 async function generateCommitMessage(context: ExtensionContext) {
+  if (abortController) {
+    abortController?.abort()
+  }
+
+  const controller = new AbortController()
+  abortController = controller
+
   try {
     logger.info('Starting commit message generation')
 
-    // 验证必需的配置项
+    // 验证配置
     const validation = validateConfig([
-      {
-        key: 'service.apiKey',
-        required: true,
-        errorMessage: l10n.t('API Key is required. Please configure it in settings.'),
-      },
-      {
-        key: 'service.baseURL',
-        required: true,
-        errorMessage: l10n.t('Base URL is required. Please configure it in settings.'),
-      },
-      {
-        key: 'service.model',
-        required: true,
-        errorMessage: l10n.t('Model is required. Please configure it in settings.'),
-      },
+      { key: 'service.apiKey', required: true, errorMessage: l10n.t('API Key is required. Please configure it in settings.') },
+      { key: 'service.baseURL', required: true, errorMessage: l10n.t('Base URL is required. Please configure it in settings.') },
+      { key: 'service.model', required: true, errorMessage: l10n.t('Model is required. Please configure it in settings.') },
     ])
     if (!validation.isValid) {
       logger.warn('Configuration validation failed', { error: validation.error })
@@ -45,20 +40,9 @@ async function generateCommitMessage(context: ExtensionContext) {
       return
     }
 
-    // 取消之前的请求（如果存在）
-    if (activeAbortController) {
-      logger.debug('Aborting previous request')
-      activeAbortController.abort()
-      activeAbortController = null
-    }
-
-    // 获取当前 Git 仓库
-    const repo = await getRepo(context)
-
     // 获取暂存区的 diff
+    const repo = await getRepo(context)
     const diff = await getDiffStaged(repo)
-
-    // 检查是否有暂存的更改
     if (!diff || diff === l10n.t('No staged changes.')) {
       logger.info('No staged changes found')
       window.showInformationMessage(l10n.t('No staged changes to commit.'))
@@ -73,52 +57,40 @@ async function generateCommitMessage(context: ExtensionContext) {
       throw new Error(l10n.t('Unable to find SCM input box.'))
     }
 
-    // 生成 AI 提示词
-    const messagePrompts = await generateCommitMessageChatCompletionPrompt(
-      diff,
-    )
+    // 生成并调用 API
+    const messagePrompts = await generateCommitMessageChatCompletionPrompt(diff)
+    logger.info('Calling OpenAI API')
 
-    // 创建新的中止控制器
-    const abortController = new AbortController()
-    activeAbortController = abortController
+    await ProgressHandler.withProgress('', async (progress) => {
+      progress.report({ message: l10n.t('Generating commit message...') })
 
-    try {
-      logger.info('Calling OpenAI API')
-      return await ProgressHandler.withProgress('', async (progress) => {
-        progress.report({ message: l10n.t('Generating commit message...') })
-
-        // 清空输入框并流式输出 AI 生成的内容
-        scmInputBox.value = ''
-        await ChatGPTStreamAPI(
-          messagePrompts as ChatCompletionMessageParam[],
-          (chunk: string) => {
-            if (!abortController.signal.aborted) {
-              scmInputBox.value += chunk
-            }
-          },
-          { signal: abortController.signal },
-        )
-
+      scmInputBox.value = ''
+      await ChatGPTStreamAPI(
+        messagePrompts as ChatCompletionMessageParam[],
+        (chunk: string) => {
+          if (!controller.signal.aborted) {
+            scmInputBox.value += chunk
+          }
+        },
+        { signal: controller.signal },
+      )
+      if (!controller.signal.aborted) {
         logger.info('Commit message generated successfully')
-      })
-    }
-    finally {
-      // 清理中止控制器
-      if (activeAbortController === abortController) {
-        activeAbortController = null
       }
-    }
+    })
   }
   catch (error: unknown) {
-    // 使用错误处理器分析并显示友好的错误消息
     if (shouldSilenceError(error)) {
-      logger.debug('Request aborted by user')
       return
     }
 
     logger.error('Failed to generate commit message', error)
-    const message = getUserFriendlyErrorMessage(error)
-    window.showErrorMessage(message)
+    window.showErrorMessage(getUserFriendlyErrorMessage(error))
+  }
+  finally {
+    if (abortController === controller) {
+      abortController = null
+    }
   }
 }
 

@@ -30,9 +30,8 @@
   ],
   "l10n": "./l10n",
   "engines": {
-    "vscode": "^1.73.0"
+    "vscode": "^1.75.0"
   },
-  "activationEvents": [],
   "contributes": {
     "commands": [
       {

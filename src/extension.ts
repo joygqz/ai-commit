@@ -14,7 +14,9 @@ export function activate(context: vscode.ExtensionContext) {
   logger.initFromConfig()
   logger.info('Commit Genie extension activated')
 
-  // 监听配置变更
+  /**
+   * 监听配置变更
+   */
   context.subscriptions.push(
     workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration(`${EXTENSION_ID}.service`)) {
