@@ -114,7 +114,7 @@ async function reviewAndCommit(context: ExtensionContext) {
   abortController = controller
 
   try {
-    logger.info('Starting commit message generation')
+    logger.info('Starting review and commit workflow')
 
     // 验证配置
     const validation = validateConfig([
@@ -215,7 +215,7 @@ async function reviewAndCommit(context: ExtensionContext) {
       return
     }
 
-    logger.error('Failed to generate commit message', error)
+    logger.error('Failed to complete review and commit workflow', error)
     window.showErrorMessage(getUserFriendlyErrorMessage(error))
   }
   finally {
