@@ -4,7 +4,7 @@
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
 [![Rating](https://img.shields.io/visual-studio-marketplace/r/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
 
-AI-powered code review and commit message generator for VS Code. Automatically reviews your code changes and generates meaningful, standard commit messages.
+AI-powered commit message generator with optional code review for VS Code. Generate meaningful, standard commit messages with optional pre-commit code review.
 
 ## ✨ Features
 
