@@ -23,8 +23,10 @@
     "CHANGELOG.md",
     "LICENSE",
     "dist/*",
-    "images/*"
+    "images/*",
+    "l10n/*.json"
   ],
+  "l10n": "./l10n",
   "engines": {
     "vscode": "^1.73.0"
   },

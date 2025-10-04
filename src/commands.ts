@@ -1,6 +1,6 @@
 import type { ChatCompletionMessageParam } from 'openai/resources'
 import type { ExtensionContext } from 'vscode'
-import { ConfigurationTarget, window, workspace } from 'vscode'
+import { ConfigurationTarget, l10n, window, workspace } from 'vscode'
 import { ProgressHandler } from './utils'
 import { name } from './utils/constants'
 import { getDiffStaged, getRepo } from './utils/git'
@@ -20,14 +20,14 @@ async function generateCommitMessage(context: ExtensionContext) {
 
     const diff = await getDiffStaged(repo)
 
-    if (!diff || diff === '没有暂存的更改。') {
-      window.showInformationMessage('没有暂存的更改可提交。')
+    if (!diff || diff === l10n.t('No staged changes.')) {
+      window.showInformationMessage(l10n.t('No staged changes to commit.'))
       return
     }
 
     const scmInputBox = repo?.inputBox
     if (!scmInputBox) {
-      throw new Error('无法找到 SCM 输入框。')
+      throw new Error(l10n.t('Unable to find SCM input box.'))
     }
 
     const messagePrompts = await generateCommitMessageChatCompletionPrompt(
@@ -39,7 +39,7 @@ async function generateCommitMessage(context: ExtensionContext) {
 
     try {
       return await ProgressHandler.withProgress('', async (progress) => {
-        progress.report({ message: '正在生成提交信息...' })
+        progress.report({ message: l10n.t('Generating commit message...') })
 
         scmInputBox.value = ''
         await ChatGPTStreamAPI(
@@ -72,7 +72,7 @@ async function selectAvailableModel() {
     const models = await showModels()
 
     if (!models.length) {
-      window.showWarningMessage('当前 API 配置未返回可用模型。')
+      window.showWarningMessage(l10n.t('No models available from current API configuration.'))
       return
     }
 
@@ -80,12 +80,12 @@ async function selectAvailableModel() {
 
     const items = models.map(model => ({
       label: model,
-      description: model === currentModel ? '当前使用' : undefined,
+      description: model === currentModel ? l10n.t('Current') : undefined,
     }))
 
     const picked = await window.showQuickPick(items, {
-      title: '选择模型',
-      placeHolder: '请选择用于生成提交信息的模型。',
+      title: l10n.t('Select Model'),
+      placeHolder: l10n.t('Please select a model to generate commit messages.'),
       matchOnDescription: true,
     })
 
@@ -94,7 +94,7 @@ async function selectAvailableModel() {
     }
 
     await workspace.getConfiguration(name).update('service.model', picked.label, ConfigurationTarget.Global)
-    window.showInformationMessage('模型已更新为 {model}。'.replace('{model}', picked.label))
+    window.showInformationMessage(l10n.t('Model updated to {0}.', picked.label))
   }
   catch (error: any) {
     window.showErrorMessage(error.message)
