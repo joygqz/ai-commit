@@ -1,3 +1,14 @@
+# [1.0.0](https://github.com/joygqz/commit-genie/compare/v0.2.9...v1.0.0) (2025-10-04)
+
+
+### Features
+
+* **i18n:** 添加简体中文本地化支持 ([995574d](https://github.com/joygqz/commit-genie/commit/995574dd9dd7875eafbda3480ddf0cf3c805442c))
+* 添加多语言支持 ([9f8743c](https://github.com/joygqz/commit-genie/commit/9f8743c89ae2784ef3f3be0a6c85aace7c4258c4))
+* 添加配置验证和错误提示 ([3620a47](https://github.com/joygqz/commit-genie/commit/3620a4773bbabc539fb012ace51e00617e570b59))
+
+
+
 ## [0.2.9](https://github.com/joygqz/commit-genie/compare/v0.2.8...v0.2.9) (2025-10-03)
 
 

@@ -2,7 +2,7 @@
   "publisher": "joygqz",
   "name": "commit-genie",
   "displayName": "Commit Genie",
-  "version": "0.2.9",
+  "version": "1.0.0",
   "packageManager": "pnpm@10.17.1",
   "description": "AI Commit Message Generator",
   "license": "SEE LICENSE IN LICENSE",
