@@ -1,3 +1,18 @@
+# [2.0.0](https://github.com/joygqz/commit-genie/compare/v1.1.0...v2.0.0) (2025-10-04)
+
+
+### Bug Fixes
+
+* 更新日志消息以准确反映工作流程 ([36a26f1](https://github.com/joygqz/commit-genie/commit/36a26f17f417faf168eab805f22bced745c3bf9e))
+
+
+### Features
+
+* 添加代码审查功能并重构配置结构 ([fda97ec](https://github.com/joygqz/commit-genie/commit/fda97eca9dc52987f3386229d6a5b8ad140e63ac))
+* 重构配置系统并改进代码审查功能 ([2edea08](https://github.com/joygqz/commit-genie/commit/2edea084e354839eceaacbba7266423c8c45552e))
+
+
+
 # [1.1.0](https://github.com/joygqz/commit-genie/compare/v1.0.2...v1.1.0) (2025-10-04)
 
 
