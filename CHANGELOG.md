@@ -1,3 +1,13 @@
+# [2.1.0](https://github.com/joygqz/commit-genie/compare/v2.0.1...v2.1.0) (2025-10-04)
+
+
+### Features
+
+* **review:** 添加中英文数字间空格格式要求说明 ([f4bfc49](https://github.com/joygqz/commit-genie/commit/f4bfc491a1a689b66087e90916d2b5417bc58e78))
+* 简化提示词内容 ([17ce614](https://github.com/joygqz/commit-genie/commit/17ce614ddcf87144fa0037902ff818afd2d67645))
+
+
+
 ## [2.0.1](https://github.com/joygqz/commit-genie/compare/v2.0.0...v2.0.1) (2025-10-04)
 
 
