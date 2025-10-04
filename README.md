@@ -28,7 +28,7 @@ Before using Commit Genie, you **must** configure the following settings:
 
 1. Open VS Code Settings (`Cmd/Ctrl + ,`)
 2. Search for "Commit Genie"
-3. Configure your API Key and Base URL
+3. Configure Base URL and API Key
 4. Run "Commit Genie: Select Available Model" to choose a model
 
 ## Commands
@@ -55,20 +55,20 @@ Browse and select from available AI models provided by your API endpoint.
 
 ### Service Configuration
 
-#### `commit-genie.service.apiKey` ✅ Required
-
-API key for authentication with your AI service provider.
-
-- **Type:** `string`
-- **Default:** `""` (empty)
-- **Note:** Must be configured before using any features
-
 #### `commit-genie.service.baseURL` ✅ Required
 
 Base URL of the AI service API endpoint.
 
 - **Type:** `string`
 - **Default:** `"https://api.deepseek.com"`
+- **Note:** Must be configured before using any features
+
+#### `commit-genie.service.apiKey` ✅ Required
+
+API key for authentication with your AI service provider.
+
+- **Type:** `string`
+- **Default:** `""` (empty)
 - **Note:** Must be configured before using any features
 
 #### `commit-genie.service.model`
@@ -97,22 +97,38 @@ Add emoji prefix to commit messages (e.g., ✨ feat, 🐛 fix, 📝 docs).
 - **Type:** `boolean`
 - **Default:** `false`
 
+#### `commit-genie.format.customPrompt`
+
+Custom prompt to append to the system message for personalized commit message generation.
+
+- **Type:** `string`
+- **Default:** `""` (empty)
+- **Note:** Use this to add specific guidelines or requirements. Custom rules override default prompts in case of conflicts.
+- **Example:** "Always include ticket numbers", "Use present tense for all messages", etc.
+
 ## Supported Languages
 
-Generate commit messages in your preferred language:
+Generate commit messages in your preferred language (19 languages supported):
 
 - English
 - Simplified Chinese (简体中文)
 - Traditional Chinese (繁體中文)
 - Japanese (にほんご)
 - Korean (한국어)
+- Czech (česky)
 - German (Deutsch)
 - French (française)
-- Spanish (español)
 - Italian (italiano)
+- Dutch (Nederlands)
 - Portuguese (português)
+- Vietnamese (tiếng Việt)
+- Spanish (español)
+- Swedish (Svenska)
 - Russian (русский)
-- And more...
+- Bahasa (bahasa)
+- Polish (Polski)
+- Turkish (Turkish)
+- Thai (ไทย)
 
 ## License
 
