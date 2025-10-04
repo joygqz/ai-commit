@@ -1,6 +1,7 @@
 import type { LogOutputChannel } from 'vscode'
-import { LogLevel, window, workspace } from 'vscode'
-import { EXTENSION_ID } from './constants'
+import { LogLevel, window } from 'vscode'
+import { config } from './config'
+import { EXTENSION_NAME } from './constants'
 
 /**
  * 重新导出 VS Code 官方 LogLevel 枚举
@@ -35,7 +36,7 @@ function stringToLogLevel(level: string): LogLevel {
  * 提供分级日志记录功能，输出到 VS Code 输出面板
  */
 class Logger {
-  private outputChannel: LogOutputChannel = window.createOutputChannel(EXTENSION_ID, { log: true })
+  private outputChannel: LogOutputChannel = window.createOutputChannel(EXTENSION_NAME, { log: true })
   private _enabled = true // 生产环境默认启用，便于问题排查
   private _level: LogLevel = LogLevel.Warning // 默认只记录警告和错误
 
@@ -70,12 +71,10 @@ class Logger {
    * 从 VS Code 配置初始化日志设置
    */
   initFromConfig(): void {
-    const config = workspace.getConfiguration(EXTENSION_ID)
-    const enableLogging = config.get<boolean>('debug.enableLogging', true)
-    const logLevel = config.get<string>('debug.logLevel', 'warn')
+    const debugConfig = config.getDebugConfig()
 
-    this._enabled = enableLogging
-    this.setLevel(logLevel)
+    this._enabled = debugConfig.enableLogging
+    this.setLevel(debugConfig.logLevel)
   }
 
   /**

@@ -4,6 +4,11 @@
 export const EXTENSION_ID = 'commit-genie'
 
 /**
+ * 扩展名称
+ */
+export const EXTENSION_NAME = 'Commit Genie'
+
+/**
  * 命令 ID 常量集合
  */
 export const COMMANDS = {

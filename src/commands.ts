@@ -86,10 +86,12 @@ async function showReviewResultAndAskToContinue(review: CodeReviewResult): Promi
     ? `\n\n${l10n.t('Suggestions:')}\n${review.suggestions.map((suggestion, index) => `${index + 1}. ${suggestion}`).join('\n')}`
     : ''
 
-  const severityIcon = review.severity === 'error' ? '❌' : '⚠️'
-  const message = `${severityIcon} ${l10n.t('Code review found issues')}${issuesText}${suggestionsText}`
+  // 根据严重程度生成标题
+  const title = review.severity === 'error'
+    ? l10n.t('❌ Code review found errors')
+    : l10n.t('⚠️ Code review found warnings')
 
-  // 显示详细信息
+  const message = `${title}${issuesText}${suggestionsText}`
   const continueButton = l10n.t('Continue anyway')
 
   const choice = await window.showWarningMessage(

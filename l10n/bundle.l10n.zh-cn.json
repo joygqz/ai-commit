@@ -1,7 +1,8 @@
 {
   "Issues found:": "发现的问题：",
   "Suggestions:": "建议：",
-  "Code review found issues": "代码审查发现问题",
+  "❌ Code review found errors": "❌ 代码审查发现错误",
+  "⚠️ Code review found warnings": "⚠️ 代码审查发现警告",
   "Continue anyway": "仍然继续",
   "API Key is required. Please configure it in settings.": "需要 API 密钥。请在设置中配置。",
   "Base URL is required. Please configure it in settings.": "需要基础 URL。请在设置中配置。",

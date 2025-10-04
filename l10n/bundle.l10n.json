@@ -1,7 +1,8 @@
 {
   "Issues found:": "Issues found:",
   "Suggestions:": "Suggestions:",
-  "Code review found issues": "Code review found issues",
+  "❌ Code review found errors": "❌ Code review found errors",
+  "⚠️ Code review found warnings": "⚠️ Code review found warnings",
   "Continue anyway": "Continue anyway",
   "API Key is required. Please configure it in settings.": "API Key is required. Please configure it in settings.",
   "Base URL is required. Please configure it in settings.": "Base URL is required. Please configure it in settings.",

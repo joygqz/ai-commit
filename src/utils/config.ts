@@ -1,6 +1,60 @@
 import { ConfigurationTarget, workspace } from 'vscode'
 import { EXTENSION_ID } from './constants'
 
+/**
+ * 审查模式类型
+ */
+export type ReviewMode = 'off' | 'lenient' | 'standard' | 'strict'
+
+/**
+ * 日志级别类型
+ */
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
+
+/**
+ * 服务配置接口
+ */
+export interface ServiceConfig {
+  apiKey: string
+  baseURL: string
+  model: string
+}
+
+/**
+ * 格式配置接口
+ */
+export interface FormatConfig {
+  outputLanguage: string
+}
+
+/**
+ * 提交消息配置接口
+ */
+export interface CommitConfig {
+  enableEmojiPrefix: boolean
+  customPrompt: string
+}
+
+/**
+ * 代码审查配置接口
+ */
+export interface ReviewConfig {
+  mode: ReviewMode
+  customPrompt: string
+}
+
+/**
+ * 调试配置接口
+ */
+export interface DebugConfig {
+  enableLogging: boolean
+  logLevel: LogLevel
+}
+
+/**
+ * 配置管理器类
+ * 提供类型安全的配置访问和更新方法
+ */
 class ConfigManager {
   private readonly section = EXTENSION_ID
 
@@ -40,7 +94,7 @@ class ConfigManager {
    * 获取服务相关配置
    * @returns 服务配置对象
    */
-  getServiceConfig() {
+  getServiceConfig(): ServiceConfig {
     return {
       apiKey: this.get<string>('service.apiKey', ''),
       baseURL: this.get<string>('service.baseURL', 'https://api.deepseek.com'),
@@ -52,7 +106,7 @@ class ConfigManager {
    * 获取格式相关配置
    * @returns 格式配置对象
    */
-  getFormatConfig() {
+  getFormatConfig(): FormatConfig {
     return {
       outputLanguage: this.get<string>('format.outputLanguage', 'Simplified Chinese'),
     }
@@ -62,7 +116,7 @@ class ConfigManager {
    * 获取提交消息相关配置
    * @returns 提交消息配置对象
    */
-  getCommitConfig() {
+  getCommitConfig(): CommitConfig {
     return {
       enableEmojiPrefix: this.get<boolean>('commit.enableEmojiPrefix', false),
       customPrompt: this.get<string>('commit.customPrompt', ''),
@@ -73,9 +127,9 @@ class ConfigManager {
    * 获取代码审查相关配置
    * @returns 审查配置对象
    */
-  getReviewConfig() {
+  getReviewConfig(): ReviewConfig {
     return {
-      mode: this.get<'off' | 'lenient' | 'standard' | 'strict'>('review.mode', 'standard'),
+      mode: this.get<ReviewMode>('review.mode', 'standard'),
       customPrompt: this.get<string>('review.customPrompt', ''),
     }
   }
@@ -84,10 +138,10 @@ class ConfigManager {
    * 获取调试相关配置
    * @returns 调试配置对象
    */
-  getDebugConfig() {
+  getDebugConfig(): DebugConfig {
     return {
       enableLogging: this.get<boolean>('debug.enableLogging', true),
-      logLevel: this.get<string>('debug.logLevel', 'warn'),
+      logLevel: this.get<LogLevel>('debug.logLevel', 'warn'),
     }
   }
 }
