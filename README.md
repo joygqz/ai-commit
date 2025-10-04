@@ -4,109 +4,78 @@
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
 [![Rating](https://img.shields.io/visual-studio-marketplace/r/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
 
-Use OpenAI SDK compatible APIs to intelligently analyze Git changes and automatically generate standard commit messages.
+AI-powered commit message generator for VS Code. Automatically generates meaningful, standard commit messages by analyzing your Git changes.
 
-## Features
+## ✨ Features
 
-- 🤖 **AI-Powered**: Leverages OpenAI-compatible APIs to generate meaningful commit messages
-- 🌐 **Multi-Language Support**: Generate commit messages in 19+ languages
-- 🔄 **Model Selection**: Easily switch between available AI models
-- ⚡ **Real-time Generation**: Stream commit messages directly to Git input box
-- 🎨 **Emoji Support**: Optional emoji prefixes for commit messages
+- 🤖 **AI-Powered**: Works with OpenAI-compatible APIs (DeepSeek, OpenAI, etc.)
+- 🌐 **Multi-Language**: Generate commit messages in 19+ languages
+- ⚡ **Real-time Streaming**: See messages being generated instantly
+- 🎨 **Emoji Support**: Optional emoji prefixes (e.g., ✨ feat, 🐛 fix)
+- ❌ **Cancellable**: Stop generation anytime with the cancel button
+- 🔄 **Smart Model Selection**: Browse and switch between AI models easily
 
-## Getting Started
+## 🚀 Quick Start
 
-### Required Configuration
+1. **Install** the extension from VS Code Marketplace
+2. **Configure API** (Press `Cmd/Ctrl + ,` to open Settings):
+   - Set `commit-genie.service.apiKey` (your API key)
+   - Set `commit-genie.service.baseURL` (default: `https://api.deepseek.com`)
+3. **Select Model**: Run `Commit Genie: Select Available Model` from Command Palette
+4. **Start Using**: Stage your changes and click the ✨ icon in Source Control
 
-Before using Commit Genie, you **must** configure the following settings:
-
-1. **API Key** (`commit-genie.service.apiKey`) - Required for authentication
-2. **Base URL** (`commit-genie.service.baseURL`) - API endpoint (default: DeepSeek)
-3. **Model** (`commit-genie.service.model`) - AI model to use (use "Select Available Model" command to choose)
-
-### Quick Setup
-
-1. Open VS Code Settings (`Cmd/Ctrl + ,`)
-2. Search for "Commit Genie"
-3. Configure Base URL and API Key
-4. Run "Commit Genie: Select Available Model" to choose a model
-
-## Commands
+## 📋 Usage
 
 ### Generate Commit Message
 
-**Command:** `commit-genie.generateCommitMessage`
+1. Stage your changes in Source Control
+2. Click the <img src="images/logo.png" width="16" height="16" /> icon or run `Commit Genie: Generate Commit Message`
+3. Watch the AI generate your commit message in real-time
+4. Edit if needed and commit
 
-Generate intelligent commit messages from your staged Git changes.
+**Tips:**
+- Click cancel (×) to stop generation anytime
+- Clicking again automatically cancels the previous request
 
-- **Requirements:** API Key, Base URL, and Model must be configured
-- **Usage:** Click the <img src="images/logo.png" width="16" height="16" /> icon in Source Control or run the command from Command Palette
+### Select Model
 
-### Select Available Model
+Run `Commit Genie: Select Available Model` from Command Palette to:
+- Browse available models from your API
+- Switch to a different model
+- See which model is currently active
 
-**Command:** `commit-genie.selectAvailableModel`
+## ⚙️ Configuration
 
-Browse and select from available AI models provided by your API endpoint.
+### Essential Settings
 
-- **Requirements:** API Key and Base URL must be configured
-- **Usage:** Run from Command Palette to see and switch between available models
+| Setting | Description | Example |
+|---------|-------------|---------|
+| `service.apiKey` ✅ | Your API key | `sk-...` |
+| `service.baseURL` ✅ | API endpoint | `https://api.deepseek.com` |
+| `service.model` | AI model name | `deepseek-chat` |
 
-## Configurations
+**Supported API Providers:**
+- DeepSeek: `https://api.deepseek.com`
+- OpenAI: `https://api.openai.com/v1`
+- Any OpenAI-compatible API
 
-### Service Configuration
+### Optional Settings
 
-#### `commit-genie.service.baseURL` ✅ Required
+| Setting | Description | Default |
+|---------|-------------|---------|
+| `format.commitMessageLanguage` | Language for messages | Simplified Chinese |
+| `format.enableEmojiPrefix` | Add emoji to messages | `false` |
+| `format.customPrompt` | Custom instructions for AI | (empty) |
+| `debug.enableLogging` | Enable debug logs | `true` |
+| `debug.logLevel` | Log detail level | `warn` |
 
-Base URL of the AI service API endpoint.
+**Custom Prompt Example:**
+```
+Always include ticket numbers in the format [JIRA-123]
+Use imperative mood for all messages
+```
 
-- **Type:** `string`
-- **Default:** `"https://api.deepseek.com"`
-- **Note:** Must be configured before using any features
-
-#### `commit-genie.service.apiKey` ✅ Required
-
-API key for authentication with your AI service provider.
-
-- **Type:** `string`
-- **Default:** `""` (empty)
-- **Note:** Must be configured before using any features
-
-#### `commit-genie.service.model`
-
-AI model to use for generating commit messages.
-
-- **Type:** `string`
-- **Default:** `"deepseek-chat"`
-- **Required:** Only for generating commit messages
-- **Tip:** Use "Select Available Model" command to choose from available options
-
-### Format Configuration
-
-#### `commit-genie.format.commitMessageLanguage`
-
-Language for generated commit messages.
-
-- **Type:** `string`
-- **Default:** `"Simplified Chinese"`
-- **Options:** 19 languages including English, Chinese, Japanese, Korean, German, French, Spanish, and more
-
-#### `commit-genie.format.enableEmojiPrefix`
-
-Add emoji prefix to commit messages (e.g., ✨ feat, 🐛 fix, 📝 docs).
-
-- **Type:** `boolean`
-- **Default:** `false`
-
-#### `commit-genie.format.customPrompt`
-
-Custom prompt to append to the system message for personalized commit message generation.
-
-- **Type:** `string`
-- **Default:** `""` (empty)
-- **Note:** Use this to add specific guidelines or requirements. Custom rules override default prompts in case of conflicts.
-- **Example:** "Always include ticket numbers", "Use present tense for all messages", etc.
-
-## Supported Languages
+## 🌍 Supported Languages
 
 Generate commit messages in your preferred language (19 languages supported):
 
@@ -130,6 +99,27 @@ Generate commit messages in your preferred language (19 languages supported):
 - Turkish (Turkish)
 - Thai (ไทย)
 
-## License
+## 🐛 Troubleshooting
+
+**"API Key is required"**
+→ Configure `service.apiKey` in Settings
+
+**"No staged changes"**
+→ Stage your changes first in Source Control
+
+**Network/Timeout errors**
+→ Check internet connection and API endpoint
+
+**Need detailed logs?**
+1. Settings → Search "Commit Genie debug"
+2. Set `debug.logLevel` to `"debug"`
+3. View: Output panel → "Commit Genie"
+
+##  License
 
 [MIT License](LICENSE)
+
+---
+
+**Enjoying Commit Genie?**
+⭐ [Star on GitHub](https://github.com/joygqz/commit-genie) • 💬 [Report Issues](https://github.com/joygqz/commit-genie/issues) • 📝 [Changelog](CHANGELOG.md)
