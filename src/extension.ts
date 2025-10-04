@@ -1,12 +1,28 @@
-import * as vscode from 'vscode'
-import { commands } from './commands'
-import { name } from './utils/constants'
+import type * as vscode from 'vscode'
+import { commands } from 'vscode'
+import * as Commands from './commands'
+import { COMMANDS } from './utils/constants'
 
+/**
+ * 扩展激活函数
+ * @param context 扩展上下文，用于管理扩展的生命周期
+ */
 export function activate(context: vscode.ExtensionContext) {
-  Object.entries(commands).forEach(([commandName, command]) => {
-    const disposable = vscode.commands.registerCommand(`${name}.${commandName}`, command)
-    context.subscriptions.push(disposable)
-  })
+  // 注册生成 commit 消息命令
+  context.subscriptions.push(
+    commands.registerCommand(
+      COMMANDS.GENERATE_COMMIT_MESSAGE,
+      Commands.generateCommitMessage.bind(null, context),
+    ),
+    // 注册选择可用模型命令
+    commands.registerCommand(
+      COMMANDS.SELECT_AVAILABLE_MODEL,
+      Commands.selectAvailableModel,
+    ),
+  )
 }
 
+/**
+ * 扩展注销函数
+ */
 export function deactivate() {}

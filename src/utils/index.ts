@@ -1,8 +1,14 @@
 import type { Progress } from 'vscode'
-import { ProgressLocation, window, workspace } from 'vscode'
-import { name } from './constants'
+import { ProgressLocation, window } from 'vscode'
+import { config } from './config'
 
 export class ProgressHandler {
+  /**
+   * 在进度通知中执行异步任务
+   * @param title 进度标题
+   * @param task 要执行的异步任务，接收 progress 对象用于报告进度
+   * @returns 任务的返回值
+   */
   static async withProgress<T>(
     title: string,
     task: (progress: Progress<{ message?: string, increment?: number }>) => Promise<T>,
@@ -18,27 +24,48 @@ export class ProgressHandler {
   }
 }
 
+/**
+ * 配置验证规则接口
+ */
 export interface ValidationRule {
+  /** 配置键名 */
   key: string
+  /** 是否必需 */
   required?: boolean
+  /** 最小长度 */
   minLength?: number
+  /** 最大长度 */
   maxLength?: number
+  /** 正则表达式验证 */
   pattern?: RegExp
+  /** 自定义验证函数 */
   custom?: (value: any) => boolean
+  /** 验证失败时的错误消息 */
   errorMessage: string
 }
 
+/**
+ * 配置验证结果接口
+ */
 export interface ValidationResult {
+  /** 是否验证通过 */
   isValid: boolean
+  /** 第一个错误消息（如果有） */
   error?: string
+  /** 所有错误消息数组（如果有） */
   errors?: string[]
 }
 
+/**
+ * 验证配置项
+ * @param rules 验证规则数组
+ * @returns 验证结果，包含是否通过和错误信息
+ */
 export function validateConfig(rules: ValidationRule[]): ValidationResult {
   const errors: string[] = []
 
   for (const rule of rules) {
-    const value = workspace.getConfiguration(name).get(rule.key)
+    const value = config.get(rule.key)
 
     // Required check
     if (rule.required) {
