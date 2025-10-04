@@ -10,7 +10,7 @@
   "Model updated to {0}.": "模型已更新为 {0}。",
   "Git extension not found.": "未找到 Git 扩展。",
   "Workspace folder not found.": "未找到工作区文件夹。",
-  "API Key is required. Please configure it in settings.": "API Key 为必填项,请在设置中配置。",
-  "Base URL is required. Please configure it in settings.": "Base URL 为必填项,请在设置中配置。",
-  "Model is required. Please configure it in settings.": "Model 为必填项,请在设置中配置。"
+  "API Key is required. Please configure it in settings.": "API Key 为必填项，请在设置中配置。",
+  "Base URL is required. Please configure it in settings.": "Base URL 为必填项，请在设置中配置。",
+  "Model is required. Please configure it in settings.": "Model 为必填项，请在设置中配置。"
 }

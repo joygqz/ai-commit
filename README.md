@@ -34,37 +34,69 @@ Before using Commit Genie, you **must** configure the following settings:
 
 ## Commands
 
-| Command                              | Title                                 | Description                                                              |
-| ------------------------------------ | ------------------------------------- | ------------------------------------------------------------------------ |
-| `commit-genie.generateCommitMessage` | Commit Genie: Generate Commit Message | Generate commit message from staged changes (requires all config)        |
-| `commit-genie.selectAvailableModel`  | Commit Genie: Select Available Model  | Browse and select from available AI models (requires API Key & Base URL) |
+### Generate Commit Message
+
+**Command:** `commit-genie.generateCommitMessage`
+
+Generate intelligent commit messages from your staged Git changes.
+
+- **Requirements:** API Key, Base URL, and Model must be configured
+- **Usage:** Click the <img src="images/logo.png" width="16" height="16" /> icon in Source Control or run the command from Command Palette
+
+### Select Available Model
+
+**Command:** `commit-genie.selectAvailableModel`
+
+Browse and select from available AI models provided by your API endpoint.
+
+- **Requirements:** API Key and Base URL must be configured
+- **Usage:** Run from Command Palette to see and switch between available models
 
 ## Configurations
 
-| Key                                         | Description                                                                                                                          | Type      | Required | Default                      |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | --------- | -------- | ---------------------------- |
-| `commit-genie.service.apiKey`               | API key for authentication with your AI service provider.                                                                            | `string`  | Yes      | `""`                         |
-| `commit-genie.service.baseURL`              | Base URL of the AI service API endpoint.                                                                                             | `string`  | Yes      | `"https://api.deepseek.com"` |
-| `commit-genie.service.model`                | AI model to use for generating commit messages. Use "Commit Genie: Select Available Model" command to choose from available options. | `string`  | No       | `"deepseek-chat"`            |
-| `commit-genie.format.commitMessageLanguage` | Language for generated commit messages. Supports 19 languages including English, Chinese, Japanese, Korean, and more.                | `string`  | No       | `"Simplified Chinese"`       |
-| `commit-genie.format.enableEmojiPrefix`     | Add emoji prefix to commit messages.                                                                                                 | `boolean` | No       | `false`                      |
+### Service Configuration
 
-*Required for generating commit messages, optional for selecting models.
+#### `commit-genie.service.apiKey` ✅ Required
 
-## Validation Rules
+API key for authentication with your AI service provider.
 
-Commit Genie validates your configuration before operations:
+- **Type:** `string`
+- **Default:** `""` (empty)
+- **Note:** Must be configured before using any features
 
-### Generate Commit Message
-- ✅ API Key must be configured
-- ✅ Base URL must be configured
-- ✅ Model must be selected
+#### `commit-genie.service.baseURL` ✅ Required
 
-### Select Available Model
-- ✅ API Key must be configured
-- ✅ Base URL must be configured
+Base URL of the AI service API endpoint.
 
-If validation fails, you'll receive a clear error message prompting you to complete the configuration.
+- **Type:** `string`
+- **Default:** `"https://api.deepseek.com"`
+- **Note:** Must be configured before using any features
+
+#### `commit-genie.service.model`
+
+AI model to use for generating commit messages.
+
+- **Type:** `string`
+- **Default:** `"deepseek-chat"`
+- **Required:** Only for generating commit messages
+- **Tip:** Use "Select Available Model" command to choose from available options
+
+### Format Configuration
+
+#### `commit-genie.format.commitMessageLanguage`
+
+Language for generated commit messages.
+
+- **Type:** `string`
+- **Default:** `"Simplified Chinese"`
+- **Options:** 19 languages including English, Chinese, Japanese, Korean, German, French, Spanish, and more
+
+#### `commit-genie.format.enableEmojiPrefix`
+
+Add emoji prefix to commit messages (e.g., ✨ feat, 🐛 fix, 📝 docs).
+
+- **Type:** `boolean`
+- **Default:** `false`
 
 ## Supported Languages
 
