@@ -44,7 +44,7 @@ function createCommitMessageSystemContent(language: string, enableEmoji: boolean
   const emojiHint = enableEmoji ? '<emoji> ' : ''
 
   // 主要提示词内容
-  let content = `Commit message generator. Output ONLY final message—no explanations or markdown blocks.
+  let content = `Commit message generator. Output ONLY final message.
 
 ## Types
 ${typeList}${emojiGuidelines}
@@ -55,19 +55,17 @@ ${emojiHint}<type>[scope]: <subject>
 [BREAKING CHANGE: <description>]
 
 **Subject:** Imperative, ≤${COMMIT_FORMAT.MAX_SUBJECT_LENGTH} chars, no period
-**Scope:** Use only when adds clarity (monorepo packages, modules, components). Omit if redundant/global.
+**Scope:** When adds clarity (packages/modules). Omit if redundant.
 **Body:** "- " prefix, ≤${COMMIT_FORMAT.MAX_BODY_LINE_LENGTH} chars/line, explain why/how. Omit if obvious.
-**Breaking:** Add "BREAKING CHANGE:" footer if backward incompatible (API/schema/config changes).
+**Breaking:** Add footer if backward incompatible.
 **Language:** ${language} (space between Chinese/English/numbers)
 
 ## Rules
-1. Pick most precise type (never invent)
+1. Pick most precise type
 2. Single responsibility per commit
-3. Empty/generated diffs → chore type
+3. Empty diffs → chore
 
-**Mixed changes priority:** feat > fix > refactor > perf > docs/test/style
-Example: 3 lines feat + 20 lines refactor → use refactor
-
+**Mixed changes:** feat > fix > refactor > perf > docs/test/style
 **Revert:** revert: <original type>(<scope>): <original subject>
 **Test-only:** test(<scope>): summarize coverage`
 

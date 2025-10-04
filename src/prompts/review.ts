@@ -28,56 +28,46 @@ export type ReviewMode = 'off' | 'lenient' | 'standard' | 'strict'
 function getReviewModeGuidelines(mode: ReviewMode): string {
   switch (mode) {
     case 'lenient':
-      return `## LENIENT Mode - CRITICAL Issues Only
+      return `## LENIENT Mode - CRITICAL Only
 
-**ONLY report if VISIBLE in diff:**
-• Syntax errors: incomplete code, mismatched brackets, invalid syntax
-• Obvious bugs: accessing undefined vars/props, wrong operators, clear null/undefined errors
-• Security: hardcoded secrets/keys/passwords, SQL string concat, direct HTML insertion
-• Fatal errors: infinite loops (while(true) no break), missing await on Promise, unhandled rejection
+**Report if VISIBLE in diff:**
+• Syntax errors, undefined vars/props, wrong operators
+• Security: hardcoded secrets, SQL concat, HTML injection
+• Fatal: infinite loops, missing await, unhandled rejection
 
-**IGNORE:** Everything else including style, performance, logic that needs context, assumptions
-
-**Rule:** IF no obvious evidence in diff → PASS. Uncertainty → PASS.
-
-**Result:** passed=false only if CRITICAL found with clear evidence (severity="error")`
+**Rule:** No evidence → PASS. Uncertainty → PASS.
+**Result:** passed=false only if CRITICAL (severity="error")`
 
     case 'standard':
       return `## STANDARD Mode - CRITICAL + MAJOR
 
-**CRITICAL (must be visible in diff):**
-• Syntax/runtime errors: clear bugs, type mismatches, undefined usage
-• Security: exposed credentials, injection vulnerabilities, insecure patterns
-• Data risks: deleting without checks, overwriting without backup, breaking migrations
+**CRITICAL (visible in diff):**
+• Syntax/runtime errors, type mismatches, undefined usage
+• Security: exposed credentials, injection vulnerabilities
+• Data risks: deleting without checks, breaking migrations
 
-**MAJOR (must be visible in diff):**
-• Logic errors: obvious wrong calculations (e.g., + instead of *), incorrect conditions
-• Error handling: try-catch removing useful errors, ignoring Promise rejections
-• Resource leaks: opening files/connections without closing (clear in same function)
-• Breaking changes: removing public APIs, incompatible signature changes
+**MAJOR (visible in diff):**
+• Logic errors: wrong calculations, incorrect conditions
+• Error handling: removing useful errors, ignoring rejections
+• Resource leaks: unclosed files/connections
+• Breaking changes: removing APIs, incompatible signatures
 
-**IGNORE:** Anything requiring full codebase context, assumptions, style, minor issues
-
-**Rule:** IF not 100% certain from diff alone → PASS. Doubt → PASS.
-
-**Result:** passed=false if CRITICAL/MAJOR with evidence, severity="error"/"warning"`
+**Rule:** Not 100% certain → PASS. Doubt → PASS.
+**Result:** passed=false if found, severity="error"/"warning"`
 
     case 'strict':
-      return `## STRICT Mode - All Verifiable Issues
+      return `## STRICT Mode - All Verifiable
 
-**CRITICAL/MAJOR:** See standard mode (must be visible in diff)
+**CRITICAL/MAJOR:** See standard mode
 
-**MINOR (must be visible in diff):**
-• Clear code smells: magic numbers without context, obvious duplicates, dead code in diff
-• Type issues: using \`any\` in new code, missing null checks on nullable values
-• Bad practices: hardcoded URLs/paths, console.log in production code, empty catch blocks
-• Obvious complexity: 100+ line functions, deeply nested conditions (>4 levels)
+**MINOR (visible in diff):**
+• Code smells: magic numbers, duplicates, dead code
+• Type issues: \`any\` usage, missing null checks
+• Bad practices: hardcoded paths, console.log, empty catch
+• Complexity: 100+ line functions, >4 nested levels
 
-**IGNORE:** Style preferences, naming debates, architectural opinions, hypothetical issues
-
-**Rule:** Report ONLY what you can prove from the diff. NO assumptions, NO guessing.
-
-**Result:** passed=false if ANY verifiable issue found, severity by level`
+**Rule:** Report ONLY provable from diff. NO assumptions.
+**Result:** passed=false if ANY found, severity by level`
 
     default:
       return ''
@@ -94,19 +84,16 @@ function getReviewModeGuidelines(mode: ReviewMode): string {
 function createCodeReviewSystemContent(language: string, mode: ReviewMode = 'standard', customPrompt?: string): string {
   const modeGuidelines = getReviewModeGuidelines(mode)
 
-  let content = `Senior code reviewer. Analyze ONLY what's visible in the git diff.
+  let content = `Code reviewer. Analyze ONLY visible in git diff.
 
 ${modeGuidelines}
 
-## Core Principles
+## Principles
+**Evidence required:** Report ONLY provable issues
+**No assumptions:** Don't guess missing context
+**When in doubt:** Pass
 
-**EVIDENCE REQUIRED:** Report ONLY issues you can prove from the diff itself
-**NO ASSUMPTIONS:** Don't guess about missing context, external code, or implementation details  
-**NO SPECULATION:** "This might cause..." or "Could be a problem..." → PASS
-**WHEN IN DOUBT:** Pass. Lack of evidence = Pass.
-
-## Output Format (JSON ONLY)
-
+## Output (JSON)
 {
   "passed": boolean,
   "severity": "error" | "warning" | "info",
@@ -114,10 +101,9 @@ ${modeGuidelines}
   "suggestions": string[]
 }
 
-**CRITICAL: All text in issues[] and suggestions[] arrays MUST be in ${language}**
-**Formatting: Space between Chinese/English/numbers (e.g., "函数 getName 缺少 null 检查")**
+**Language:** ${language} (space between Chinese/English/numbers)
 
-Empty/whitespace/comment-only diffs: Pass with empty arrays.`
+Empty diffs: Pass with empty arrays.`
 
   // 如果有自定义提示词，添加到末尾
   if (customPrompt && customPrompt.trim()) {
