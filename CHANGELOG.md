@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/joygqz/commit-genie/compare/v1.0.2...v1.1.0) (2025-10-04)
+
+
+### Features
+
+* 添加错误处理和配置变更监听 ([1de10be](https://github.com/joygqz/commit-genie/commit/1de10be8787eddc4e3dc6aa3559016f5f1729e99))
+* 添加调试日志配置支持 ([630b902](https://github.com/joygqz/commit-genie/commit/630b902f718b00ead90de197910f3b21f012bdd7))
+* 增强错误处理和日志记录功能 ([d9beb1f](https://github.com/joygqz/commit-genie/commit/d9beb1fef3dd16e8b5e6fae3cae582b9ce116942))
+* 支持取消生成提交消息操作 ([1f3e32a](https://github.com/joygqz/commit-genie/commit/1f3e32a30f001a3dd75a8859d83a71af868bd21d))
+
+
+
 ## [1.0.2](https://github.com/joygqz/commit-genie/compare/v1.0.1...v1.0.2) (2025-10-04)
 
 
