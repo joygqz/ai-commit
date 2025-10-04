@@ -4,14 +4,16 @@
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
 [![Rating](https://img.shields.io/visual-studio-marketplace/r/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
 
-AI-powered commit message generator for VS Code. Automatically generates meaningful, standard commit messages by analyzing your Git changes.
+AI-powered code review and commit message generator for VS Code. Automatically reviews your code changes and generates meaningful, standard commit messages.
 
 ## ✨ Features
 
 - 🤖 **AI-Powered**: Works with OpenAI-compatible APIs (DeepSeek, OpenAI, etc.)
+- 🔍 **Code Review**: Optional pre-commit code review with 4 modes (off/lenient/standard/strict)
 - 🌐 **Multi-Language**: Generate commit messages in 19+ languages
 - ⚡ **Real-time Streaming**: See messages being generated instantly
 - 🎨 **Emoji Support**: Optional emoji prefixes (e.g., ✨ feat, 🐛 fix)
+- ✏️ **Custom Prompts**: Add custom instructions for both review and commit
 - ❌ **Cancellable**: Stop generation anytime with the cancel button
 - 🔄 **Smart Model Selection**: Browse and switch between AI models easily
 
@@ -26,16 +28,22 @@ AI-powered commit message generator for VS Code. Automatically generates meaning
 
 ## 📋 Usage
 
-### Generate Commit Message
+### Review and Commit (Recommended)
 
 1. Stage your changes in Source Control
-2. Click the <img src="images/logo.png" width="16" height="16" /> icon or run `Commit Genie: Generate Commit Message`
-3. Watch the AI generate your commit message in real-time
-4. Edit if needed and commit
+2. Click the <img src="images/logo.png" width="16" height="16" /> icon or run `Commit Genie: Review and Commit`
+3. **Code Review** (if enabled):
+   - AI analyzes your changes for potential issues
+   - Shows errors/warnings with suggestions
+   - Choose to continue or fix issues
+4. **Commit Message**:
+   - Watch the AI generate your commit message in real-time
+   - Edit if needed and commit
 
 **Tips:**
 - Click cancel (×) to stop generation anytime
-- Clicking again automatically cancels the previous request
+- Set `review.mode` to `off` to skip code review
+- Adjust review strictness: `lenient` / `standard` / `strict`
 
 ### Select Model
 
@@ -46,7 +54,7 @@ Run `Commit Genie: Select Available Model` from Command Palette to:
 
 ## ⚙️ Configuration
 
-### Essential Settings
+### Service Settings (Required)
 
 | Setting | Description | Example |
 |---------|-------------|---------|
@@ -59,21 +67,55 @@ Run `Commit Genie: Select Available Model` from Command Palette to:
 - OpenAI: `https://api.openai.com/v1`
 - Any OpenAI-compatible API
 
-### Optional Settings
+### Format Settings
 
 | Setting | Description | Default |
 |---------|-------------|---------|
 | `format.outputLanguage` | Language for messages | Simplified Chinese |
-| `commit.enableEmojiPrefix` | Add emoji to messages | `false` |
-| `commit.customPrompt` | Custom instructions for AI | (empty) |
-| `debug.enableLogging` | Enable debug logs | `true` |
-| `debug.logLevel` | Log detail level | `warn` |
 
-**Custom Prompt Example:**
+### Review Settings
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| `review.mode` | Code review strictness | `standard` |
+| `review.customPrompt` | Custom review rules | (empty) |
+
+**Review Modes:**
+- `off` - Disabled, skip code review
+- `lenient` - Only critical issues (syntax errors, security, crashes)
+- `standard` - Critical + major issues (logic errors, error handling)
+- `strict` - All verifiable issues (including code quality)
+
+**Review Custom Prompt Example:**
+```
+Focus on:
+- Security vulnerabilities
+- Performance issues in database queries
+- Missing error handling
+```
+
+### Commit Settings
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| `commit.enableEmojiPrefix` | Add emoji to messages | `false` |
+| `commit.customPrompt` | Custom commit instructions | (empty) |
+
+**Commit Custom Prompt Example:**
 ```
 Always include ticket numbers in the format [JIRA-123]
 Use imperative mood for all messages
+Keep first line under 50 characters
 ```
+
+### Debug Settings
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| `debug.enableLogging` | Enable debug logs | `true` |
+| `debug.logLevel` | Log detail level | `warn` |
+
+**Log Levels:** `debug` / `info` / `warn` / `error`
 
 ## 🌍 Supported Languages
 
@@ -106,6 +148,12 @@ Generate commit messages in your preferred language (19 languages supported):
 
 **"No staged changes"**
 → Stage your changes first in Source Control
+
+**Code review too strict/lenient?**
+→ Adjust `review.mode`: `off` / `lenient` / `standard` / `strict`
+
+**Want to skip code review?**
+→ Set `review.mode` to `off`
 
 **Network/Timeout errors**
 → Check internet connection and API endpoint

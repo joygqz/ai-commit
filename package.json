@@ -4,7 +4,7 @@
   "displayName": "Commit Genie",
   "version": "1.1.0",
   "packageManager": "pnpm@10.17.1",
-  "description": "AI Commit Message Generator",
+  "description": "AI-powered code review and commit message generator",
   "license": "SEE LICENSE IN LICENSE",
   "homepage": "https://github.com/joygqz/commit-genie#readme",
   "repository": {
