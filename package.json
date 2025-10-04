@@ -132,6 +132,30 @@
           "type": "string",
           "editPresentation": "multilineText",
           "order": 5
+        },
+        "commit-genie.debug.enableLogging": {
+          "default": true,
+          "markdownDescription": "%configuration.debug.enableLogging.description%",
+          "type": "boolean",
+          "order": 6
+        },
+        "commit-genie.debug.logLevel": {
+          "default": "warn",
+          "markdownDescription": "%configuration.debug.logLevel.description%",
+          "type": "string",
+          "enum": [
+            "debug",
+            "info",
+            "warn",
+            "error"
+          ],
+          "enumDescriptions": [
+            "Debug: Show all logs (for development)",
+            "Info: Show info, warnings and errors",
+            "Warn: Show warnings and errors (recommended)",
+            "Error: Show only errors"
+          ],
+          "order": 7
         }
       }
     },

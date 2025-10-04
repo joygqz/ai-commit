@@ -59,6 +59,17 @@ class ConfigManager {
       customPrompt: this.get<string>('format.customPrompt', ''),
     }
   }
+
+  /**
+   * 获取调试相关配置
+   * @returns 调试配置对象
+   */
+  getDebugConfig() {
+    return {
+      enableLogging: this.get<boolean>('debug.enableLogging', true),
+      logLevel: this.get<string>('debug.logLevel', 'warn'),
+    }
+  }
 }
 
 export const config = new ConfigManager()

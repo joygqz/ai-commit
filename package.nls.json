@@ -6,5 +6,7 @@
   "configuration.service.model.description": "AI model to use for generating commit messages. Run [Commit Genie: Select Available Model](command:commit-genie.selectAvailableModel) to choose from available options.",
   "configuration.format.commitMessageLanguage.description": "Language for generated commit messages.",
   "configuration.format.enableEmojiPrefix.description": "Enable emoji prefix.",
-  "configuration.format.customPrompt.description": "Custom prompt to append to the system message. Use this to add specific guidelines or requirements for commit message generation."
+  "configuration.format.customPrompt.description": "Custom prompt to append to the system message. Use this to add specific guidelines or requirements for commit message generation.",
+  "configuration.debug.enableLogging.description": "Enable logging to the Output panel for troubleshooting. Logs help diagnose issues when reporting bugs.",
+  "configuration.debug.logLevel.description": "Minimum log level to display. Lower levels include all higher levels (e.g., 'info' includes 'warn' and 'error')."
 }

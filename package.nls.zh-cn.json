@@ -6,5 +6,7 @@
   "configuration.service.model.description": "用于生成提交信息的 AI 模型。运行 [Commit Genie: 选择可用模型](command:commit-genie.selectAvailableModel) 从可用选项中选择。",
   "configuration.format.commitMessageLanguage.description": "生成的提交信息的语言。",
   "configuration.format.enableEmojiPrefix.description": "启用表情符号前缀。",
-  "configuration.format.customPrompt.description": "追加到系统消息的自定义提示语。使用此选项为提交信息生成添加特定的指南或要求。"
+  "configuration.format.customPrompt.description": "追加到系统消息的自定义提示语。使用此选项为提交信息生成添加特定的指南或要求。",
+  "configuration.debug.enableLogging.description": "启用输出面板日志以进行故障排查。日志有助于在报告错误时诊断问题。",
+  "configuration.debug.logLevel.description": "显示的最低日志级别。较低级别包含所有较高级别（例如，'info' 包含 'warn' 和 'error'）。"
 }

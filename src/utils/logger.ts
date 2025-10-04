@@ -1,4 +1,4 @@
-import { window } from 'vscode'
+import { window, workspace } from 'vscode'
 import { EXTENSION_ID } from './constants'
 
 /**
@@ -12,13 +12,33 @@ export enum LogLevel {
 }
 
 /**
+ * 将字符串转换为日志级别
+ * @param level 日志级别字符串
+ * @returns 日志级别枚举值
+ */
+function stringToLogLevel(level: string): LogLevel {
+  switch (level.toLowerCase()) {
+    case 'debug':
+      return LogLevel.DEBUG
+    case 'info':
+      return LogLevel.INFO
+    case 'warn':
+      return LogLevel.WARN
+    case 'error':
+      return LogLevel.ERROR
+    default:
+      return LogLevel.WARN
+  }
+}
+
+/**
  * 日志管理器类
  * 提供分级日志记录功能，输出到 VS Code 输出面板
  */
 class Logger {
   private outputChannel = window.createOutputChannel(EXTENSION_ID, { log: true })
-  private _enabled = false
-  private _level: LogLevel = LogLevel.INFO
+  private _enabled = true // 生产环境默认启用，便于问题排查
+  private _level: LogLevel = LogLevel.WARN // 默认只记录警告和错误
 
   /**
    * 启用日志输出
@@ -36,10 +56,27 @@ class Logger {
 
   /**
    * 设置日志级别
-   * @param level 日志级别
+   * @param level 日志级别（枚举值或字符串）
    */
-  setLevel(level: LogLevel): void {
-    this._level = level
+  setLevel(level: LogLevel | string): void {
+    if (typeof level === 'string') {
+      this._level = stringToLogLevel(level)
+    }
+    else {
+      this._level = level
+    }
+  }
+
+  /**
+   * 从 VS Code 配置初始化日志设置
+   */
+  initFromConfig(): void {
+    const config = workspace.getConfiguration(EXTENSION_ID)
+    const enableLogging = config.get<boolean>('debug.enableLogging', true)
+    const logLevel = config.get<string>('debug.logLevel', 'warn')
+
+    this._enabled = enableLogging
+    this.setLevel(logLevel)
   }
 
   /**
