@@ -5,6 +5,7 @@ import { name } from './constants'
 interface PromptOptions {
   language: string
   enableEmoji: boolean
+  customPrompt?: string
 }
 
 const COMMIT_TYPES = [
@@ -35,69 +36,64 @@ function createEmojiGuidelines(enableEmoji: boolean) {
   }
 
   return `
-
-### Emoji Support
-- Prefix each subject with the matching emoji.
-- Use format: <emoji> <type>[optional scope]: <subject>.
-- Omit emoji when no type matches.`
+### Emoji Rules
+- Format: <emoji> <type>[scope]: <subject>
+- Use matching emoji from the types above`
 }
 
 function createWorkflowSection(enableEmoji: boolean, language: string) {
   const emojiHint = enableEmoji ? '<emoji> ' : ''
 
-  return `## Output Contract
+  return `## Format
 
-${emojiHint}<type>[optional scope]: <subject>
+${emojiHint}<type>[scope]: <subject>
 
-[optional body]
+[body]
 
-### Subject Rules
-- Use imperative mood, keep it succinct, never end with a period.
-- ≤ 50 characters, single responsibility, avoid duplicate information.
-- Include an explicit scope only when it sharpens understanding.
+### Subject (Required)
+- Imperative mood, ≤50 chars, no period
+- Add scope only when essential for clarity
+- Single responsibility per commit
 
-### Body Rules (Optional)
-- Use "- " bullet prefix, ≤ 72 characters per line.
-- Focus on why or how when extra clarity is needed.
-- Omit the body if the subject already captures the change.
+### Body (Optional)
+- "- " bullet prefix, ≤72 chars/line
+- Explain why/how when subject insufficient
+- Omit if subject is self-explanatory
 
-### Language Discipline
-- Produce all text in ${language}.
-- Insert spaces between Chinese / English words and numbers if applicable.
-- Keep casing consistent with the selected language norms.`
+### Language
+- All text in ${language}
+- Space between Chinese/English/numbers`
 }
 
 function createWorkflowChecklist() {
-  return `## Delivery Checklist
+  return `## Process
 
-1. Understand the diff: identify files, behaviors, tests, docs, configs.
-2. Choose the most precise type; never invent new types.
-3. Confirm the subject mirrors the main change.
-4. Add body bullets only when they deliver meaningful nuance.
-5. Final validation: ensure the output strictly matches the contract.
+1. Analyze diff → identify main change
+2. Pick most precise type (never invent)
+3. Write subject capturing core change
+4. Add body only if adds value
+5. Validate format compliance
 
-If the diff is empty or contains only generated artefacts, respond with a maintenance style message (e.g. chore) and describe the meaningful effect (or state "no functional changes" if accurate).`
+**Empty/generated diffs**: Use chore type, describe effect or "no functional changes"`
 }
 
 function createEdgeCaseSection() {
-  return `## Edge Cases
+  return `## Special Cases
 
-- **Mixed changes**: Select the dominant change; mention secondary effects in the body.
-- **Reverts / rollbacks**: Prefer "revert" wording inside the subject for clarity.
-- **Config toggles**: Highlight the user-facing impact rather than the toggled flag.
-- **Renames / moves**: Briefly state the intent (e.g. "reorganize components namespace").
-- **Test-only updates**: Use **test** type and summarise coverage or scenario.`
+- **Mixed**: Pick dominant type, note others in body
+- **Revert**: Use revert type with original subject
+- **Config**: Focus on user impact, not tech details
+- **Rename/Move**: State intent (e.g., "reorganize structure")
+- **Test-only**: Use test type, summarize coverage`
 }
 
 function createSystemContent(options: PromptOptions) {
-  const { enableEmoji, language } = options
+  const { enableEmoji, language, customPrompt } = options
 
-  return [
-    '# Git Commit Message Generator',
+  const sections = [
+    'You are a commit message generator. Analyze the git diff and output ONLY the final commit message—no explanations, markdown blocks, or extra text.',
     '',
-    'You are an elite release engineer crafting production-ready commit messages based on git diffs. Output **only** the final commit message—no explanations, backticks, or extra prose.',
-    '',
-    '## Commit Types',
+    '## Types',
     '',
     createCommitTypeSection(enableEmoji),
     createEmojiGuidelines(enableEmoji),
@@ -107,7 +103,13 @@ function createSystemContent(options: PromptOptions) {
     createWorkflowChecklist(),
     '',
     createEdgeCaseSection(),
-  ].join('\n')
+  ]
+
+  if (customPrompt && customPrompt.trim()) {
+    sections.push('', '## Custom Rules (Override All Above)', '', customPrompt.trim())
+  }
+
+  return sections.join('\n')
 }
 
 function createSystemMessage(options: PromptOptions): ChatCompletionMessageParam {
@@ -118,9 +120,12 @@ function createSystemMessage(options: PromptOptions): ChatCompletionMessageParam
 }
 
 async function getMainCommitPrompt(): Promise<ChatCompletionMessageParam[]> {
+  const config = workspace.getConfiguration(name)
+
   const options: PromptOptions = {
-    language: workspace.getConfiguration(name).get('format.commitMessageLanguage') as string || 'Simplified Chinese',
-    enableEmoji: workspace.getConfiguration(name).get('format.enableEmojiPrefix') as boolean || false,
+    language: config.get<string>('format.commitMessageLanguage') || 'Simplified Chinese',
+    enableEmoji: config.get<boolean>('format.enableEmojiPrefix') || false,
+    customPrompt: config.get<string>('format.customPrompt') || '',
   }
 
   return [createSystemMessage(options)]

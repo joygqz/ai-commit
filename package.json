@@ -125,6 +125,13 @@
           "description": "%configuration.format.enableEmojiPrefix.description%",
           "type": "boolean",
           "order": 4
+        },
+        "commit-genie.format.customPrompt": {
+          "default": "",
+          "description": "%configuration.format.customPrompt.description%",
+          "type": "string",
+          "editPresentation": "multilineText",
+          "order": 5
         }
       }
     },
