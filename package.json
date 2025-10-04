@@ -36,8 +36,8 @@
     "commands": [
       {
         "category": "Commit Genie",
-        "command": "commit-genie.generateCommitMessage",
-        "title": "%command.generateCommitMessage.title%",
+        "command": "commit-genie.reviewAndCommit",
+        "title": "%command.reviewAndCommit.title%",
         "icon": {
           "light": "images/logo.svg",
           "dark": "images/logo.svg"
@@ -71,9 +71,9 @@
           "type": "string",
           "order": 2
         },
-        "commit-genie.format.commitMessageLanguage": {
+        "commit-genie.format.outputLanguage": {
           "default": "Simplified Chinese",
-          "markdownDescription": "%configuration.format.commitMessageLanguage.description%",
+          "markdownDescription": "%configuration.format.outputLanguage.description%",
           "enum": [
             "Simplified Chinese",
             "Traditional Chinese",
@@ -119,24 +119,49 @@
           "type": "string",
           "order": 3
         },
-        "commit-genie.format.enableEmojiPrefix": {
-          "default": false,
-          "markdownDescription": "%configuration.format.enableEmojiPrefix.description%",
-          "type": "boolean",
+        "commit-genie.review.mode": {
+          "default": "standard",
+          "markdownDescription": "%configuration.review.mode.description%",
+          "type": "string",
+          "enum": [
+            "off",
+            "lenient",
+            "standard",
+            "strict"
+          ],
+          "enumDescriptions": [
+            "%configuration.review.mode.off%",
+            "%configuration.review.mode.lenient%",
+            "%configuration.review.mode.standard%",
+            "%configuration.review.mode.strict%"
+          ],
           "order": 4
         },
-        "commit-genie.format.customPrompt": {
+        "commit-genie.review.customPrompt": {
           "default": "",
-          "markdownDescription": "%configuration.format.customPrompt.description%",
+          "markdownDescription": "%configuration.review.customPrompt.description%",
           "type": "string",
           "editPresentation": "multilineText",
           "order": 5
+        },
+        "commit-genie.commit.enableEmojiPrefix": {
+          "default": false,
+          "markdownDescription": "%configuration.commit.enableEmojiPrefix.description%",
+          "type": "boolean",
+          "order": 6
+        },
+        "commit-genie.commit.customPrompt": {
+          "default": "",
+          "markdownDescription": "%configuration.commit.customPrompt.description%",
+          "type": "string",
+          "editPresentation": "multilineText",
+          "order": 7
         },
         "commit-genie.debug.enableLogging": {
           "default": true,
           "markdownDescription": "%configuration.debug.enableLogging.description%",
           "type": "boolean",
-          "order": 6
+          "order": 8
         },
         "commit-genie.debug.logLevel": {
           "default": "warn",
@@ -154,14 +179,14 @@
             "Warn: Show warnings and errors (recommended)",
             "Error: Show only errors"
           ],
-          "order": 7
+          "order": 9
         }
       }
     },
     "menus": {
       "scm/title": [
         {
-          "command": "commit-genie.generateCommitMessage",
+          "command": "commit-genie.reviewAndCommit",
           "group": "navigation",
           "when": "scmProvider === git"
         }

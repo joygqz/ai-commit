@@ -63,9 +63,9 @@ Run `Commit Genie: Select Available Model` from Command Palette to:
 
 | Setting | Description | Default |
 |---------|-------------|---------|
-| `format.commitMessageLanguage` | Language for messages | Simplified Chinese |
-| `format.enableEmojiPrefix` | Add emoji to messages | `false` |
-| `format.customPrompt` | Custom instructions for AI | (empty) |
+| `format.outputLanguage` | Language for messages | Simplified Chinese |
+| `commit.enableEmojiPrefix` | Add emoji to messages | `false` |
+| `commit.customPrompt` | Custom instructions for AI | (empty) |
 | `debug.enableLogging` | Enable debug logs | `true` |
 | `debug.logLevel` | Log detail level | `warn` |
 

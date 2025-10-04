@@ -129,6 +129,50 @@ export async function ChatGPTStreamAPI(
 }
 
 /**
+ * 调用 ChatGPT 非流式 API（用于获取结构化响应）
+ * @param messages 聊天消息数组，包含系统提示和用户输入
+ * @param options 可选配置对象
+ * @param options.signal 可选的中止信号，用于取消请求
+ * @param options.timeout 请求超时时间（毫秒），默认 60 秒
+ * @returns 完整的响应内容
+ * @throws 如果请求失败则抛出错误（中止除外）
+ */
+export async function ChatGPTAPI(
+  messages: ChatCompletionMessageParam[],
+  options: { signal?: AbortSignal, timeout?: number } = {},
+): Promise<string> {
+  const { signal, timeout = API_CONFIG.DEFAULT_TIMEOUT } = options
+  const openai = createOpenAIApi()
+  const { model } = config.getServiceConfig()
+  const temperature = API_CONFIG.DEFAULT_TEMPERATURE
+
+  // 创建超时信号
+  const timeoutController = new AbortController()
+  const timeoutId = setTimeout(() => timeoutController.abort(), timeout)
+
+  // 合并用户信号和超时信号
+  const combinedSignal = signal
+    ? AbortSignal.any([signal, timeoutController.signal])
+    : timeoutController.signal
+
+  try {
+    // 创建聊天完成请求
+    const response = await openai.chat.completions.create({
+      model,
+      messages: messages as ChatCompletionMessageParam[],
+      temperature,
+      stream: false,
+    }, { signal: combinedSignal })
+
+    return response.choices[0]?.message?.content || ''
+  }
+  finally {
+    // 清理超时定时器
+    clearTimeout(timeoutId)
+  }
+}
+
+/**
  * 获取可用的模型列表
  * @returns 模型 ID 数组
  */

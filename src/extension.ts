@@ -30,11 +30,11 @@ export function activate(context: vscode.ExtensionContext) {
     }),
   )
 
-  // 注册生成 commit 消息命令
+  // 注册审查代码并生成 commit 消息命令
   context.subscriptions.push(
     commands.registerCommand(
-      COMMANDS.GENERATE_COMMIT_MESSAGE,
-      Commands.generateCommitMessage.bind(null, context),
+      COMMANDS.REVIEW_AND_COMMIT,
+      Commands.reviewAndCommit.bind(null, context),
     ),
     // 注册选择可用模型命令
     commands.registerCommand(

@@ -54,9 +54,29 @@ class ConfigManager {
    */
   getFormatConfig() {
     return {
-      commitMessageLanguage: this.get<string>('format.commitMessageLanguage', 'Simplified Chinese'),
-      enableEmojiPrefix: this.get<boolean>('format.enableEmojiPrefix', false),
-      customPrompt: this.get<string>('format.customPrompt', ''),
+      outputLanguage: this.get<string>('format.outputLanguage', 'Simplified Chinese'),
+    }
+  }
+
+  /**
+   * 获取提交消息相关配置
+   * @returns 提交消息配置对象
+   */
+  getCommitConfig() {
+    return {
+      enableEmojiPrefix: this.get<boolean>('commit.enableEmojiPrefix', false),
+      customPrompt: this.get<string>('commit.customPrompt', ''),
+    }
+  }
+
+  /**
+   * 获取代码审查相关配置
+   * @returns 审查配置对象
+   */
+  getReviewConfig() {
+    return {
+      mode: this.get<'off' | 'lenient' | 'standard' | 'strict'>('review.mode', 'standard'),
+      customPrompt: this.get<string>('review.customPrompt', ''),
     }
   }
 
