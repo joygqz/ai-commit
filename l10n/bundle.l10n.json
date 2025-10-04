@@ -9,5 +9,8 @@
   "Please select a model to generate commit messages.": "Please select a model to generate commit messages.",
   "Model updated to {0}.": "Model updated to {0}.",
   "Git extension not found.": "Git extension not found.",
-  "Workspace folder not found.": "Workspace folder not found."
+  "Workspace folder not found.": "Workspace folder not found.",
+  "API Key is required. Please configure it in settings.": "API Key is required. Please configure it in settings.",
+  "Base URL is required. Please configure it in settings.": "Base URL is required. Please configure it in settings.",
+  "Model is required. Please configure it in settings.": "Model is required. Please configure it in settings."
 }

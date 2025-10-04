@@ -1,7 +1,7 @@
 import type { ChatCompletionMessageParam } from 'openai/resources'
 import type { ExtensionContext } from 'vscode'
 import { ConfigurationTarget, l10n, window, workspace } from 'vscode'
-import { ProgressHandler } from './utils'
+import { ProgressHandler, validateConfig } from './utils'
 import { name } from './utils/constants'
 import { getDiffStaged, getRepo } from './utils/git'
 import { ChatGPTStreamAPI, showModels } from './utils/openai'
@@ -11,6 +11,28 @@ let activeAbortController: AbortController | null = null
 
 async function generateCommitMessage(context: ExtensionContext) {
   try {
+    const validation = validateConfig([
+      {
+        key: 'service.apiKey',
+        required: true,
+        errorMessage: l10n.t('API Key is required. Please configure it in settings.'),
+      },
+      {
+        key: 'service.baseURL',
+        required: true,
+        errorMessage: l10n.t('Base URL is required. Please configure it in settings.'),
+      },
+      {
+        key: 'service.model',
+        required: true,
+        errorMessage: l10n.t('Model is required. Please configure it in settings.'),
+      },
+    ])
+    if (!validation.isValid) {
+      window.showErrorMessage(validation.error!)
+      return
+    }
+
     if (activeAbortController) {
       activeAbortController.abort()
       activeAbortController = null
@@ -69,6 +91,23 @@ async function generateCommitMessage(context: ExtensionContext) {
 
 async function selectAvailableModel() {
   try {
+    const validation = validateConfig([
+      {
+        key: 'service.apiKey',
+        required: true,
+        errorMessage: l10n.t('API Key is required. Please configure it in settings.'),
+      },
+      {
+        key: 'service.baseURL',
+        required: true,
+        errorMessage: l10n.t('Base URL is required. Please configure it in settings.'),
+      },
+    ])
+    if (!validation.isValid) {
+      window.showErrorMessage(validation.error!)
+      return
+    }
+
     const models = await showModels()
 
     if (!models.length) {

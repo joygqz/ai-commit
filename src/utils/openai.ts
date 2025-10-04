@@ -7,22 +7,10 @@ function getOpenAIConfig() {
   const apiKey = workspace.getConfiguration(name).get('service.apiKey') as string
   const baseURL = workspace.getConfiguration(name).get('service.baseURL') as string
 
-  const _config: {
-    apiKey?: string
-    baseURL?: string
-    defaultQuery?: { 'api-version': string }
-    defaultHeaders?: { 'api-key': string }
-  } = {}
-
-  if (baseURL) {
-    _config.baseURL = baseURL
+  return {
+    apiKey,
+    baseURL,
   }
-
-  if (apiKey) {
-    _config.apiKey = apiKey
-  }
-
-  return _config
 }
 
 export function createOpenAIApi() {
