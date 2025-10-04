@@ -2,10 +2,6 @@
 
 
 
-## [2.1.1](https://github.com/joygqz/commit-genie/compare/v2.1.0...v2.1.1) (2025-10-04)
-
-
-
 # [2.1.0](https://github.com/joygqz/commit-genie/compare/v2.0.1...v2.1.0) (2025-10-04)
 
 
@@ -40,10 +36,10 @@
 
 ### Features
 
-* 添加错误处理和配置变更监听 ([1de10be](https://github.com/joygqz/commit-genie/commit/1de10be8787eddc4e3dc6aa3559016f5f1729e99))
-* 添加调试日志配置支持 ([630b902](https://github.com/joygqz/commit-genie/commit/630b902f718b00ead90de197910f3b21f012bdd7))
 * 增强错误处理和日志记录功能 ([d9beb1f](https://github.com/joygqz/commit-genie/commit/d9beb1fef3dd16e8b5e6fae3cae582b9ce116942))
 * 支持取消生成提交消息操作 ([1f3e32a](https://github.com/joygqz/commit-genie/commit/1f3e32a30f001a3dd75a8859d83a71af868bd21d))
+* 添加调试日志配置支持 ([630b902](https://github.com/joygqz/commit-genie/commit/630b902f718b00ead90de197910f3b21f012bdd7))
+* 添加错误处理和配置变更监听 ([1de10be](https://github.com/joygqz/commit-genie/commit/1de10be8787eddc4e3dc6aa3559016f5f1729e99))
 
 
 
@@ -65,9 +61,9 @@
 
 ### Features
 
+* **i18n:** 添加简体中文本地化支持 ([17107ba](https://github.com/joygqz/commit-genie/commit/17107ba80f07dcca67e17782286ae554c488ae10))
 * 添加多语言支持 ([0163b19](https://github.com/joygqz/commit-genie/commit/0163b1925ce3070be9547c024ba83b3e144f3b07))
 * 添加配置验证和错误提示 ([882faa1](https://github.com/joygqz/commit-genie/commit/882faa14ece0b120ffa735006a93ff30dd9e111f))
-* **i18n:** 添加简体中文本地化支持 ([17107ba](https://github.com/joygqz/commit-genie/commit/17107ba80f07dcca67e17782286ae554c488ae10))
 
 
 
@@ -140,16 +136,16 @@
 
 ### Bug Fixes
 
-* 调整 ChatGPT 流式 API 温度参数 ([c0f74de](https://github.com/joygqz/commit-genie/commit/c0f74dec79abf6fc8adacc9eda4debe85c133543))
 * 优化错误处理逻辑 ([6e52fa0](https://github.com/joygqz/commit-genie/commit/6e52fa0ad70ef9c7876e7473e9b57231da29e3dd))
+* 调整 ChatGPT 流式 API 温度参数 ([c0f74de](https://github.com/joygqz/commit-genie/commit/c0f74dec79abf6fc8adacc9eda4debe85c133543))
 
 
 ### Features
 
-* 添加配置验证功能并优化错误处理 ([104bf96](https://github.com/joygqz/commit-genie/commit/104bf96c3c3cd7a282d2dc7b16f2a8c14b876d43))
-* 添加提交消息生成取消功能 ([4c64dd2](https://github.com/joygqz/commit-genie/commit/4c64dd28cdf8e06508eea6e24e07c7c7c07fa769))
 * 为 AI 提交消息生成添加取消操作支持 ([b2e3be1](https://github.com/joygqz/commit-genie/commit/b2e3be1acf068e92143e43942a6efb61f9a951dd))
 * 为进度处理器添加可取消功能 ([5f76fd0](https://github.com/joygqz/commit-genie/commit/5f76fd0b623d736aa7cb0bce7d622613066393b1))
+* 添加提交消息生成取消功能 ([4c64dd2](https://github.com/joygqz/commit-genie/commit/4c64dd28cdf8e06508eea6e24e07c7c7c07fa769))
+* 添加配置验证功能并优化错误处理 ([104bf96](https://github.com/joygqz/commit-genie/commit/104bf96c3c3cd7a282d2dc7b16f2a8c14b876d43))
 
 
 
@@ -158,8 +154,8 @@
 
 ### Features
 
-* 实现提交消息流式生成功能 ([27c56c1](https://github.com/joygqz/commit-genie/commit/27c56c13858e5283defb16788f6fed5500c6a6e7))
 * **i18n:** 添加多语言国际化支持 ([e445e94](https://github.com/joygqz/commit-genie/commit/e445e941f927940cf6680b17385ab6b18b2470fc))
+* 实现提交消息流式生成功能 ([27c56c1](https://github.com/joygqz/commit-genie/commit/27c56c13858e5283defb16788f6fed5500c6a6e7))
 
 
 
