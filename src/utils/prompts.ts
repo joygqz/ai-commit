@@ -1,5 +1,6 @@
 import type { ChatCompletionMessageParam } from 'openai/resources'
 import { config } from './config'
+import { COMMIT_FORMAT } from './constants'
 
 /**
  * 提示词选项接口
@@ -75,12 +76,12 @@ ${emojiHint}<type>[scope]: <subject>
 [body]
 
 ### Subject (Required)
-- Imperative mood, ≤50 chars, no period
+- Imperative mood, ≤${COMMIT_FORMAT.MAX_SUBJECT_LENGTH} chars, no period
 - Add scope only when essential for clarity
 - Single responsibility per commit
 
 ### Body (Optional)
-- "- " bullet prefix, ≤72 chars/line
+- "- " bullet prefix, ≤${COMMIT_FORMAT.MAX_BODY_LINE_LENGTH} chars/line
 - Explain why/how when subject insufficient
 - Omit if subject is self-explanatory
 

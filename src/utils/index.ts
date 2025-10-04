@@ -2,6 +2,10 @@ import type { Progress } from 'vscode'
 import { ProgressLocation, window } from 'vscode'
 import { config } from './config'
 
+// 重新导出常用模块
+export * from './error-handler'
+export * from './logger'
+
 export class ProgressHandler {
   /**
    * 在进度通知中执行异步任务

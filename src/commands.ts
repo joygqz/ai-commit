@@ -1,8 +1,9 @@
 import type { ChatCompletionMessageParam } from 'openai/resources'
 import type { ExtensionContext } from 'vscode'
 import { ConfigurationTarget, l10n, window } from 'vscode'
-import { ProgressHandler, validateConfig } from './utils'
+import { logger, ProgressHandler, validateConfig } from './utils'
 import { config } from './utils/config'
+import { getUserFriendlyErrorMessage, shouldSilenceError } from './utils/error-handler'
 import { getDiffStaged, getRepo } from './utils/git'
 import { ChatGPTStreamAPI, showModels } from './utils/openai'
 import { generateCommitMessageChatCompletionPrompt } from './utils/prompts'
@@ -18,6 +19,8 @@ let activeAbortController: AbortController | null = null
  */
 async function generateCommitMessage(context: ExtensionContext) {
   try {
+    logger.info('Starting commit message generation')
+
     // 验证必需的配置项
     const validation = validateConfig([
       {
@@ -37,12 +40,14 @@ async function generateCommitMessage(context: ExtensionContext) {
       },
     ])
     if (!validation.isValid) {
+      logger.warn('Configuration validation failed', { error: validation.error })
       window.showErrorMessage(validation.error!)
       return
     }
 
     // 取消之前的请求（如果存在）
     if (activeAbortController) {
+      logger.debug('Aborting previous request')
       activeAbortController.abort()
       activeAbortController = null
     }
@@ -55,9 +60,12 @@ async function generateCommitMessage(context: ExtensionContext) {
 
     // 检查是否有暂存的更改
     if (!diff || diff === l10n.t('No staged changes.')) {
+      logger.info('No staged changes found')
       window.showInformationMessage(l10n.t('No staged changes to commit.'))
       return
     }
+
+    logger.debug('Retrieved staged changes', { diffLength: diff.length })
 
     // 获取 SCM 输入框
     const scmInputBox = repo?.inputBox
@@ -75,6 +83,7 @@ async function generateCommitMessage(context: ExtensionContext) {
     activeAbortController = abortController
 
     try {
+      logger.info('Calling OpenAI API')
       return await ProgressHandler.withProgress('', async (progress) => {
         progress.report({ message: l10n.t('Generating commit message...') })
 
@@ -89,6 +98,8 @@ async function generateCommitMessage(context: ExtensionContext) {
           },
           { signal: abortController.signal },
         )
+
+        logger.info('Commit message generated successfully')
       })
     }
     finally {
@@ -98,12 +109,16 @@ async function generateCommitMessage(context: ExtensionContext) {
       }
     }
   }
-  catch (error: any) {
-    // 忽略中止错误
-    if (error.message.toLowerCase().includes('aborted'))
+  catch (error: unknown) {
+    // 使用错误处理器分析并显示友好的错误消息
+    if (shouldSilenceError(error)) {
+      logger.debug('Request aborted by user')
       return
+    }
 
-    window.showErrorMessage(error.message)
+    logger.error('Failed to generate commit message', error)
+    const message = getUserFriendlyErrorMessage(error)
+    window.showErrorMessage(message)
   }
 }
 
@@ -112,6 +127,8 @@ async function generateCommitMessage(context: ExtensionContext) {
  */
 async function selectAvailableModel() {
   try {
+    logger.info('Fetching available models')
+
     // 验证 API 配置
     const validation = validateConfig([
       {
@@ -133,7 +150,10 @@ async function selectAvailableModel() {
     // 从 API 获取可用模型列表
     const models = await showModels()
 
+    logger.debug('Retrieved models', { count: models.length, models })
+
     if (!models.length) {
+      logger.warn('No models available')
       window.showWarningMessage(l10n.t('No models available from current API configuration.'))
       return
     }
@@ -160,10 +180,13 @@ async function selectAvailableModel() {
 
     // 更新模型配置
     await config.update('service.model', picked.label, ConfigurationTarget.Global)
+    logger.info('Model updated', { model: picked.label })
     window.showInformationMessage(l10n.t('Model updated to {0}.', picked.label))
   }
-  catch (error: any) {
-    window.showErrorMessage(error.message)
+  catch (error: unknown) {
+    logger.error('Failed to select model', error)
+    const message = getUserFriendlyErrorMessage(error)
+    window.showErrorMessage(message)
   }
 }
 

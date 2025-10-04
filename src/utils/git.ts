@@ -1,6 +1,14 @@
+import type { ExtensionContext, Uri } from 'vscode'
 import * as fs from 'node:fs'
 import simpleGit from 'simple-git'
 import { extensions, l10n, workspace } from 'vscode'
+
+/**
+ * 仓库上下文接口
+ */
+interface RepoContext {
+  rootUri?: Uri
+}
 
 /**
  * 获取 Git 仓库实例
@@ -8,7 +16,7 @@ import { extensions, l10n, workspace } from 'vscode'
  * @returns Git 仓库实例
  * @throws 如果 Git 扩展未找到则抛出错误
  */
-export async function getRepo(arg: any) {
+export async function getRepo(arg: ExtensionContext | RepoContext) {
   // 获取 VS Code 内置的 Git 扩展 API
   const gitApi = extensions.getExtension('vscode.git')?.exports.getAPI(1)
   if (!gitApi) {
@@ -16,7 +24,7 @@ export async function getRepo(arg: any) {
   }
 
   // 如果传入的参数包含 rootUri，则尝试匹配对应的仓库
-  if (typeof arg === 'object' && arg.rootUri) {
+  if (typeof arg === 'object' && 'rootUri' in arg && arg.rootUri) {
     const resourceUri = arg.rootUri
     const realResourcePath: string = fs.realpathSync(resourceUri!.fsPath)
     for (let i = 0; i < gitApi.repositories.length; i++) {
@@ -31,12 +39,22 @@ export async function getRepo(arg: any) {
 }
 
 /**
+ * Git 仓库接口
+ */
+interface GitRepository {
+  rootUri?: Uri
+  inputBox?: {
+    value: string
+  }
+}
+
+/**
  * 获取暂存区的 diff
  * @param repo Git 仓库实例
  * @returns 暂存区的 diff 内容，如果没有更改则返回提示信息
  * @throws 如果工作区文件夹未找到则抛出错误
  */
-export async function getDiffStaged(repo: any): Promise<string> {
+export async function getDiffStaged(repo: GitRepository): Promise<string> {
   // 获取仓库根路径
   const rootPath = repo?.rootUri?.fsPath || workspace.workspaceFolders?.[0].uri.fsPath
 
