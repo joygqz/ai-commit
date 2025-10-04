@@ -140,7 +140,7 @@
         {
           "command": "commit-genie.generateCommitMessage",
           "group": "navigation",
-          "when": "scmProvider == git"
+          "when": "scmProvider === git"
         }
       ]
     }
