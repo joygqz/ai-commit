@@ -1,10 +1,11 @@
 import type { ChatCompletionMessageParam } from 'openai/resources'
 import OpenAI from 'openai'
-import { config } from './config'
+import { workspace } from 'vscode'
+import { name } from './constants'
 
 function getOpenAIConfig() {
-  const apiKey = config.apiKey
-  const baseURL = config.baseURL
+  const apiKey = workspace.getConfiguration(name).get('service.apiKey') as string
+  const baseURL = workspace.getConfiguration(name).get('service.baseURL') as string
 
   const _config: {
     apiKey?: string
@@ -36,7 +37,7 @@ export async function ChatGPTStreamAPI(
 ): Promise<string> {
   const { signal } = options
   const openai = createOpenAIApi()
-  const model = config.model
+  const model = workspace.getConfiguration(name).get('service.model') as string
   const temperature = 0
 
   const stream = await openai.chat.completions.create({

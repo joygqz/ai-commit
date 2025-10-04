@@ -1,15 +1,11 @@
 import * as fs from 'node:fs'
 import simpleGit from 'simple-git'
-import { extensions, workspace } from 'vscode'
-import { config } from './config'
-import { getMessages } from './i18n'
+import { extensions, l10n, workspace } from 'vscode'
 
 export async function getRepo(arg: any) {
   const gitApi = extensions.getExtension('vscode.git')?.exports.getAPI(1)
-  const messages = getMessages(config.commitMessageLanguage)
-
   if (!gitApi) {
-    throw new Error(messages.gitExtensionNotFound)
+    throw new Error('未找到 Git 扩展。')
   }
 
   if (typeof arg === 'object' && arg.rootUri) {
@@ -26,15 +22,14 @@ export async function getRepo(arg: any) {
 }
 
 export async function getDiffStaged(repo: any): Promise<string> {
-  const messages = getMessages(config.commitMessageLanguage)
   const rootPath = repo?.rootUri?.fsPath || workspace.workspaceFolders?.[0].uri.fsPath
 
   if (!rootPath) {
-    throw new Error(messages.noWorkspaceFound)
+    throw new Error('未找到工作区文件夹。')
   }
 
   const git = simpleGit(rootPath)
   const diff = await git.diff(['--staged'])
 
-  return diff || messages.noChangesStaged
+  return diff || '没有暂存的更改。'
 }

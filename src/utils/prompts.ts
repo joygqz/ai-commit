@@ -1,5 +1,6 @@
 import type { ChatCompletionMessageParam } from 'openai/resources'
-import { config } from './config'
+import { workspace } from 'vscode'
+import { name } from './constants'
 
 interface PromptOptions {
   language: string
@@ -118,8 +119,8 @@ function createSystemMessage(options: PromptOptions): ChatCompletionMessageParam
 
 async function getMainCommitPrompt(): Promise<ChatCompletionMessageParam[]> {
   const options: PromptOptions = {
-    language: config.commitMessageLanguage,
-    enableEmoji: config.enableEmojiPrefix,
+    language: workspace.getConfiguration(name).get('format.commitMessageLanguage') as string || 'Simplified Chinese',
+    enableEmoji: workspace.getConfiguration(name).get('format.enableEmojiPrefix') as boolean || false,
   }
 
   return [createSystemMessage(options)]
