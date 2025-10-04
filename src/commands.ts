@@ -61,23 +61,32 @@ async function generateCommitMessage(context: ExtensionContext) {
     const messagePrompts = await generateCommitMessageChatCompletionPrompt(diff)
     logger.info('Calling OpenAI API')
 
-    await ProgressHandler.withProgress('', async (progress) => {
-      progress.report({ message: l10n.t('Generating commit message...') })
+    await ProgressHandler.withProgress(
+      '',
+      async (progress, token) => {
+        progress.report({ message: l10n.t('Generating commit message...') })
 
-      scmInputBox.value = ''
-      await ChatGPTStreamAPI(
-        messagePrompts as ChatCompletionMessageParam[],
-        (chunk: string) => {
-          if (!controller.signal.aborted) {
-            scmInputBox.value += chunk
-          }
-        },
-        { signal: controller.signal },
-      )
-      if (!controller.signal.aborted) {
-        logger.info('Commit message generated successfully')
-      }
-    })
+        token?.onCancellationRequested(() => {
+          controller.abort()
+        })
+
+        scmInputBox.value = ''
+        await ChatGPTStreamAPI(
+          messagePrompts as ChatCompletionMessageParam[],
+          (chunk: string) => {
+            if (!controller.signal.aborted) {
+              scmInputBox.value += chunk
+            }
+          },
+          { signal: controller.signal },
+        )
+
+        if (!controller.signal.aborted) {
+          logger.info('Commit message generated successfully')
+        }
+      },
+      true,
+    )
   }
   catch (error: unknown) {
     if (shouldSilenceError(error)) {

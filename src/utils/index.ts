@@ -10,20 +10,22 @@ export class ProgressHandler {
   /**
    * 在进度通知中执行异步任务
    * @param title 进度标题
-   * @param task 要执行的异步任务，接收 progress 对象用于报告进度
+   * @param task 要执行的异步任务，接收 progress 对象和 cancellation token
+   * @param cancellable 是否允许用户取消操作
    * @returns 任务的返回值
    */
   static async withProgress<T>(
     title: string,
-    task: (progress: Progress<{ message?: string, increment?: number }>) => Promise<T>,
+    task: (progress: Progress<{ message?: string, increment?: number }>, token?: { isCancellationRequested: boolean, onCancellationRequested: (callback: () => void) => void }) => Promise<T>,
+    cancellable = false,
   ): Promise<T> {
     return window.withProgress(
       {
         location: ProgressLocation.Notification,
         title: `${title}`,
-        cancellable: false,
+        cancellable,
       },
-      progress => task(progress),
+      (progress, token) => task(progress, token),
     )
   }
 }
