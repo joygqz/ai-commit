@@ -1,3 +1,12 @@
+## [1.0.2](https://github.com/joygqz/commit-genie/compare/v1.0.1...v1.0.2) (2025-10-04)
+
+
+### Features
+
+* **config:** 添加自定义提示语配置选项 ([5c22b1e](https://github.com/joygqz/commit-genie/commit/5c22b1eb4adda949ea5cd4cadaadaa030ff6a91e))
+
+
+
 ## [1.0.1](https://github.com/joygqz/commit-genie/compare/v1.0.0...v1.0.1) (2025-10-04)
 
 
