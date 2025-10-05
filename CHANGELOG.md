@@ -1,3 +1,13 @@
+# [2.2.0](https://github.com/joygqz/commit-genie/compare/v2.1.1...v2.2.0) (2025-10-05)
+
+
+### Features
+
+* **openai:** 添加 token 使用统计和日志记录功能 ([42963f2](https://github.com/joygqz/commit-genie/commit/42963f21ba5422928a5b4a439f366dc564c033e1))
+* 添加 Token 使用统计功能 ([350170e](https://github.com/joygqz/commit-genie/commit/350170e90ede0679a61aa1e09a2509074800136e))
+
+
+
 ## [2.1.1](https://github.com/joygqz/commit-genie/compare/v2.1.0...v2.1.1) (2025-10-04)
 
 
