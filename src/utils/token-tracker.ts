@@ -31,6 +31,7 @@ export interface HistoricalStats {
 interface PersistedData {
   version: number
   totalTokens: number
+  totalPromptTokens: number
   totalCachedTokens: number
   requestCount: number
 }
@@ -52,6 +53,7 @@ class TokenTracker {
   private statusBarItem: StatusBarItem | null = null
   private lastUsage: TokenUsage | null = null
   private totalTokens = 0
+  private totalPromptTokens = 0
   private totalCachedTokens = 0
   private requestCount = 0
   private context: ExtensionContext | null = null
@@ -103,6 +105,9 @@ class TokenTracker {
       if (typeof data.totalTokens === 'number' && data.totalTokens >= 0) {
         this.totalTokens = data.totalTokens
       }
+      if (typeof data.totalPromptTokens === 'number' && data.totalPromptTokens >= 0) {
+        this.totalPromptTokens = data.totalPromptTokens
+      }
       if (typeof data.totalCachedTokens === 'number' && data.totalCachedTokens >= 0) {
         this.totalCachedTokens = data.totalCachedTokens
       }
@@ -132,6 +137,7 @@ class TokenTracker {
       const data: PersistedData = {
         version: DATA_VERSION,
         totalTokens: this.totalTokens,
+        totalPromptTokens: this.totalPromptTokens,
         totalCachedTokens: this.totalCachedTokens,
         requestCount: this.requestCount,
       }
@@ -154,6 +160,7 @@ class TokenTracker {
   updateUsage(usage: TokenUsage): void {
     this.lastUsage = usage
     this.totalTokens += usage.totalTokens
+    this.totalPromptTokens += usage.promptTokens
     this.totalCachedTokens += usage.cachedTokens || 0
     this.requestCount++
 
@@ -194,8 +201,10 @@ class TokenTracker {
     }
 
     const avgTokens = Math.round(this.totalTokens / this.requestCount)
-    const overallCacheRate = this.totalTokens > 0
-      ? ((this.totalCachedTokens / this.totalTokens) * 100).toFixed(1)
+    // 缓存命中率计算：缓存的 token 数 / 总 prompt token 数
+    // 因为缓存只针对 prompt tokens，不包括 completion tokens
+    const overallCacheRate = this.totalPromptTokens > 0
+      ? ((this.totalCachedTokens / this.totalPromptTokens) * 100).toFixed(1)
       : '0'
 
     return {
@@ -212,6 +221,7 @@ class TokenTracker {
   async reset(): Promise<void> {
     this.lastUsage = null
     this.totalTokens = 0
+    this.totalPromptTokens = 0
     this.totalCachedTokens = 0
     this.requestCount = 0
 

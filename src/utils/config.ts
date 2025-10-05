@@ -1,10 +1,6 @@
+import type { ReviewMode } from '../prompts/review'
 import { ConfigurationTarget, workspace } from 'vscode'
 import { EXTENSION_ID } from './constants'
-
-/**
- * 审查模式类型
- */
-export type ReviewMode = 'off' | 'lenient' | 'standard' | 'strict'
 
 /**
  * 服务配置接口
