@@ -1,3 +1,12 @@
+## [2.2.1](https://github.com/joygqz/commit-genie/compare/v2.2.0...v2.2.1) (2025-10-05)
+
+
+### Features
+
+* 添加 Token 使用统计持久化功能 ([40f42a0](https://github.com/joygqz/commit-genie/commit/40f42a0d90e55d6f45012cf6856a370a37a38a57))
+
+
+
 # [2.2.0](https://github.com/joygqz/commit-genie/compare/v2.1.1...v2.2.0) (2025-10-05)
 
 
