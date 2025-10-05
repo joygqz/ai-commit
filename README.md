@@ -4,135 +4,72 @@
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
 [![Rating](https://img.shields.io/visual-studio-marketplace/r/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
 
-AI-powered commit message generator with optional code review for VS Code. Generate meaningful, standard commit messages with optional pre-commit code review.
+AI-powered commit message generator with optional code review for VS Code.
 
 ## ✨ Features
 
-- 🤖 **AI-Powered**: Works with OpenAI-compatible APIs (DeepSeek, OpenAI, etc.)
-- 🔍 **Code Review**: Optional pre-commit code review with 4 modes (off/lenient/standard/strict)
-- 🌐 **Multi-Language**: Generate commit messages in 19+ languages
-- ⚡ **Real-time Streaming**: See messages being generated instantly
-- 🎨 **Emoji Support**: Optional emoji prefixes (e.g., ✨ feat, 🐛 fix)
-- ✏️ **Custom Prompts**: Add custom instructions for both review and commit
-- ❌ **Cancellable**: Stop generation anytime with the cancel button
-- 🔄 **Smart Model Selection**: Browse and switch between AI models easily
+- 🤖 **AI-Powered** - Compatible with OpenAI, DeepSeek, and other OpenAI-compatible APIs
+- 🔍 **Code Review** - Optional pre-commit review (off/lenient/standard/strict)
+- 🌐 **Multi-Language** - Generate messages in 19+ languages
+- ⚡ **Real-time** - Streaming generation with cancel support
+- 🎨 **Customizable** - Emoji support, custom prompts, model selection
 
 ## 🚀 Quick Start
 
-1. **Install** the extension from VS Code Marketplace
-2. **Configure API** (Press `Cmd/Ctrl + ,` to open Settings):
-   - Set `commit-genie.service.apiKey` (your API key)
-   - Set `commit-genie.service.baseURL` (default: `https://api.deepseek.com`)
-3. **Select Model**: Run `Commit Genie: Select Available Model` from Command Palette
-4. **Start Using**: Stage your changes and click the <img src="images/logo.png" width="16" height="16" /> icon in Source Control
+1. Install from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
+2. Configure API (Settings):
+   - `commit-genie.service.apiKey` - Your API key
+   - `commit-genie.service.baseURL` - API endpoint (default: `https://api.deepseek.com`)
+3. Select Model: Run `Commit Genie: Select Available Model`
+4. Stage changes and click the ✨ icon in Source Control
 
 ## 📋 Usage
 
-### Review and Commit (Recommended)
+1. **Stage changes** in Source Control
+2. **Click** the ✨ icon or run `Commit Genie: Review and Commit`
+3. **Review** (if enabled) - AI checks for issues, you can continue or fix
+4. **Commit** - AI generates message in real-time, edit if needed
 
-1. Stage your changes in Source Control
-2. Click the <img src="images/logo.png" width="16" height="16" /> icon or run `Commit Genie: Review and Commit`
-3. **Code Review** (if enabled):
-   - AI analyzes your changes for potential issues
-   - Shows errors/warnings with suggestions
-   - Choose to continue or fix issues
-4. **Commit Message**:
-   - Watch the AI generate your commit message in real-time
-   - Edit if needed and commit
-
-**Tips:**
-- Click cancel (×) to stop generation anytime
-- Set `review.mode` to `off` to skip code review
-- Adjust review strictness: `lenient` / `standard` / `strict`
-
-### Select Model
-
-Run `Commit Genie: Select Available Model` from Command Palette to:
-- Browse available models from your API
-- Switch to a different model
-- See which model is currently active
+**Commands:**
+- `Commit Genie: Review and Commit` - Generate commit message with optional review
+- `Commit Genie: Select Available Model` - Browse and switch AI models
 
 ## ⚙️ Configuration
 
-### Service Settings (Required)
+### Required Settings
 
-| Setting | Description | Example |
-|---------|-------------|---------|
-| `service.apiKey` ✅ | Your API key | `sk-...` |
-| `service.baseURL` ✅ | API endpoint | `https://api.deepseek.com` |
-| `service.model` | AI model name | `deepseek-chat` |
-
-**Supported API Providers:**
-- DeepSeek: `https://api.deepseek.com`
-- OpenAI: `https://api.openai.com/v1`
-- Any OpenAI-compatible API
-
-### Format Settings
-
-| Setting | Description | Default |
-|---------|-------------|---------|
-| `format.outputLanguage` | Language for messages | Simplified Chinese |
-
-### Review Settings
-
-| Setting | Description | Default |
-|---------|-------------|---------|
-| `review.mode` | Code review strictness | `standard` |
-| `review.customPrompt` | Custom review rules | (empty) |
-
-**Review Modes:**
-- `off` - Disabled, skip code review
-- `lenient` - Only critical issues (syntax errors, security, crashes)
-- `standard` - Critical + major issues (logic errors, error handling)
-- `strict` - All verifiable issues (including code quality)
-
-**Review Custom Prompt Example:**
-```
-Focus on:
-- Security vulnerabilities
-- Performance issues in database queries
-- Missing error handling
+```jsonc
+{
+  "commit-genie.service.apiKey": "sk-...", // Your API key
+  "commit-genie.service.baseURL": "https://api.deepseek.com", // API endpoint
+  "commit-genie.service.model": "deepseek-chat" // Model name
+}
 ```
 
-### Commit Settings
+**Supported Providers:** DeepSeek, OpenAI, or any OpenAI-compatible API
 
-| Setting | Description | Default |
-|---------|-------------|---------|
-| `commit.enableEmojiPrefix` | Add emoji to messages | `false` |
-| `commit.customPrompt` | Custom commit instructions | (empty) |
+### Optional Settings
 
-**Commit Custom Prompt Example:**
-```
-Always include ticket numbers in the format [JIRA-123]
-Use imperative mood for all messages
-Keep first line under 50 characters
-```
+**Format:**
+- `format.outputLanguage` - Message language (default: Simplified Chinese)
+
+**Review:**
+- `review.mode` - Review strictness: `off` / `lenient` / `standard` / `strict` (default: `standard`)
+  - `off` - Skip review
+  - `lenient` - Critical only (syntax, security, crashes)
+  - `standard` - Critical + major (logic, error handling)
+  - `strict` - All issues (including code quality)
+- `review.customPrompt` - Custom review instructions
+
+**Commit:**
+- `commit.enableEmojiPrefix` - Add emoji (e.g., ✨ feat, 🐛 fix) (default: `false`)
+- `commit.customPrompt` - Custom commit instructions
 
 ## 🌍 Supported Languages
 
-Generate commit messages in your preferred language (19 languages supported):
+English, 简体中文, 繁體中文, 日本語, 한국어, Deutsch, Français, Italiano, Nederlands, Português, Tiếng Việt, Español, Svenska, Русский, Bahasa, Polski, Türkçe, ไทย, Čeština
 
-- English
-- Simplified Chinese (简体中文)
-- Traditional Chinese (繁體中文)
-- Japanese (にほんご)
-- Korean (한국어)
-- Czech (česky)
-- German (Deutsch)
-- French (française)
-- Italian (italiano)
-- Dutch (Nederlands)
-- Portuguese (português)
-- Vietnamese (tiếng Việt)
-- Spanish (español)
-- Swedish (Svenska)
-- Russian (русский)
-- Bahasa (bahasa)
-- Polish (Polski)
-- Turkish (Turkish)
-- Thai (ไทย)
-
-##  License
+## 📝 License
 
 [MIT License](LICENSE)
 
