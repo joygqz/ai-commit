@@ -13,8 +13,8 @@ import { tokenTracker } from './utils/token-tracker'
 export function activate(context: vscode.ExtensionContext) {
   logger.info('Commit Genie extension activated')
 
-  // 初始化 Token 状态栏
-  const statusBarItem = tokenTracker.initialize()
+  // 初始化 Token 状态栏并加载持久化数据
+  const statusBarItem = tokenTracker.initialize(context)
   context.subscriptions.push(statusBarItem)
 
   /**
@@ -29,30 +29,41 @@ export function activate(context: vscode.ExtensionContext) {
     }),
   )
 
-  // 注册审查代码并生成 commit 消息命令
+  // 注册命令
   context.subscriptions.push(
+    // 审查代码并生成 commit 消息
     commands.registerCommand(
       COMMANDS.REVIEW_AND_COMMIT,
       Commands.reviewAndCommit.bind(null, context),
     ),
-    // 注册选择可用模型命令
+    // 选择可用模型
     commands.registerCommand(
       COMMANDS.SELECT_AVAILABLE_MODEL,
       Commands.selectAvailableModel,
     ),
-    // 注册显示 Token 统计命令
+    // 显示 Token 统计
     commands.registerCommand(
-      'commitGenie.showTokenStats',
+      COMMANDS.SHOW_TOKEN_STATS,
       () => tokenTracker.showDetailedStats(),
+    ),
+    // 重置 Token 统计
+    commands.registerCommand(
+      COMMANDS.RESET_TOKEN_STATS,
+      () => tokenTracker.resetWithConfirmation(),
     ),
   )
 }
 
 /**
  * 扩展注销函数
+ * VS Code 允许返回 Promise，会等待异步操作完成
  */
-export function deactivate() {
-  logger.info('Commit Genie extension deactivated')
+export async function deactivate() {
+  logger.info('Commit Genie extension deactivating')
+
+  // 确保 token 统计数据已保存
+  await tokenTracker.ensureSaved()
+
   tokenTracker.dispose()
   logger.dispose()
 }

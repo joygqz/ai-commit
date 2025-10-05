@@ -1,6 +1,8 @@
 {
   "command.reviewAndCommit.title": "审查代码并生成提交",
   "command.selectAvailableModel.title": "选择可用模型",
+  "command.showTokenStats.title": "显示 Token 使用统计",
+  "command.resetTokenStats.title": "重置 Token 使用统计",
   "configuration.service.apiKey.description": "用于 AI 服务提供商身份验证的 API 密钥。",
   "configuration.service.baseURL.description": "AI 服务 API 端点的基础 URL。",
   "configuration.service.model.description": "用于生成提交信息的 AI 模型。运行 [Commit Genie: 选择可用模型](command:commit-genie.selectAvailableModel) 从可用选项中选择。",

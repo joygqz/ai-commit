@@ -1,7 +1,8 @@
-import type { StatusBarItem } from 'vscode'
+import type { ExtensionContext, StatusBarItem } from 'vscode'
 import type { TokenUsage } from './openai'
 import { l10n, QuickPickItemKind, StatusBarAlignment, window } from 'vscode'
-import { EXTENSION_NAME } from './constants'
+import { COMMANDS, EXTENSION_NAME } from './constants'
+import { logger } from './logger'
 
 interface Stats {
   totalTokens: number
@@ -13,25 +14,127 @@ interface Stats {
   overallCacheRate: string
 }
 
+/**
+ * 持久化存储的数据结构
+ */
+interface PersistedData {
+  version: number
+  totalTokens: number
+  totalCachedTokens: number
+  requestCount: number
+}
+
+/**
+ * 当前数据版本号
+ */
+const DATA_VERSION = 1
+
+/**
+ * 存储键名
+ */
+const STORAGE_KEY = 'tokenTrackerData'
+
+/**
+ * Token 跟踪器
+ */
 class TokenTracker {
   private statusBarItem: StatusBarItem | null = null
   private lastUsage: TokenUsage | null = null
   private totalTokens = 0
   private totalCachedTokens = 0
   private requestCount = 0
+  private context: ExtensionContext | null = null
 
   /**
-   * 初始化状态栏
+   * 初始化状态栏并加载持久化数据
+   * @param context 扩展上下文，用于持久化存储
    */
-  initialize(): StatusBarItem {
+  initialize(context: ExtensionContext): StatusBarItem {
+    this.context = context
+
+    // 加载持久化数据
+    this.loadPersistedData()
+
     if (!this.statusBarItem) {
       this.statusBarItem = window.createStatusBarItem(StatusBarAlignment.Right, 100)
-      this.statusBarItem.command = 'commitGenie.showTokenStats'
+      this.statusBarItem.command = COMMANDS.SHOW_TOKEN_STATS
       this.statusBarItem.text = `$(sparkle) ${EXTENSION_NAME}`
       this.statusBarItem.tooltip = l10n.t('Click to view Token usage statistics')
       this.statusBarItem.show()
     }
     return this.statusBarItem
+  }
+
+  /**
+   * 加载持久化数据
+   */
+  private loadPersistedData(): void {
+    if (!this.context) {
+      return
+    }
+
+    try {
+      const data = this.context.globalState.get<PersistedData>(STORAGE_KEY)
+      if (!data) {
+        return
+      }
+
+      // 验证数据版本
+      if (data.version !== DATA_VERSION) {
+        logger.warn('Token tracker data version mismatch, resetting data', {
+          expected: DATA_VERSION,
+          actual: data.version,
+        })
+        return
+      }
+
+      // 验证数据完整性和类型
+      if (typeof data.totalTokens === 'number' && data.totalTokens >= 0) {
+        this.totalTokens = data.totalTokens
+      }
+      if (typeof data.totalCachedTokens === 'number' && data.totalCachedTokens >= 0) {
+        this.totalCachedTokens = data.totalCachedTokens
+      }
+      if (typeof data.requestCount === 'number' && data.requestCount >= 0) {
+        this.requestCount = data.requestCount
+      }
+
+      logger.debug('Loaded token tracker data', {
+        totalTokens: this.totalTokens,
+        requestCount: this.requestCount,
+      })
+    }
+    catch (error) {
+      logger.error('Failed to load token tracker data', error)
+    }
+  }
+
+  /**
+   * 保存持久化数据
+   */
+  private async savePersistedData(): Promise<void> {
+    if (!this.context) {
+      return
+    }
+
+    try {
+      const data: PersistedData = {
+        version: DATA_VERSION,
+        totalTokens: this.totalTokens,
+        totalCachedTokens: this.totalCachedTokens,
+        requestCount: this.requestCount,
+      }
+
+      await this.context.globalState.update(STORAGE_KEY, data)
+      logger.debug('Saved token tracker data', {
+        totalTokens: this.totalTokens,
+        requestCount: this.requestCount,
+      })
+    }
+    catch (error) {
+      logger.error('Failed to save token tracker data', error)
+      throw error
+    }
   }
 
   /**
@@ -42,6 +145,9 @@ class TokenTracker {
     this.totalTokens += usage.totalTokens
     this.totalCachedTokens += usage.cachedTokens || 0
     this.requestCount++
+
+    // 错误已在 savePersistedData 中记录，这里静默处理不影响主流程继续执行
+    this.savePersistedData().catch(() => {})
   }
 
   /**
@@ -77,13 +183,45 @@ class TokenTracker {
   }
 
   /**
+   * 重置统计（带确认）
+   */
+  async resetWithConfirmation(): Promise<void> {
+    const confirmed = await window.showWarningMessage(
+      l10n.t('Are you sure you want to reset all Token usage statistics?'),
+      { modal: true },
+      l10n.t('Reset'),
+    )
+
+    if (confirmed) {
+      await this.reset()
+      window.showInformationMessage(l10n.t('Token usage statistics have been reset'))
+    }
+  }
+
+  /**
    * 重置统计
    */
-  reset(): void {
+  async reset(): Promise<void> {
     this.lastUsage = null
     this.totalTokens = 0
     this.totalCachedTokens = 0
     this.requestCount = 0
+
+    // 清除持久化数据
+    await this.savePersistedData()
+  }
+
+  /**
+   * 在扩展停用前调用此方法以确保所有数据已持久化
+   */
+  async ensureSaved(): Promise<void> {
+    try {
+      await this.savePersistedData()
+      logger.info('Token tracker data saved on deactivate')
+    }
+    catch (error) {
+      logger.error('Failed to save token tracker data on deactivate', error)
+    }
   }
 
   /**

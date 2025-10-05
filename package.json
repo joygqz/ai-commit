@@ -65,6 +65,9 @@
   "engines": {
     "vscode": "^1.75.0"
   },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "contributes": {
     "commands": [
       {
@@ -80,6 +83,16 @@
         "category": "Commit Genie",
         "command": "commit-genie.selectAvailableModel",
         "title": "%command.selectAvailableModel.title%"
+      },
+      {
+        "category": "Commit Genie",
+        "command": "commit-genie.showTokenStats",
+        "title": "%command.showTokenStats.title%"
+      },
+      {
+        "category": "Commit Genie",
+        "command": "commit-genie.resetTokenStats",
+        "title": "%command.resetTokenStats.title%"
       }
     ],
     "configuration": [

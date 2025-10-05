@@ -33,6 +33,8 @@ AI-powered commit message generator with optional code review for VS Code.
 **Commands:**
 - `Commit Genie: Review and Commit` - Generate commit message with optional review
 - `Commit Genie: Select Available Model` - Browse and switch AI models
+- `Commit Genie: Show Token Usage Statistics` - View token usage stats
+- `Commit Genie: Reset Token Usage Statistics` - Clear all token statistics
 
 ## ⚙️ Configuration
 

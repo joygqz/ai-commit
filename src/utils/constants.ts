@@ -16,6 +16,10 @@ export const COMMANDS = {
   REVIEW_AND_COMMIT: `${EXTENSION_ID}.reviewAndCommit`,
   /** 选择可用模型命令 */
   SELECT_AVAILABLE_MODEL: `${EXTENSION_ID}.selectAvailableModel`,
+  /** 显示 Token 统计命令 */
+  SHOW_TOKEN_STATS: `${EXTENSION_ID}.showTokenStats`,
+  /** 重置 Token 统计命令 */
+  RESET_TOKEN_STATS: `${EXTENSION_ID}.resetTokenStats`,
 } as const
 
 /**
