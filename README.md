@@ -1,8 +1,9 @@
 # Commit Genie
 
-[![Version](https://img.shields.io/visual-studio-marketplace/v/joygqz.commit-genie?style=flat-square&logo=visual-studio-code&label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
-[![Installs](https://img.shields.io/visual-studio-marketplace/i/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
-[![Rating](https://img.shields.io/visual-studio-marketplace/r/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
+[![GitHub last commit](https://img.shields.io/github/last-commit/joygqz/commit-genie)](https://github.com/joygqz/commit-genie)
+[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/joygqz.commit-genie)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
+[![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/joygqz.commit-genie)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
+[![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/joygqz.commit-genie)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
 
 AI-powered commit message generator with optional code review for VS Code.
 
