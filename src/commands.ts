@@ -218,7 +218,7 @@ async function showTokenStats() {
 
       // 只有缓存 token 大于 0 时才显示缓存行
       if (currentStats.cachedTokens > 0) {
-        items.push({ label: l10n.t('Cache: {0}%', currentStats.cacheHitRate), detail: l10n.t('Prompt cache used, saving costs') })
+        items.push({ label: l10n.t('Cache: {0}%', currentStats.cacheHitRate), detail: l10n.t('Prompt cache hit rate') })
       }
     }
 
@@ -228,7 +228,7 @@ async function showTokenStats() {
       { label: l10n.t('Requests: {0} count', historicalStats.requestCount), detail: l10n.t('Total API calls made') },
       { label: l10n.t('Total: {0} token', historicalStats.totalTokens), detail: l10n.t('Total tokens used') },
       { label: l10n.t('Average: {0} token/request', historicalStats.avgTokens), detail: l10n.t('Average tokens per request') },
-      { label: l10n.t('Cache: {0}%', historicalStats.overallCacheRate), detail: l10n.t('Cumulative cache hit rate') },
+      { label: l10n.t('Cache: {0}%', historicalStats.overallCacheRate), detail: l10n.t('Prompt cache hit rate') },
     )
 
     // 显示统计信息

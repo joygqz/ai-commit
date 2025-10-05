@@ -179,8 +179,8 @@ class TokenTracker {
 
     const { totalTokens, promptTokens, completionTokens, cachedTokens = 0 } = this.lastUsage
     const cacheHitRate = cachedTokens > 0 && promptTokens > 0
-      ? ((cachedTokens / promptTokens) * 100).toFixed(0)
-      : '0'
+      ? ((cachedTokens / promptTokens) * 100).toFixed(1)
+      : '0.0'
 
     return {
       totalTokens,
