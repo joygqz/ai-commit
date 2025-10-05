@@ -1,3 +1,13 @@
+## [2.2.3](https://github.com/joygqz/commit-genie/compare/v2.2.2...v2.2.3) (2025-10-05)
+
+
+### Bug Fixes
+
+* **commands:** 修复 SCM 输入框获取时的空值判断逻辑 ([4349012](https://github.com/joygqz/commit-genie/commit/434901235c9636dc345a7f6d1fc5073eadd8996e))
+* **commands:** 修复 showTokenStats 函数异步调用问题 ([38f255a](https://github.com/joygqz/commit-genie/commit/38f255a66f81e20af551fcd3fd3e6a2fb8f91a78))
+
+
+
 ## [2.2.2](https://github.com/joygqz/commit-genie/compare/v2.2.1...v2.2.2) (2025-10-05)
 
 
