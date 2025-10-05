@@ -50,7 +50,7 @@ async function reviewAndCommit(context: ExtensionContext) {
     logger.debug('Retrieved staged changes', { diffLength: diff.length })
 
     // 获取 SCM 输入框
-    const scmInputBox = repo?.inputBox
+    const scmInputBox = repo.inputBox
     if (!scmInputBox) {
       throw new Error(l10n.t('Unable to find SCM input box.'))
     }
