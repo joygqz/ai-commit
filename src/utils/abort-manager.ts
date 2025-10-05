@@ -1,7 +1,3 @@
-/**
- * AbortController 管理器
- * 用于管理异步操作的中止控制
- */
 export class AbortManager {
   private currentController: AbortController | null = null
 

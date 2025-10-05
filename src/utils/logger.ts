@@ -2,10 +2,6 @@ import type { LogOutputChannel } from 'vscode'
 import { window } from 'vscode'
 import { EXTENSION_NAME } from './constants'
 
-/**
- * VS Code 日志输出通道
- * 使用官方 LogOutputChannel API，日志级别由 VS Code 统一控制
- */
 const outputChannel: LogOutputChannel = window.createOutputChannel(EXTENSION_NAME, { log: true })
 
 /**

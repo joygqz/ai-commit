@@ -58,7 +58,7 @@ async function reviewAndCommit(context: ExtensionContext) {
     const reviewConfig = config.getReviewConfig()
     const reviewMode = reviewConfig.mode
 
-    // 第一步：执行代码 review（如果未关闭）
+    // 执行代码 review
     if (reviewMode !== 'off') {
       const reviewResult = await ProgressHandler.withProgress(
         '',
@@ -87,7 +87,7 @@ async function reviewAndCommit(context: ExtensionContext) {
       logger.info('Code review is disabled (mode: off)')
     }
 
-    // 第二步：生成 commit 消息
+    // 生成 commit 消息
     await ProgressHandler.withProgress(
       '',
       async (progress, token) => {
