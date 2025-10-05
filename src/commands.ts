@@ -191,7 +191,7 @@ async function selectAvailableModel() {
 /**
  * 显示 Token 使用统计命令
  */
-function showTokenStats() {
+async function showTokenStats() {
   try {
     logger.debug('Showing token usage statistics')
 
@@ -232,7 +232,7 @@ function showTokenStats() {
     )
 
     // 显示统计信息
-    window.showQuickPick(items, {
+    await window.showQuickPick(items, {
       title: l10n.t('Token Usage Statistics'),
       placeHolder: l10n.t('Press ESC to close'),
     })
