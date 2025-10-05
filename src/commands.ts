@@ -207,28 +207,28 @@ async function showTokenStats() {
     // 构建统计项列表
     const items: Array<{ label: string, detail?: string, kind?: QuickPickItemKind }> = []
 
-    // 如果有当前请求的统计数据，添加当前请求部分
+    // 如果有当前请求的统计数据,添加当前请求部分
     if (currentStats) {
       items.push(
         { label: `${l10n.t('Current Request')}`, kind: QuickPickItemKind.Separator },
-        { label: l10n.t('Total: {0} token', currentStats.totalTokens), detail: l10n.t('Total tokens used in this request') },
-        { label: l10n.t('Prompt: {0} token', currentStats.promptTokens), detail: l10n.t('Tokens in the prompt sent to AI') },
-        { label: l10n.t('Completion: {0} token', currentStats.completionTokens), detail: l10n.t('Tokens in the AI response') },
+        { label: l10n.t('Total Tokens: {0}', currentStats.totalTokens) },
+        { label: l10n.t('Prompt Tokens: {0}', currentStats.promptTokens) },
+        { label: l10n.t('Completion Tokens: {0}', currentStats.completionTokens) },
       )
 
       // 只有缓存 token 大于 0 时才显示缓存行
       if (currentStats.cachedTokens > 0) {
-        items.push({ label: l10n.t('Cache: {0}%', currentStats.cacheHitRate), detail: l10n.t('Prompt cache hit rate') })
+        items.push({ label: l10n.t('Cache Hit Rate: {0}%', currentStats.cacheHitRate) })
       }
     }
 
     // 添加累计统计部分
     items.push(
       { label: `${l10n.t('Cumulative Statistics')}`, kind: QuickPickItemKind.Separator },
-      { label: l10n.t('Requests: {0} count', historicalStats.requestCount), detail: l10n.t('Total API calls made') },
-      { label: l10n.t('Total: {0} token', historicalStats.totalTokens), detail: l10n.t('Total tokens used') },
-      { label: l10n.t('Average: {0} token/request', historicalStats.avgTokens), detail: l10n.t('Average tokens per request') },
-      { label: l10n.t('Cache: {0}%', historicalStats.overallCacheRate), detail: l10n.t('Prompt cache hit rate') },
+      { label: l10n.t('Total Requests: {0}', historicalStats.requestCount) },
+      { label: l10n.t('Total Tokens: {0}', historicalStats.totalTokens) },
+      { label: l10n.t('Average Tokens per Request: {0}', historicalStats.avgTokens) },
+      { label: l10n.t('Overall Cache Hit Rate: {0}%', historicalStats.overallCacheRate) },
     )
 
     // 显示统计信息
