@@ -23,14 +23,19 @@ export class ReviewService {
     logger.info('Starting code review', { mode })
 
     const reviewPrompts = await generateCodeReviewPrompt(diff, mode)
-    const reviewResponse = await ChatGPTAPI(
+
+    // 调用 API 并获取响应内容和 token 使用统计
+    const apiResult = await ChatGPTAPI(
       reviewPrompts as ChatCompletionMessageParam[],
       { signal },
     )
 
-    logger.debug('Code review response received', { response: reviewResponse })
+    logger.debug('Code review response received', {
+      contentLength: apiResult.content.length,
+      hasUsage: !!apiResult.usage,
+    })
 
-    return this.parseReviewResponse(reviewResponse)
+    return this.parseReviewResponse(apiResult.content)
   }
 
   /**
@@ -42,7 +47,7 @@ export class ReviewService {
     try {
       let jsonStr = response.trim()
 
-      // 移除 markdown 代码块标记
+      // 移除 Markdown 代码块标记
       if (jsonStr.includes('```')) {
         const startIdx = jsonStr.indexOf('{')
         const endIdx = jsonStr.lastIndexOf('}')

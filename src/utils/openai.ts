@@ -2,6 +2,7 @@ import type { ChatCompletionMessageParam } from 'openai/resources'
 import OpenAI from 'openai'
 import { config } from './config'
 import { API_CONFIG } from './constants'
+import { logger } from './logger'
 
 /**
  * OpenAI 客户端缓存
@@ -60,20 +61,52 @@ export function clearOpenAICache(): void {
 }
 
 /**
+ * Token 使用统计接口
+ */
+export interface TokenUsage {
+  promptTokens: number
+  completionTokens: number
+  totalTokens: number
+  cachedTokens?: number
+}
+
+/**
+ * 记录 token 使用信息到日志
+ * @param usage Token 使用统计
+ */
+function logTokenUsage(usage: TokenUsage): void {
+  const parts: string[] = []
+
+  // 基础 token 信息
+  parts.push(`Token Usage: ${usage.totalTokens} total`)
+  parts.push(`(${usage.promptTokens} prompt + ${usage.completionTokens} completion)`)
+
+  // 缓存信息
+  if (usage.cachedTokens && usage.cachedTokens > 0) {
+    const cacheHitRate = ((usage.cachedTokens / usage.promptTokens) * 100).toFixed(1)
+    const cacheMissTokens = usage.promptTokens - usage.cachedTokens
+    parts.push(`| Cache Hit: ${usage.cachedTokens} tokens (${cacheHitRate}%)`)
+    parts.push(`Miss: ${cacheMissTokens} tokens`)
+  }
+
+  logger.info(parts.join(' '))
+}
+
+/**
  * 调用 ChatGPT 流式 API
  * @param messages 聊天消息数组，包含系统提示和用户输入
  * @param onChunk 每次接收到内容块时的回调函数
  * @param options 可选配置对象
  * @param options.signal 可选的中止信号，用于取消请求
  * @param options.timeout 请求超时时间（毫秒），默认 60 秒
- * @returns 完整的响应内容
+ * @returns 包含完整响应内容和 token 使用统计的对象
  * @throws 如果请求失败则抛出错误（中止除外）
  */
 export async function ChatGPTStreamAPI(
   messages: ChatCompletionMessageParam[],
   onChunk: (chunk: string) => void,
   options: { signal?: AbortSignal, timeout?: number } = {},
-): Promise<string> {
+): Promise<{ content: string, usage?: TokenUsage }> {
   const { signal, timeout = API_CONFIG.DEFAULT_TIMEOUT } = options
   const openai = createOpenAIApi()
   const { model } = config.getServiceConfig()
@@ -95,9 +128,11 @@ export async function ChatGPTStreamAPI(
       messages: messages as ChatCompletionMessageParam[],
       temperature,
       stream: true,
+      stream_options: { include_usage: true },
     }, { signal: combinedSignal })
 
     let fullContent = ''
+    let usage: TokenUsage | undefined
 
     try {
       // 迭代处理流式响应
@@ -110,17 +145,33 @@ export async function ChatGPTStreamAPI(
           fullContent += content
           onChunk(content)
         }
+
+        // 捕获最后一个 chunk 中的 usage 信息
+        if (chunk.usage) {
+          const rawUsage = chunk.usage as any
+          usage = {
+            promptTokens: rawUsage.prompt_tokens || 0,
+            completionTokens: rawUsage.completion_tokens || 0,
+            totalTokens: rawUsage.total_tokens || 0,
+            cachedTokens: rawUsage.prompt_tokens_details?.cached_tokens || 0,
+          }
+        }
       }
     }
     catch (error) {
       // 如果是中止操作，返回已接收的内容
       if (combinedSignal?.aborted) {
-        return fullContent
+        return { content: fullContent, usage }
       }
       throw error
     }
 
-    return fullContent
+    // 记录 token 使用信息
+    if (usage) {
+      logTokenUsage(usage)
+    }
+
+    return { content: fullContent, usage }
   }
   finally {
     // 清理超时定时器
@@ -134,13 +185,13 @@ export async function ChatGPTStreamAPI(
  * @param options 可选配置对象
  * @param options.signal 可选的中止信号，用于取消请求
  * @param options.timeout 请求超时时间（毫秒），默认 60 秒
- * @returns 完整的响应内容
+ * @returns 包含完整响应内容和 token 使用统计的对象
  * @throws 如果请求失败则抛出错误（中止除外）
  */
 export async function ChatGPTAPI(
   messages: ChatCompletionMessageParam[],
   options: { signal?: AbortSignal, timeout?: number } = {},
-): Promise<string> {
+): Promise<{ content: string, usage?: TokenUsage }> {
   const { signal, timeout = API_CONFIG.DEFAULT_TIMEOUT } = options
   const openai = createOpenAIApi()
   const { model } = config.getServiceConfig()
@@ -164,7 +215,33 @@ export async function ChatGPTAPI(
       stream: false,
     }, { signal: combinedSignal })
 
-    return response.choices[0]?.message?.content || ''
+    // 提取 token 使用情况
+    let usage: TokenUsage | undefined
+    if (response.usage) {
+      const rawUsage = response.usage as any
+
+      // 支持 OpenAI 和 DeepSeek 两种格式
+      const cachedTokens = rawUsage.prompt_tokens_details?.cached_tokens
+        || rawUsage.prompt_cache_hit_tokens
+        || 0
+
+      usage = {
+        promptTokens: rawUsage.prompt_tokens || 0,
+        completionTokens: rawUsage.completion_tokens || 0,
+        totalTokens: rawUsage.total_tokens || 0,
+        cachedTokens,
+      }
+    }
+
+    // 记录 token 使用信息
+    if (usage) {
+      logTokenUsage(usage)
+    }
+
+    return {
+      content: response.choices[0]?.message?.content || '',
+      usage,
+    }
   }
   finally {
     // 清理超时定时器
