@@ -3,7 +3,7 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/joygqz/commit-genie?style=flat-square)](https://github.com/joygqz/commit-genie)
 [![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
 [![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
-[![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
+[![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie&ssr=false#review-details)
 
 AI-powered commit message generator with optional code review for VS Code.
 
