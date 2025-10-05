@@ -4,6 +4,7 @@ import * as Commands from './commands'
 import { COMMANDS, EXTENSION_ID } from './utils/constants'
 import { logger } from './utils/logger'
 import { clearOpenAICache } from './utils/openai'
+import { tokenTracker } from './utils/token-tracker'
 
 /**
  * 扩展激活函数
@@ -11,6 +12,10 @@ import { clearOpenAICache } from './utils/openai'
  */
 export function activate(context: vscode.ExtensionContext) {
   logger.info('Commit Genie extension activated')
+
+  // 初始化 Token 状态栏
+  const statusBarItem = tokenTracker.initialize()
+  context.subscriptions.push(statusBarItem)
 
   /**
    * 监听配置变更
@@ -35,6 +40,11 @@ export function activate(context: vscode.ExtensionContext) {
       COMMANDS.SELECT_AVAILABLE_MODEL,
       Commands.selectAvailableModel,
     ),
+    // 注册显示 Token 统计命令
+    commands.registerCommand(
+      'commitGenie.showTokenStats',
+      () => tokenTracker.showDetailedStats(),
+    ),
   )
 }
 
@@ -43,5 +53,6 @@ export function activate(context: vscode.ExtensionContext) {
  */
 export function deactivate() {
   logger.info('Commit Genie extension deactivated')
+  tokenTracker.dispose()
   logger.dispose()
 }

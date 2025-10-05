@@ -3,6 +3,7 @@ import OpenAI from 'openai'
 import { config } from './config'
 import { API_CONFIG } from './constants'
 import { logger } from './logger'
+import { tokenTracker } from './token-tracker'
 
 /**
  * OpenAI 客户端缓存
@@ -71,10 +72,11 @@ export interface TokenUsage {
 }
 
 /**
- * 记录 token 使用信息到日志
+ * 记录并显示 token 使用信息
+ * 将信息写入日志并更新状态栏显示
  * @param usage Token 使用统计
  */
-function logTokenUsage(usage: TokenUsage): void {
+function recordTokenUsage(usage: TokenUsage): void {
   const parts: string[] = []
 
   // 基础 token 信息
@@ -90,6 +92,9 @@ function logTokenUsage(usage: TokenUsage): void {
   }
 
   logger.info(parts.join(' '))
+
+  // 更新状态栏显示
+  tokenTracker.updateUsage(usage)
 }
 
 /**
@@ -168,7 +173,7 @@ export async function ChatGPTStreamAPI(
 
     // 记录 token 使用信息
     if (usage) {
-      logTokenUsage(usage)
+      recordTokenUsage(usage)
     }
 
     return { content: fullContent, usage }
@@ -235,7 +240,7 @@ export async function ChatGPTAPI(
 
     // 记录 token 使用信息
     if (usage) {
-      logTokenUsage(usage)
+      recordTokenUsage(usage)
     }
 
     return {
