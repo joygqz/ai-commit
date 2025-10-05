@@ -44,12 +44,12 @@ export function activate(context: vscode.ExtensionContext) {
     // 显示 Token 统计
     commands.registerCommand(
       COMMANDS.SHOW_TOKEN_STATS,
-      () => tokenTracker.showDetailedStats(),
+      Commands.showTokenStats,
     ),
     // 重置 Token 统计
     commands.registerCommand(
       COMMANDS.RESET_TOKEN_STATS,
-      () => tokenTracker.resetWithConfirmation(),
+      Commands.resetTokenStats,
     ),
   )
 }

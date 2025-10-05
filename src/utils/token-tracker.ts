@@ -1,15 +1,26 @@
 import type { ExtensionContext, StatusBarItem } from 'vscode'
 import type { TokenUsage } from './openai'
-import { l10n, QuickPickItemKind, StatusBarAlignment, window } from 'vscode'
+import { l10n, StatusBarAlignment, window } from 'vscode'
 import { COMMANDS, EXTENSION_NAME } from './constants'
 import { logger } from './logger'
 
-interface Stats {
+/**
+ * 当前请求统计数据
+ */
+export interface CurrentStats {
   totalTokens: number
   promptTokens: number
   completionTokens: number
   cachedTokens: number
   cacheHitRate: string
+}
+
+/**
+ * 历史累计统计数据
+ */
+export interface HistoricalStats {
+  requestCount: number
+  totalTokens: number
   avgTokens: number
   overallCacheRate: string
 }
@@ -151,55 +162,52 @@ class TokenTracker {
   }
 
   /**
-   * 显示详细统计
+   * 获取当前请求的统计数据
+   * @returns 当前请求统计，如果没有则返回 null
    */
-  showDetailedStats(): void {
-    const stats = this.calculateStats()
-
-    if (!stats) {
-      window.showInformationMessage(l10n.t('No Token usage records'))
-      return
+  getCurrentStats(): CurrentStats | null {
+    if (!this.lastUsage) {
+      return null
     }
 
-    const items = [
-      { label: `${l10n.t('Current Request')}`, kind: QuickPickItemKind.Separator },
-      { label: l10n.t('Total: {0} token', stats.totalTokens), detail: l10n.t('Total tokens used in this request') },
-      { label: l10n.t('Prompt: {0} token', stats.promptTokens), detail: l10n.t('Tokens in the prompt sent to AI') },
-      { label: l10n.t('Completion: {0} token', stats.completionTokens), detail: l10n.t('Tokens in the AI response') },
-      ...(stats.cachedTokens > 0
-        ? [{ label: l10n.t('Cache: {0}%', stats.cacheHitRate), detail: l10n.t('Prompt cache used, saving costs') }]
-        : []),
-      { label: `${l10n.t('Cumulative Statistics')}`, kind: QuickPickItemKind.Separator },
-      { label: l10n.t('Requests: {0} count', this.requestCount), detail: l10n.t('Total API calls made') },
-      { label: l10n.t('Total: {0} token', this.totalTokens), detail: l10n.t('Total tokens used') },
-      { label: l10n.t('Average: {0} token/request', stats.avgTokens), detail: l10n.t('Average tokens per request') },
-      { label: l10n.t('Cache: {0}%', stats.overallCacheRate), detail: l10n.t('Cumulative cache hit rate') },
-    ]
+    const { totalTokens, promptTokens, completionTokens, cachedTokens = 0 } = this.lastUsage
+    const cacheHitRate = cachedTokens > 0 && promptTokens > 0
+      ? ((cachedTokens / promptTokens) * 100).toFixed(0)
+      : '0'
 
-    window.showQuickPick(items, {
-      title: l10n.t('Token Usage Statistics'),
-      placeHolder: l10n.t('Press ESC to close'),
-    })
-  }
-
-  /**
-   * 重置统计（带确认）
-   */
-  async resetWithConfirmation(): Promise<void> {
-    const confirmed = await window.showWarningMessage(
-      l10n.t('Are you sure you want to reset all Token usage statistics?'),
-      { modal: true },
-      l10n.t('Reset'),
-    )
-
-    if (confirmed) {
-      await this.reset()
-      window.showInformationMessage(l10n.t('Token usage statistics have been reset'))
+    return {
+      totalTokens,
+      promptTokens,
+      completionTokens,
+      cachedTokens,
+      cacheHitRate,
     }
   }
 
   /**
-   * 重置统计
+   * 获取历史累计统计数据
+   * @returns 历史统计，如果没有则返回 null
+   */
+  getHistoricalStats(): HistoricalStats | null {
+    if (this.requestCount === 0) {
+      return null
+    }
+
+    const avgTokens = Math.round(this.totalTokens / this.requestCount)
+    const overallCacheRate = this.totalTokens > 0
+      ? ((this.totalCachedTokens / this.totalTokens) * 100).toFixed(1)
+      : '0'
+
+    return {
+      requestCount: this.requestCount,
+      totalTokens: this.totalTokens,
+      avgTokens,
+      overallCacheRate,
+    }
+  }
+
+  /**
+   * 重置所有统计数据
    */
   async reset(): Promise<void> {
     this.lastUsage = null
@@ -207,8 +215,8 @@ class TokenTracker {
     this.totalCachedTokens = 0
     this.requestCount = 0
 
-    // 清除持久化数据
     await this.savePersistedData()
+    logger.info('Token tracker data reset')
   }
 
   /**
@@ -230,27 +238,6 @@ class TokenTracker {
   dispose(): void {
     this.statusBarItem?.dispose()
     this.statusBarItem = null
-  }
-
-  /**
-   * 计算统计数据
-   */
-  private calculateStats(): Stats | null {
-    if (!this.lastUsage) {
-      return null
-    }
-
-    const { totalTokens, promptTokens, completionTokens, cachedTokens = 0 } = this.lastUsage
-
-    return {
-      totalTokens,
-      promptTokens,
-      completionTokens,
-      cachedTokens,
-      cacheHitRate: cachedTokens > 0 && promptTokens > 0 ? ((cachedTokens / promptTokens) * 100).toFixed(0) : '0',
-      avgTokens: this.requestCount > 0 ? Math.round(this.totalTokens / this.requestCount) : 0,
-      overallCacheRate: this.totalTokens > 0 ? ((this.totalCachedTokens / this.totalTokens) * 100).toFixed(1) : '0',
-    }
   }
 }
 

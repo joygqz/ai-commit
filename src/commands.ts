@@ -1,5 +1,5 @@
 import type { ExtensionContext } from 'vscode'
-import { ConfigurationTarget, l10n, window } from 'vscode'
+import { ConfigurationTarget, l10n, QuickPickItemKind, window } from 'vscode'
 import { CommitMessageService } from './service/commit'
 import { ReviewService } from './service/review'
 import { AbortManager } from './utils/abort-manager'
@@ -9,6 +9,7 @@ import { getDiffStaged, getRepo } from './utils/git'
 import { logger, ProgressHandler, validateConfig } from './utils/index'
 import { getAvailableModels } from './utils/openai'
 import { showReviewResultAndAskToContinue } from './utils/review-dialog'
+import { tokenTracker } from './utils/token-tracker'
 
 /**
  * AbortController 管理器实例
@@ -187,5 +188,100 @@ async function selectAvailableModel() {
   }
 }
 
+/**
+ * 显示 Token 使用统计命令
+ */
+function showTokenStats() {
+  try {
+    logger.debug('Showing token usage statistics')
+
+    const currentStats = tokenTracker.getCurrentStats()
+    const historicalStats = tokenTracker.getHistoricalStats()
+
+    // 如果有当前请求的统计数据，显示详细信息
+    if (currentStats && historicalStats) {
+      const items = [
+        { label: `${l10n.t('Current Request')}`, kind: QuickPickItemKind.Separator },
+        { label: l10n.t('Total: {0} token', currentStats.totalTokens), detail: l10n.t('Total tokens used in this request') },
+        { label: l10n.t('Prompt: {0} token', currentStats.promptTokens), detail: l10n.t('Tokens in the prompt sent to AI') },
+        { label: l10n.t('Completion: {0} token', currentStats.completionTokens), detail: l10n.t('Tokens in the AI response') },
+        ...(currentStats.cachedTokens > 0
+          ? [{ label: l10n.t('Cache: {0}%', currentStats.cacheHitRate), detail: l10n.t('Prompt cache used, saving costs') }]
+          : []),
+        { label: `${l10n.t('Cumulative Statistics')}`, kind: QuickPickItemKind.Separator },
+        { label: l10n.t('Requests: {0} count', historicalStats.requestCount), detail: l10n.t('Total API calls made') },
+        { label: l10n.t('Total: {0} token', historicalStats.totalTokens), detail: l10n.t('Total tokens used') },
+        { label: l10n.t('Average: {0} token/request', historicalStats.avgTokens), detail: l10n.t('Average tokens per request') },
+        { label: l10n.t('Cache: {0}%', historicalStats.overallCacheRate), detail: l10n.t('Cumulative cache hit rate') },
+      ]
+
+      window.showQuickPick(items, {
+        title: l10n.t('Token Usage Statistics'),
+        placeHolder: l10n.t('Press ESC to close'),
+      })
+      return
+    }
+
+    // 如果只有历史累计数据，只显示累计统计
+    if (historicalStats) {
+      const items = [
+        { label: `${l10n.t('Cumulative Statistics')}`, kind: QuickPickItemKind.Separator },
+        { label: l10n.t('Requests: {0} count', historicalStats.requestCount), detail: l10n.t('Total API calls made') },
+        { label: l10n.t('Total: {0} token', historicalStats.totalTokens), detail: l10n.t('Total tokens used') },
+        { label: l10n.t('Average: {0} token/request', historicalStats.avgTokens), detail: l10n.t('Average tokens per request') },
+        { label: l10n.t('Cache: {0}%', historicalStats.overallCacheRate), detail: l10n.t('Cumulative cache hit rate') },
+      ]
+
+      window.showQuickPick(items, {
+        title: l10n.t('Token Usage Statistics'),
+        placeHolder: l10n.t('Press ESC to close'),
+      })
+      return
+    }
+
+    // 没有任何数据，显示提示信息
+    window.showInformationMessage(l10n.t('No Token usage records'))
+  }
+  catch (error: unknown) {
+    logger.error('Failed to show token stats', error)
+    const message = getUserFriendlyErrorMessage(error)
+    window.showErrorMessage(message)
+  }
+}
+
+/**
+ * 重置 Token 使用统计命令
+ */
+async function resetTokenStats() {
+  try {
+    logger.info('Requesting to reset token usage statistics')
+
+    const confirmed = await window.showWarningMessage(
+      l10n.t('Are you sure you want to reset all Token usage statistics?'),
+      { modal: true },
+      l10n.t('Reset'),
+    )
+
+    if (confirmed) {
+      await tokenTracker.reset()
+      window.showInformationMessage(l10n.t('Token usage statistics have been reset'))
+      logger.info('Token usage statistics reset successfully')
+    }
+    else {
+      logger.debug('Token usage statistics reset cancelled by user')
+    }
+  }
+  catch (error: unknown) {
+    logger.error('Failed to reset token stats', error)
+    const message = getUserFriendlyErrorMessage(error)
+    window.showErrorMessage(message)
+  }
+}
+
 // 导出命令函数供扩展入口文件使用
-export { reviewAndCommit, selectAvailableModel }
+export {
+  resetTokenStats,
+  reviewAndCommit,
+  selectAvailableModel,
+  showTokenStats,
+}

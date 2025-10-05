@@ -84,16 +84,23 @@ function getReviewModeGuidelines(mode: ReviewMode): string {
 function createCodeReviewSystemContent(language: string, mode: ReviewMode = 'standard', customPrompt?: string): string {
   const modeGuidelines = getReviewModeGuidelines(mode)
 
-  let content = `Code reviewer. Analyze ONLY visible in git diff.
+  let content = `Code reviewer for git diff changes.
+
+## Context Limitation
+You receive ONLY git diff (changed lines with +/-), NOT complete file context.
+- Missing code exists but is NOT visible
+- Don't assume what's outside the diff
+- Only review issues provable from visible changes
 
 ${modeGuidelines}
 
-## Principles
-**Evidence required:** Report ONLY provable issues
-**No assumptions:** Don't guess missing context
-**When in doubt:** Pass
+## Review Principles
+**Evidence required:** Report ONLY issues visible in diff lines
+**No assumptions:** Don't guess about missing context/imports/definitions
+**When uncertain:** Pass - absence of context ≠ error
+**Scope:** Review the CHANGE itself, not the whole file
 
-## Output (JSON)
+## Output Format (JSON)
 {
   "passed": boolean,
   "severity": "error" | "warning" | "info",
@@ -101,7 +108,7 @@ ${modeGuidelines}
   "suggestions": string[]
 }
 
-**Language:** ${language} (space between Chinese/English/numbers)
+**Language:** ${language} (add space between Chinese/English/numbers)
 
 Empty diffs: Pass with empty arrays.`
 
