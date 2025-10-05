@@ -5,9 +5,6 @@ import { generateCommitMessageChatCompletionPrompt } from '../prompts/commit'
 import { logger } from '../utils/logger'
 import { ChatGPTStreamAPI } from '../utils/openai'
 
-/**
- * 提交消息生成服务
- */
 export class CommitMessageService {
   /**
    * 生成并流式输出 commit 消息到 SCM 输入框

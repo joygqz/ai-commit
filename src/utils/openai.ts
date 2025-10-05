@@ -72,8 +72,7 @@ export interface TokenUsage {
 }
 
 /**
- * 记录并显示 token 使用信息
- * 将信息写入日志并更新状态栏显示
+ * 记录 token 使用信息
  * @param usage Token 使用统计
  */
 function recordTokenUsage(usage: TokenUsage): void {
@@ -258,7 +257,7 @@ export async function ChatGPTAPI(
  * 获取可用的模型列表
  * @returns 模型 ID 数组
  */
-export async function showModels() {
+export async function getAvailableModels() {
   const openai = createOpenAIApi()
   const models = await openai.models.list()
   const modelNames = models.data.map(model => model.id)

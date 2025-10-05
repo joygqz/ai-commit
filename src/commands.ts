@@ -7,7 +7,7 @@ import { config } from './utils/config'
 import { getUserFriendlyErrorMessage, shouldSilenceError } from './utils/error-handler'
 import { getDiffStaged, getRepo } from './utils/git'
 import { logger, ProgressHandler, validateConfig } from './utils/index'
-import { showModels } from './utils/openai'
+import { getAvailableModels } from './utils/openai'
 import { showReviewResultAndAskToContinue } from './utils/review-dialog'
 
 /**
@@ -145,7 +145,7 @@ async function selectAvailableModel() {
     }
 
     // 从 API 获取可用模型列表
-    const models = await showModels()
+    const models = await getAvailableModels()
 
     logger.debug('Retrieved models', { count: models.length, models })
 

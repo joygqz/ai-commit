@@ -4,9 +4,6 @@ import { generateCodeReviewPrompt } from '../prompts/review'
 import { logger } from '../utils/logger'
 import { ChatGPTAPI } from '../utils/openai'
 
-/**
- * 代码审查服务
- */
 export class ReviewService {
   /**
    * 执行代码 review

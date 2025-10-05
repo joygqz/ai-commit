@@ -38,10 +38,6 @@ export interface ReviewConfig {
   customPrompt: string
 }
 
-/**
- * 配置管理器类
- * 提供类型安全的配置访问和更新方法
- */
 class ConfigManager {
   private readonly section = EXTENSION_ID
 

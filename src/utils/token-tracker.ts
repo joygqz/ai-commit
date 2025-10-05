@@ -13,10 +13,6 @@ interface Stats {
   overallCacheRate: string
 }
 
-/**
- * Token 跟踪器
- * 负责跟踪和显示 API token 使用情况
- */
 class TokenTracker {
   private statusBarItem: StatusBarItem | null = null
   private lastUsage: TokenUsage | null = null
@@ -113,8 +109,8 @@ class TokenTracker {
       promptTokens,
       completionTokens,
       cachedTokens,
-      cacheHitRate: cachedTokens > 0 ? ((cachedTokens / promptTokens) * 100).toFixed(0) : '0',
-      avgTokens: Math.round(this.totalTokens / this.requestCount),
+      cacheHitRate: cachedTokens > 0 && promptTokens > 0 ? ((cachedTokens / promptTokens) * 100).toFixed(0) : '0',
+      avgTokens: this.requestCount > 0 ? Math.round(this.totalTokens / this.requestCount) : 0,
       overallCacheRate: this.totalTokens > 0 ? ((this.totalCachedTokens / this.totalTokens) * 100).toFixed(1) : '0',
     }
   }
