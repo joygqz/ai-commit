@@ -4,6 +4,7 @@ import { CommitMessageService } from './service/commit'
 import { ReviewService } from './service/review'
 import { AbortManager } from './utils/abort-manager'
 import { config } from './utils/config'
+import { EXTENSION_NAME } from './utils/constants'
 import { getUserFriendlyErrorMessage, shouldSilenceError } from './utils/error-handler'
 import { getDiffStaged, getRepo } from './utils/git'
 import { logger, ProgressHandler, validateConfig } from './utils/index'
@@ -22,6 +23,9 @@ const abortManager = new AbortManager()
  */
 async function reviewAndCommit(context: ExtensionContext) {
   const controller = abortManager.createController()
+
+  // 开始一个新的 token 统计会话
+  tokenTracker.startSession()
 
   try {
     logger.info('Starting review and commit workflow')
@@ -116,6 +120,8 @@ async function reviewAndCommit(context: ExtensionContext) {
     window.showErrorMessage(getUserFriendlyErrorMessage(error))
   }
   finally {
+    // 结束 token 统计会话
+    tokenTracker.endSession()
     abortManager.clear(controller)
   }
 }
@@ -200,17 +206,17 @@ async function showTokenStats() {
 
     // 如果没有任何数据，显示提示信息
     if (!historicalStats) {
-      window.showInformationMessage(l10n.t('No Token usage records'))
+      window.showInformationMessage(l10n.t('No usage records'))
       return
     }
 
     // 构建统计项列表
     const items: Array<{ label: string, detail?: string, kind?: QuickPickItemKind }> = []
 
-    // 如果有当前请求的统计数据,添加当前请求部分
+    // 如果有当前会话的统计数据,添加当前会话部分
     if (currentStats) {
       items.push(
-        { label: `${l10n.t('Current Request')}`, kind: QuickPickItemKind.Separator },
+        { label: `${l10n.t('Current Operation')}`, kind: QuickPickItemKind.Separator },
         { label: l10n.t('Total Tokens: {0}', currentStats.totalTokens) },
         { label: l10n.t('Prompt Tokens: {0}', currentStats.promptTokens) },
         { label: l10n.t('Completion Tokens: {0}', currentStats.completionTokens) },
@@ -225,15 +231,15 @@ async function showTokenStats() {
     // 添加累计统计部分
     items.push(
       { label: `${l10n.t('Cumulative Statistics')}`, kind: QuickPickItemKind.Separator },
-      { label: l10n.t('Total Requests: {0}', historicalStats.requestCount) },
+      { label: l10n.t('Total Operations: {0}', historicalStats.operationCount) },
       { label: l10n.t('Total Tokens: {0}', historicalStats.totalTokens) },
-      { label: l10n.t('Average Tokens per Request: {0}', historicalStats.avgTokens) },
+      { label: l10n.t('Average Tokens per Operation: {0}', historicalStats.avgTokens) },
       { label: l10n.t('Overall Cache Hit Rate: {0}%', historicalStats.overallCacheRate) },
     )
 
     // 显示统计信息
     await window.showQuickPick(items, {
-      title: l10n.t('Token Usage Statistics'),
+      title: `${EXTENSION_NAME} ${l10n.t('Usage Statistics')}`,
       placeHolder: l10n.t('Press ESC to close'),
     })
   }
