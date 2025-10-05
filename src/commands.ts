@@ -198,49 +198,44 @@ function showTokenStats() {
     const currentStats = tokenTracker.getCurrentStats()
     const historicalStats = tokenTracker.getHistoricalStats()
 
-    // 如果有当前请求的统计数据，显示详细信息
-    if (currentStats && historicalStats) {
-      const items = [
+    // 如果没有任何数据，显示提示信息
+    if (!historicalStats) {
+      window.showInformationMessage(l10n.t('No Token usage records'))
+      return
+    }
+
+    // 构建统计项列表
+    const items: Array<{ label: string, detail?: string, kind?: QuickPickItemKind }> = []
+
+    // 如果有当前请求的统计数据，添加当前请求部分
+    if (currentStats) {
+      items.push(
         { label: `${l10n.t('Current Request')}`, kind: QuickPickItemKind.Separator },
         { label: l10n.t('Total: {0} token', currentStats.totalTokens), detail: l10n.t('Total tokens used in this request') },
         { label: l10n.t('Prompt: {0} token', currentStats.promptTokens), detail: l10n.t('Tokens in the prompt sent to AI') },
         { label: l10n.t('Completion: {0} token', currentStats.completionTokens), detail: l10n.t('Tokens in the AI response') },
-        ...(currentStats.cachedTokens > 0
-          ? [{ label: l10n.t('Cache: {0}%', currentStats.cacheHitRate), detail: l10n.t('Prompt cache used, saving costs') }]
-          : []),
-        { label: `${l10n.t('Cumulative Statistics')}`, kind: QuickPickItemKind.Separator },
-        { label: l10n.t('Requests: {0} count', historicalStats.requestCount), detail: l10n.t('Total API calls made') },
-        { label: l10n.t('Total: {0} token', historicalStats.totalTokens), detail: l10n.t('Total tokens used') },
-        { label: l10n.t('Average: {0} token/request', historicalStats.avgTokens), detail: l10n.t('Average tokens per request') },
-        { label: l10n.t('Cache: {0}%', historicalStats.overallCacheRate), detail: l10n.t('Cumulative cache hit rate') },
-      ]
+      )
 
-      window.showQuickPick(items, {
-        title: l10n.t('Token Usage Statistics'),
-        placeHolder: l10n.t('Press ESC to close'),
-      })
-      return
+      // 只有缓存 token 大于 0 时才显示缓存行
+      if (currentStats.cachedTokens > 0) {
+        items.push({ label: l10n.t('Cache: {0}%', currentStats.cacheHitRate), detail: l10n.t('Prompt cache used, saving costs') })
+      }
     }
 
-    // 如果只有历史累计数据，只显示累计统计
-    if (historicalStats) {
-      const items = [
-        { label: `${l10n.t('Cumulative Statistics')}`, kind: QuickPickItemKind.Separator },
-        { label: l10n.t('Requests: {0} count', historicalStats.requestCount), detail: l10n.t('Total API calls made') },
-        { label: l10n.t('Total: {0} token', historicalStats.totalTokens), detail: l10n.t('Total tokens used') },
-        { label: l10n.t('Average: {0} token/request', historicalStats.avgTokens), detail: l10n.t('Average tokens per request') },
-        { label: l10n.t('Cache: {0}%', historicalStats.overallCacheRate), detail: l10n.t('Cumulative cache hit rate') },
-      ]
+    // 添加累计统计部分
+    items.push(
+      { label: `${l10n.t('Cumulative Statistics')}`, kind: QuickPickItemKind.Separator },
+      { label: l10n.t('Requests: {0} count', historicalStats.requestCount), detail: l10n.t('Total API calls made') },
+      { label: l10n.t('Total: {0} token', historicalStats.totalTokens), detail: l10n.t('Total tokens used') },
+      { label: l10n.t('Average: {0} token/request', historicalStats.avgTokens), detail: l10n.t('Average tokens per request') },
+      { label: l10n.t('Cache: {0}%', historicalStats.overallCacheRate), detail: l10n.t('Cumulative cache hit rate') },
+    )
 
-      window.showQuickPick(items, {
-        title: l10n.t('Token Usage Statistics'),
-        placeHolder: l10n.t('Press ESC to close'),
-      })
-      return
-    }
-
-    // 没有任何数据，显示提示信息
-    window.showInformationMessage(l10n.t('No Token usage records'))
+    // 显示统计信息
+    window.showQuickPick(items, {
+      title: l10n.t('Token Usage Statistics'),
+      placeHolder: l10n.t('Press ESC to close'),
+    })
   }
   catch (error: unknown) {
     logger.error('Failed to show token stats', error)
