@@ -26,21 +26,4 @@ export class AbortManager {
       this.currentController = null
     }
   }
-
-  /**
-   * 中止当前的操作
-   */
-  abort(): void {
-    if (this.currentController) {
-      this.currentController.abort()
-      this.currentController = null
-    }
-  }
-
-  /**
-   * 获取当前是否有活动的 controller
-   */
-  get isActive(): boolean {
-    return this.currentController !== null
-  }
 }

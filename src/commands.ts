@@ -1,14 +1,13 @@
 import type { ExtensionContext } from 'vscode'
 import { ConfigurationTarget, l10n, QuickPickItemKind, window } from 'vscode'
-import { CommitMessageService } from './service/commit'
-import { ReviewService } from './service/review'
+import { generateReviewAndCommitPrompt } from './prompts'
 import { AbortManager } from './utils/abort-manager'
 import { config } from './utils/config'
 import { EXTENSION_NAME } from './utils/constants'
 import { getUserFriendlyErrorMessage, shouldSilenceError } from './utils/error-handler'
 import { getDiffStaged, getRepo } from './utils/git'
 import { logger, ProgressHandler, validateConfig } from './utils/index'
-import { getAvailableModels } from './utils/openai'
+import { ChatGPTAPI, getAvailableModels } from './utils/openai'
 import { showReviewResultAndAskToContinue } from './utils/review-dialog'
 import { tokenTracker } from './utils/token-tracker'
 
@@ -63,53 +62,88 @@ async function reviewAndCommit(context: ExtensionContext) {
     const reviewConfig = config.getReviewConfig()
     const reviewMode = reviewConfig.mode
 
-    // 执行代码 review
-    if (reviewMode !== 'off') {
-      const reviewResult = await ProgressHandler.withProgress(
-        '',
-        async (progress, token) => {
-          progress.report({ message: l10n.t('Reviewing code changes...') })
-
-          token?.onCancellationRequested(() => {
-            controller.abort()
-          })
-
-          return await ReviewService.performCodeReview(diff, controller.signal, reviewMode)
-        },
-        true,
-      )
-
-      // 如果 review 不通过，询问用户是否继续
-      if (!reviewResult.passed) {
-        const shouldContinue = await showReviewResultAndAskToContinue(reviewResult)
-        if (!shouldContinue) {
-          logger.info('User cancelled commit after review')
-          return
-        }
-      }
-    }
-    else {
-      logger.info('Code review is disabled (mode: off)')
-    }
-
-    // 生成 commit 消息
-    await ProgressHandler.withProgress(
+    // 执行代码审查并生成提交信息
+    const { review: reviewResult, commitMessage } = await ProgressHandler.withProgress(
       '',
       async (progress, token) => {
-        progress.report({ message: l10n.t('Generating commit message...') })
+        progress.report({ message: l10n.t('Reviewing changes and generating commit message...') })
 
         token?.onCancellationRequested(() => {
           controller.abort()
         })
 
-        await CommitMessageService.generateCommitMessage(
-          diff,
-          scmInputBox,
-          controller.signal,
-        )
+        // 生成 prompt 并调用 API
+        logger.info('Starting combined review and commit generation', { mode: reviewMode })
+        const prompts = await generateReviewAndCommitPrompt(diff, reviewMode)
+        const apiResult = await ChatGPTAPI(prompts, { signal: controller.signal })
+        logger.debug('Combined review+commit response received', {
+          contentLength: apiResult.content.length,
+          hasUsage: !!apiResult.usage,
+        })
+
+        // 解析 API 响应
+        try {
+          let jsonStr = apiResult.content.trim()
+
+          // 移除可能的 Markdown 代码块标记
+          if (jsonStr.includes('```')) {
+            const startIdx = jsonStr.indexOf('{')
+            const endIdx = jsonStr.lastIndexOf('}')
+            if (startIdx !== -1 && endIdx !== -1) {
+              jsonStr = jsonStr.slice(startIdx, endIdx + 1)
+            }
+          }
+
+          const parsed = JSON.parse(jsonStr)
+          const review = parsed.review ?? {
+            passed: true,
+            severity: 'info',
+            issues: [],
+            suggestions: [],
+          }
+          const commitMessage = (parsed.commitMessage ?? '').trim()
+
+          if (!commitMessage) {
+            logger.warn('Combined response missing commitMessage; falling back to empty string')
+          }
+
+          return { review, commitMessage }
+        }
+        catch (error) {
+          logger.error('Failed to parse combined review+commit response', error)
+          return {
+            review: {
+              passed: true,
+              severity: 'info',
+              issues: [],
+              suggestions: [],
+            },
+            commitMessage: '',
+          }
+        }
       },
       true,
     )
+
+    // 如果 review 不通过，询问用户是否继续
+    if (!reviewResult.passed) {
+      const shouldContinue = await showReviewResultAndAskToContinue(reviewResult)
+      if (!shouldContinue) {
+        logger.info('User cancelled commit after review')
+        return
+      }
+    }
+
+    // 应用提交信息到 SCM 输入框
+    const normalizedCommitMessage = commitMessage.trim()
+    if (normalizedCommitMessage.length > 0) {
+      scmInputBox.value = normalizedCommitMessage
+      logger.info('Commit message applied successfully', { messageLength: normalizedCommitMessage.length })
+    }
+    else {
+      logger.warn('No commit message generated')
+      window.showWarningMessage(l10n.t('Failed to generate commit message.'))
+    }
   }
   catch (error: unknown) {
     if (shouldSilenceError(error)) {

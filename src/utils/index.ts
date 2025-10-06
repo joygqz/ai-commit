@@ -31,93 +31,24 @@ export class ProgressHandler {
 }
 
 /**
- * 配置验证规则接口
+ * 验证配置项是否存在且非空
+ * @param rules 验证规则数组，每项包含 key（配置键）、required（是否必需）和 errorMessage（错误消息）
+ * @returns 验证结果，包含 isValid（是否通过）和 error（错误消息）
  */
-export interface ValidationRule {
-  /** 配置键名 */
-  key: string
-  /** 是否必需 */
-  required?: boolean
-  /** 最小长度 */
-  minLength?: number
-  /** 最大长度 */
-  maxLength?: number
-  /** 正则表达式验证 */
-  pattern?: RegExp
-  /** 自定义验证函数 */
-  custom?: (value: any) => boolean
-  /** 验证失败时的错误消息 */
-  errorMessage: string
-}
-
-/**
- * 配置验证结果接口
- */
-export interface ValidationResult {
-  /** 是否验证通过 */
-  isValid: boolean
-  /** 第一个错误消息（如果有） */
-  error?: string
-  /** 所有错误消息数组（如果有） */
-  errors?: string[]
-}
-
-/**
- * 验证配置项
- * @param rules 验证规则数组
- * @returns 验证结果，包含是否通过和错误信息
- */
-export function validateConfig(rules: ValidationRule[]): ValidationResult {
-  const errors: string[] = []
-
+export function validateConfig(
+  rules: Array<{ key: string, required: boolean, errorMessage: string }>,
+): { isValid: boolean, error?: string } {
   for (const rule of rules) {
+    if (!rule.required) {
+      continue
+    }
+
     const value = config.get(rule.key)
-
-    // Required check
-    if (rule.required) {
-      if (value === undefined || value === null || (typeof value === 'string' && value.trim() === '')) {
-        errors.push(rule.errorMessage)
-        continue
+    if (value === undefined || value === null || (typeof value === 'string' && value.trim() === '')) {
+      return {
+        isValid: false,
+        error: rule.errorMessage,
       }
-    }
-
-    // Skip other validations if value is empty and not required
-    if (value === undefined || value === null || value === '') {
-      continue
-    }
-
-    const strValue = String(value)
-
-    // Min length check
-    if (rule.minLength !== undefined && strValue.length < rule.minLength) {
-      errors.push(rule.errorMessage)
-      continue
-    }
-
-    // Max length check
-    if (rule.maxLength !== undefined && strValue.length > rule.maxLength) {
-      errors.push(rule.errorMessage)
-      continue
-    }
-
-    // Pattern check
-    if (rule.pattern && !rule.pattern.test(strValue)) {
-      errors.push(rule.errorMessage)
-      continue
-    }
-
-    // Custom validation
-    if (rule.custom && !rule.custom(value)) {
-      errors.push(rule.errorMessage)
-      continue
-    }
-  }
-
-  if (errors.length > 0) {
-    return {
-      isValid: false,
-      error: errors[0],
-      errors,
     }
   }
 

@@ -87,14 +87,6 @@ export const logger = {
     outputChannel.error(`${message}${formatData(error)}`)
   },
 
-  show(): void {
-    outputChannel.show()
-  },
-
-  clear(): void {
-    outputChannel.clear()
-  },
-
   dispose(): void {
     outputChannel.dispose()
   },

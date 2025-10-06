@@ -3,7 +3,7 @@ import { l10n } from 'vscode'
 /**
  * API 错误类型枚举
  */
-export enum ApiErrorType {
+enum ApiErrorType {
   AUTHENTICATION = 'authentication',
   RATE_LIMIT = 'rate_limit',
   TIMEOUT = 'timeout',
@@ -17,7 +17,7 @@ export enum ApiErrorType {
 /**
  * 错误信息接口
  */
-export interface ErrorInfo {
+interface ErrorInfo {
   type: ApiErrorType
   message: string
   originalError?: unknown
@@ -28,7 +28,7 @@ export interface ErrorInfo {
  * @param error 原始错误对象
  * @returns 错误信息对象
  */
-export function analyzeError(error: unknown): ErrorInfo {
+function analyzeError(error: unknown): ErrorInfo {
   if (!(error instanceof Error)) {
     return {
       type: ApiErrorType.UNKNOWN,

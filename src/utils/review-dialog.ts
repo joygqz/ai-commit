@@ -1,4 +1,4 @@
-import type { CodeReviewResult } from '../prompts/review'
+import type { CodeReviewResult } from '../prompts'
 import { l10n, window } from 'vscode'
 import { logger } from './logger'
 

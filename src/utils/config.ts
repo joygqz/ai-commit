@@ -1,4 +1,4 @@
-import type { ReviewMode } from '../prompts/review'
+import type { ReviewMode } from '../prompts'
 import { ConfigurationTarget, workspace } from 'vscode'
 import { EXTENSION_ID } from './constants'
 
