@@ -28,46 +28,44 @@ export type ReviewMode = 'off' | 'lenient' | 'standard' | 'strict'
 function getReviewModeGuidelines(mode: ReviewMode): string {
   switch (mode) {
     case 'lenient':
-      return `## LENIENT Mode - CRITICAL Only
+      return `## LENIENT — CRITICAL Only
 
-**Report if VISIBLE in diff:**
-• Syntax errors, undefined vars/props, wrong operators
-• Security: hardcoded secrets, SQL concat, HTML injection
-• Fatal: infinite loops, missing await, unhandled rejection
+Report when visible in diff:
+- Syntax/runtime errors, undefined vars/props, wrong operators
+- Security risks: hardcoded secrets, SQL concat, HTML injection
+- Fatal bugs: infinite loops, missing await, unhandled rejection
 
-**Rule:** No evidence → PASS. Uncertainty → PASS.
-**Result:** passed=false only if CRITICAL (severity="error")`
+Rule: No evidence or uncertain → pass. Only critical issues set passed=false (severity="error").`
 
     case 'standard':
-      return `## STANDARD Mode - CRITICAL + MAJOR
+      return `## STANDARD — CRITICAL + MAJOR
 
-**CRITICAL (visible in diff):**
-• Syntax/runtime errors, type mismatches, undefined usage
-• Security: exposed credentials, injection vulnerabilities
-• Data risks: deleting without checks, breaking migrations
+Critical (visible):
+- Syntax/runtime errors, type mismatches, undefined usage
+- Security leaks: exposed credentials, injection vectors
+- Data loss risks: unsafe deletes, broken migrations
 
-**MAJOR (visible in diff):**
-• Logic errors: wrong calculations, incorrect conditions
-• Error handling: removing useful errors, ignoring rejections
-• Resource leaks: unclosed files/connections
-• Breaking changes: removing APIs, incompatible signatures
+Major (visible):
+- Logic mistakes: wrong formulas, incorrect branching
+- Error handling regressions: lost errors, ignored rejections
+- Resource leaks: unclosed files, dangling connections
+- Breaking changes: removed APIs, incompatible signatures
 
-**Rule:** Not 100% certain → PASS. Doubt → PASS.
-**Result:** passed=false if found, severity="error"/"warning"`
+Rule: Doubt → pass. Raise only when certain. Severity="error" for critical, "warning" for major.
+Result: passed=false when any are reported.`
 
     case 'strict':
-      return `## STRICT Mode - All Verifiable
+      return `## STRICT — Everything Verifiable
 
-**CRITICAL/MAJOR:** See standard mode
+Critical/Major: Same as standard mode.
 
-**MINOR (visible in diff):**
-• Code smells: magic numbers, duplicates, dead code
-• Type issues: \`any\` usage, missing null checks
-• Bad practices: hardcoded paths, console.log, empty catch
-• Complexity: 100+ line functions, >4 nested levels
+Minor (visible):
+- Code smells: magic numbers, duplicate code, dead blocks
+- Type issues: \`any\`, missing null/undefined guards
+- Bad practice: hardcoded paths, stray console.log, empty catch
+- Excessive complexity: >100 line functions, >4 nest levels
 
-**Rule:** Report ONLY provable from diff. NO assumptions.
-**Result:** passed=false if ANY found, severity by level`
+Rule: Report only what diff proves. Any finding sets passed=false; severity matches level.`
 
     default:
       return ''
@@ -86,21 +84,19 @@ function createCodeReviewSystemContent(language: string, mode: ReviewMode = 'sta
 
   let content = `Code reviewer for git diff changes.
 
-## Context Limitation
-You receive ONLY git diff (changed lines with +/-), NOT complete file context.
-- Missing code exists but is NOT visible
-- Don't assume what's outside the diff
-- Only review issues provable from visible changes
+## Context Limit
+- Input is ONLY git diff (lines with +/-). Full files are unseen.
+- Do NOT assume hidden code; judge only what you see.
 
 ${modeGuidelines}
 
 ## Review Principles
-**Evidence required:** Report ONLY issues visible in diff lines
-**No assumptions:** Don't guess about missing context/imports/definitions
-**When uncertain:** Pass - absence of context ≠ error
-**Scope:** Review the CHANGE itself, not the whole file
+- Evidence only: flag issues visible in diff lines.
+- No assumptions: missing context/imports ≠ error.
+- Uncertain? Pass. Absence of proof → no report.
+- Scope: critique the change, not untouched code.
 
-## Output Format (JSON)
+## Output JSON
 {
   "passed": boolean,
   "severity": "error" | "warning" | "info",
@@ -108,9 +104,9 @@ ${modeGuidelines}
   "suggestions": string[]
 }
 
-**Language:** ${language} (add space between Chinese/English/numbers)
+Language: ${language}. For Chinese, add spaces between Chinese/English/numbers.
 
-Empty diffs: Pass with empty arrays.`
+Empty diff → pass with empty arrays.`
 
   // 如果有自定义提示词，添加到末尾
   if (customPrompt && customPrompt.trim()) {

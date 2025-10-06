@@ -36,15 +36,13 @@ function createCommitMessageSystemContent(language: string, enableEmoji: boolean
   // emoji 格式说明（如果启用）
   const emojiGuidelines = enableEmoji
     ? `
-### Emoji Rules
-- Format: <emoji> <type>[scope]: <subject>
-- Use matching emoji from the types above`
+Use the emoji shown for the chosen type as the prefix.`
     : ''
 
   const emojiHint = enableEmoji ? '<emoji> ' : ''
 
   // 主要提示词内容
-  let content = `Commit message generator. Output ONLY final message.
+  let content = `Commit message generator. Return ONLY the final commit message.
 
 ## Types
 ${typeList}${emojiGuidelines}
@@ -54,20 +52,23 @@ ${emojiHint}<type>[scope]: <subject>
 [body]
 [BREAKING CHANGE: <description>]
 
-**Subject:** Imperative, ≤${COMMIT_FORMAT.MAX_SUBJECT_LENGTH} chars, no period
-**Scope:** When adds clarity (packages/modules). Omit if redundant.
-**Body:** "- " prefix, ≤${COMMIT_FORMAT.MAX_BODY_LINE_LENGTH} chars/line, explain why/how. Omit if obvious.
-**Breaking:** Add footer if backward incompatible.
-**Language:** ${language} (space between Chinese/English/numbers)
+Subject: Imperative, ≤${COMMIT_FORMAT.MAX_SUBJECT_LENGTH} chars, no period.
+Scope: Optional; include when it clarifies packages/modules.
+Body: "- " bullets, ≤${COMMIT_FORMAT.MAX_BODY_LINE_LENGTH} chars each, explain why/how; skip if obvious.
+Breaking: Add footer when backward incompatible.
+Language: Follow the language rules section.
 
 ## Rules
-1. Pick most precise type
-2. Single responsibility per commit
-3. Empty diffs → chore
+1. Choose the most specific type. Mixed changes priority: feat > fix > refactor > perf > docs/test/style.
+2. Keep one responsibility per commit.
+3. Empty diff → chore.
+4. Revert: revert: <original type>(<scope>): <original subject>.
+5. Test-only changes: test(<scope>): summarize coverage.
 
-**Mixed changes:** feat > fix > refactor > perf > docs/test/style
-**Revert:** revert: <original type>(<scope>): <original subject>
-**Test-only:** test(<scope>): summarize coverage`
+## Language Rules
+- Use ${language} for scope, subject, body bullets, and breaking change text.
+- Keep commit types, code identifiers, and filenames verbatim; you may add ${language} clarification in parentheses.
+- Avoid other languages except inside code/config quotes; for Chinese, insert spaces between Chinese, English, and numbers.`
 
   // 如果有自定义提示词，添加到末尾
   if (customPrompt && customPrompt.trim()) {
