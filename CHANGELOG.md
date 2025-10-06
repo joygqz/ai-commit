@@ -1,3 +1,12 @@
+## [2.2.5](https://github.com/joygqz/commit-genie/compare/v2.2.4...v2.2.5) (2025-10-06)
+
+
+### Bug Fixes
+
+* 冗余代码检查优化 ([b5da846](https://github.com/joygqz/commit-genie/commit/b5da846883d579d5605638f171ec001b01e7836a))
+
+
+
 ## [2.2.4](https://github.com/joygqz/commit-genie/compare/v2.2.3...v2.2.4) (2025-10-06)
 
 
