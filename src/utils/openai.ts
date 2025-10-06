@@ -29,6 +29,57 @@ function generateConfigKey(apiKey: string, baseURL: string): string {
   return `${apiKey}:${baseURL}`
 }
 
+function linkAbortSignals(signals: Array<AbortSignal | undefined>): { signal: AbortSignal, dispose: () => void } {
+  const validSignals = signals.filter((signal): signal is AbortSignal => Boolean(signal))
+
+  if (validSignals.length === 0) {
+    const controller = new AbortController()
+    return { signal: controller.signal, dispose: () => {} }
+  }
+
+  if (validSignals.length === 1) {
+    return { signal: validSignals[0], dispose: () => {} }
+  }
+
+  const anyFn = (AbortSignal as typeof AbortSignal & { any?: ((signals: AbortSignal[]) => AbortSignal) | undefined }).any
+
+  if (typeof anyFn === 'function') {
+    return { signal: anyFn.call(AbortSignal, validSignals), dispose: () => {} }
+  }
+
+  const controller = new AbortController()
+  let cleanedUp = false
+
+  function cleanup() {
+    if (cleanedUp) {
+      return
+    }
+    cleanedUp = true
+    validSignals.forEach(signal => signal.removeEventListener('abort', onAbort))
+  }
+
+  function onAbort() {
+    if (!controller.signal.aborted) {
+      controller.abort()
+    }
+    cleanup()
+  }
+
+  for (const signal of validSignals) {
+    if (signal.aborted) {
+      controller.abort()
+      cleanup()
+      return { signal: controller.signal, dispose: () => {} }
+    }
+    signal.addEventListener('abort', onAbort)
+  }
+
+  return {
+    signal: controller.signal,
+    dispose: cleanup,
+  }
+}
+
 /**
  * 创建 OpenAI API 客户端实例（带缓存）
  * @returns OpenAI 客户端实例
@@ -121,9 +172,10 @@ export async function ChatGPTStreamAPI(
   const timeoutId = setTimeout(() => timeoutController.abort(), timeout)
 
   // 合并用户信号和超时信号
-  const combinedSignal = signal
-    ? AbortSignal.any([signal, timeoutController.signal])
-    : timeoutController.signal
+  const { signal: combinedSignal, dispose: disposeCombinedSignal } = linkAbortSignals([
+    signal,
+    timeoutController.signal,
+  ])
 
   try {
     // 创建流式聊天完成请求
@@ -151,6 +203,7 @@ export async function ChatGPTStreamAPI(
         }
 
         // 捕获最后一个 chunk 中的 usage 信息
+        disposeCombinedSignal()
         if (chunk.usage) {
           const rawUsage = chunk.usage as any
           usage = {
@@ -206,9 +259,10 @@ export async function ChatGPTAPI(
   const timeoutId = setTimeout(() => timeoutController.abort(), timeout)
 
   // 合并用户信号和超时信号
-  const combinedSignal = signal
-    ? AbortSignal.any([signal, timeoutController.signal])
-    : timeoutController.signal
+  const { signal: combinedSignal, dispose: disposeCombinedSignal } = linkAbortSignals([
+    signal,
+    timeoutController.signal,
+  ])
 
   try {
     // 创建聊天完成请求
@@ -250,6 +304,7 @@ export async function ChatGPTAPI(
   finally {
     // 清理超时定时器
     clearTimeout(timeoutId)
+    disposeCombinedSignal()
   }
 }
 

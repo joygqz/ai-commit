@@ -3,11 +3,39 @@ import * as fs from 'node:fs'
 import simpleGit from 'simple-git'
 import { extensions, l10n, workspace } from 'vscode'
 
+interface GitRepository {
+  rootUri: Uri
+  inputBox?: {
+    value: string
+  }
+}
+
+interface GitApi {
+  repositories: GitRepository[]
+}
+
+interface GitExtensionExports {
+  getAPI: (version: number) => GitApi
+}
+
 /**
  * 仓库上下文接口
  */
 interface RepoContext {
   rootUri?: Uri
+}
+
+function isRepoContext(arg: ExtensionContext | RepoContext): arg is RepoContext {
+  return Boolean((arg as RepoContext).rootUri)
+}
+
+function resolveRealPath(path: string): string {
+  try {
+    return fs.realpathSync(path)
+  }
+  catch {
+    return path
+  }
 }
 
 /**
@@ -16,36 +44,32 @@ interface RepoContext {
  * @returns Git 仓库实例
  * @throws 如果 Git 扩展未找到则抛出错误
  */
-export async function getRepo(arg: ExtensionContext | RepoContext) {
-  // 获取 VS Code 内置的 Git 扩展 API
-  const gitApi = extensions.getExtension('vscode.git')?.exports.getAPI(1)
-  if (!gitApi) {
+export async function getRepo(arg: ExtensionContext | RepoContext): Promise<GitRepository> {
+  const gitExtension = extensions.getExtension<GitExtensionExports>('vscode.git')
+  if (!gitExtension || typeof gitExtension.exports?.getAPI !== 'function') {
     throw new Error(l10n.t('Git extension not found.'))
   }
 
+  const gitApi = gitExtension.exports.getAPI(1)
+
+  if (!gitApi?.repositories?.length) {
+    throw new Error(l10n.t('No Git repositories found in the current workspace.'))
+  }
+
   // 如果传入的参数包含 rootUri，则尝试匹配对应的仓库
-  if (typeof arg === 'object' && 'rootUri' in arg && arg.rootUri) {
-    const resourceUri = arg.rootUri
-    const realResourcePath: string = fs.realpathSync(resourceUri.fsPath)
-    for (let i = 0; i < gitApi.repositories.length; i++) {
-      const repo = gitApi.repositories[i]
-      if (realResourcePath.startsWith(repo.rootUri.fsPath)) {
-        return repo
-      }
+  if (isRepoContext(arg) && arg.rootUri) {
+    const resourcePath = resolveRealPath(arg.rootUri.fsPath)
+    const matchedRepo = gitApi.repositories.find((repo) => {
+      const repoPath = resolveRealPath(repo.rootUri.fsPath)
+      return resourcePath.startsWith(repoPath)
+    })
+
+    if (matchedRepo) {
+      return matchedRepo
     }
   }
   // 默认返回第一个仓库
   return gitApi.repositories[0]
-}
-
-/**
- * Git 仓库接口
- */
-interface GitRepository {
-  rootUri?: Uri
-  inputBox?: {
-    value: string
-  }
 }
 
 /**

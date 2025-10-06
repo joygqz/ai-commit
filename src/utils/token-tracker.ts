@@ -53,6 +53,7 @@ class TokenTracker {
   private statusBarItem: StatusBarItem | null = null
   private lastUsage: TokenUsage | null = null
   private currentSessionStats: CurrentStats | null = null
+  private sessionHadUsage = false
   private totalTokens = 0
   private totalPromptTokens = 0
   private totalCachedTokens = 0
@@ -159,6 +160,9 @@ class TokenTracker {
    * 开始一个新会话（通常在一个完整操作开始时调用）
    */
   startSession(): void {
+    if (this.currentSessionStats) {
+      this.endSession()
+    }
     this.currentSessionStats = {
       totalTokens: 0,
       promptTokens: 0,
@@ -166,32 +170,50 @@ class TokenTracker {
       cachedTokens: 0,
       cacheHitRate: '0.0',
     }
+    this.sessionHadUsage = false
   }
 
   /**
    * 结束当前会话
    */
   endSession(): void {
-    // 会话结束后，将当前会话的统计作为"最后一次请求"的数据
-    if (this.currentSessionStats) {
+    if (!this.currentSessionStats) {
+      this.sessionHadUsage = false
+      return
+    }
+
+    const sessionStats = this.currentSessionStats
+
+    const hadUsage = this.sessionHadUsage
+      || sessionStats.totalTokens > 0
+      || sessionStats.promptTokens > 0
+      || sessionStats.completionTokens > 0
+      || sessionStats.cachedTokens > 0
+
+    if (hadUsage) {
       this.lastUsage = {
-        totalTokens: this.currentSessionStats.totalTokens,
-        promptTokens: this.currentSessionStats.promptTokens,
-        completionTokens: this.currentSessionStats.completionTokens,
-        cachedTokens: this.currentSessionStats.cachedTokens,
+        totalTokens: sessionStats.totalTokens,
+        promptTokens: sessionStats.promptTokens,
+        completionTokens: sessionStats.completionTokens,
+        cachedTokens: sessionStats.cachedTokens,
       }
-      // 操作完成，增加操作计数
       this.operationCount++
-      // 保存数据
       this.savePersistedData().catch(() => {})
     }
+
     this.currentSessionStats = null
+    this.sessionHadUsage = false
   }
 
   /**
    * 更新使用统计
    */
   updateUsage(usage: TokenUsage): void {
+    const hasTokenConsumption = (usage.totalTokens ?? 0) > 0
+      || (usage.promptTokens ?? 0) > 0
+      || (usage.completionTokens ?? 0) > 0
+      || (usage.cachedTokens ?? 0) > 0
+
     // 如果有活动会话，累加到会话统计中
     if (this.currentSessionStats) {
       this.currentSessionStats.totalTokens += usage.totalTokens
@@ -205,6 +227,10 @@ class TokenTracker {
       this.currentSessionStats.cacheHitRate = cachedTokens > 0 && promptTokens > 0
         ? ((cachedTokens / promptTokens) * 100).toFixed(1)
         : '0.0'
+
+      if (hasTokenConsumption) {
+        this.sessionHadUsage = true
+      }
     }
     else {
       // 如果没有活动会话，直接记录为最后一次使用
@@ -283,6 +309,7 @@ class TokenTracker {
     this.totalPromptTokens = 0
     this.totalCachedTokens = 0
     this.operationCount = 0
+    this.sessionHadUsage = false
 
     await this.savePersistedData()
     logger.info('Token tracker data reset')
