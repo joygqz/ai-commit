@@ -1,3 +1,12 @@
+## [2.2.7](https://github.com/joygqz/commit-genie/compare/v2.2.6...v2.2.7) (2025-10-07)
+
+
+### Features
+
+* **config:** 重构配置结构并添加审查开关 ([5fb53e9](https://github.com/joygqz/commit-genie/commit/5fb53e9e297b7bd6099df2ad5f52addc646eaabe))
+
+
+
 ## [2.2.6](https://github.com/joygqz/commit-genie/compare/v2.2.5...v2.2.6) (2025-10-07)
 
 
