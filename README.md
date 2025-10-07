@@ -57,8 +57,8 @@ AI-powered commit message generator with optional code review for VS Code.
 - `format.outputLanguage` - Message language (default: Simplified Chinese)
 
 **Review:**
-- `review.mode` - Review strictness: `off` / `lenient` / `standard` / `strict` (default: `standard`)
-  - `off` - Skip review
+- `review.enabled` - Enable AI review before generating commit messages (default: `true`)
+- `review.mode` - Review strictness: `lenient` / `standard` / `strict` (default: `standard`)
   - `lenient` - Critical only (syntax, security, crashes)
   - `standard` - Critical + major (logic, error handling)
   - `strict` - All issues (including code quality)

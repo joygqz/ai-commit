@@ -30,6 +30,7 @@ export interface CommitConfig {
  * 代码审查配置接口
  */
 export interface ReviewConfig {
+  enabled: boolean
   mode: ReviewMode
   customPrompt: string
 }
@@ -107,8 +108,16 @@ class ConfigManager {
    * @returns 审查配置对象
    */
   getReviewConfig(): ReviewConfig {
+    const rawMode = this.get<string>('review.mode', 'standard')
+    const enabled = this.get<boolean>('review.enabled', rawMode !== 'off')
+
+    const normalizedMode: ReviewMode = ['lenient', 'standard', 'strict'].includes(rawMode as ReviewMode)
+      ? rawMode as ReviewMode
+      : 'standard'
+
     return {
-      mode: this.get<ReviewMode>('review.mode', 'standard'),
+      enabled,
+      mode: normalizedMode,
       customPrompt: this.get<string>('review.customPrompt', ''),
     }
   }

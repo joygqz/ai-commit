@@ -27,7 +27,7 @@ export interface ReviewAndCommitResult {
 /**
  * 审查模式类型
  */
-export type ReviewMode = 'off' | 'lenient' | 'standard' | 'strict'
+export type ReviewMode = 'lenient' | 'standard' | 'strict'
 
 /**
  * Conventional Commits 规范的提交类型定义
@@ -46,33 +46,59 @@ const COMMIT_TYPES = [
   { type: 'revert', description: 'revert previous commit', emoji: '⏪' },
 ] as const
 
-/**
- * 获取不同模式的审查严格程度描述
- * @param mode 审查模式
- * @returns 严格程度描述
- */
-function getReviewModeGuidelines(mode: ReviewMode): string {
-  switch (mode) {
-    case 'lenient':
-      return `## LENIENT Mode
-Report ONLY when visible: syntax errors, undefined usage, security leaks (hardcoded secrets, SQL injection), fatal bugs (infinite loops, missing await).
-Result: passed=false + severity="error" only for critical issues.`
+interface MarkdownSection {
+  title?: string
+  level?: number
+  content: string
+}
 
-    case 'standard':
-      return `## STANDARD Mode
-Critical (severity="error"): syntax/type errors, security leaks, data loss risks.
-Major (severity="warning"): logic errors, error handling gaps, resource leaks.
-Result: passed=false when any reported.`
+function renderSections(sections: Array<MarkdownSection | undefined>): string {
+  return sections
+    .filter((section): section is MarkdownSection => Boolean(section && section.content.trim()))
+    .map(({ title, level = 0, content }) => {
+      const body = content.trim()
+      if (!title)
+        return body
 
-    case 'strict':
-      return `## STRICT Mode
-Critical/Major: same as standard.
-Minor (severity="info"): code smells, magic numbers, \`any\` type, hardcoded paths, console.log, >100 line functions, >4 nest levels.
-Result: passed=false for any finding.`
+      const hashes = '#'.repeat(Math.max(1, level))
+      return `${hashes} ${title}\n\n${body}`
+    })
+    .join('\n\n')
+}
 
-    default:
-      return ''
-  }
+function bulletList(items: string[]): string {
+  return items.map(item => `- ${item}`).join('\n')
+}
+
+function optionalSection(options: MarkdownSection, predicate: boolean): MarkdownSection | undefined {
+  return predicate ? options : undefined
+}
+
+const REVIEW_MODE_GUIDELINES: Record<ReviewMode, MarkdownSection> = {
+  lenient: {
+    title: 'LENIENT Mode',
+    level: 3,
+    content: 'Report ONLY when visible: syntax errors, undefined usage, security leaks (hardcoded secrets, SQL injection), fatal bugs (infinite loops, missing await).\nResult: passed=false + severity="error" only for critical issues.',
+  },
+  standard: {
+    title: 'STANDARD Mode',
+    level: 3,
+    content: 'Critical (severity="error"): syntax/type errors, security leaks, data loss risks.\nMajor (severity="warning"): logic errors, error handling gaps, resource leaks.\nResult: passed=false when any reported.',
+  },
+  strict: {
+    title: 'STRICT Mode',
+    level: 3,
+    content: 'Critical/Major: same as standard.\nMinor (severity="info"): code smells, magic numbers, `any` type, hardcoded paths, console.log, >100 line functions, >4 nest levels.\nResult: passed=false for any finding.',
+  },
+}
+
+function renderCommitTypes(enableEmoji: boolean): string {
+  return COMMIT_TYPES
+    .map(({ type, description, emoji }) => {
+      const prefix = enableEmoji && emoji ? `${emoji} ` : ''
+      return `- ${prefix}**${type}**: ${description}`
+    })
+    .join('\n')
 }
 
 /**
@@ -91,38 +117,50 @@ function createCodeReviewSystemContent(
   options?: { includeOutputShape?: boolean },
 ): string {
   const includeOutputShape = options?.includeOutputShape ?? true
-  const modeGuidelines = getReviewModeGuidelines(mode)
+  const languageNote = language.includes('Chinese') ? ', add spaces between Chinese/English/numbers' : ''
+  const customContent = customPrompt?.trim()
 
-  let content = `Review git diff changes (lines with +/- only).
+  const overviewSection: MarkdownSection = {
+    title: 'Overview',
+    level: 3,
+    content: 'Review git diff changes (lines with +/- only).',
+  }
 
-${modeGuidelines}
+  const rulesSection: MarkdownSection = {
+    title: 'Rules',
+    level: 3,
+    content: bulletList([
+      'Judge ONLY visible diff lines, not hidden code',
+      'Missing imports/context ≠ error',
+      'Uncertain → pass (absence of proof = no report)',
+      'Keep issues/suggestions concise (1 line each)',
+      `Language: ${language}${languageNote}`,
+      'Empty diff → passed=true, empty arrays',
+    ]),
+  }
 
-Rules:
-- Judge ONLY visible diff lines, not hidden code
-- Missing imports/context ≠ error
-- Uncertain → pass (absence of proof = no report)
-- Keep issues/suggestions concise (1 line each)
-- Language: ${language}${language.includes('Chinese') ? ', add spaces between Chinese/English/numbers' : ''}
-- Empty diff → passed=true, empty arrays`
-
-  if (includeOutputShape) {
-    content += `
-
-## Output JSON
-{
+  const outputShapeSection: MarkdownSection = {
+    title: 'Output JSON',
+    level: 3,
+    content: `{
   "passed": boolean,
   "severity": "error" | "warning" | "info",
   "issues": string[],
   "suggestions": string[]
-}`
+}`,
   }
 
-  // 如果有自定义提示词，添加到末尾
-  if (customPrompt && customPrompt.trim()) {
-    content += `\n\n## Custom Review Rules (Additional Focus)\n\n${customPrompt.trim()}`
-  }
-
-  return content
+  return renderSections([
+    overviewSection,
+    REVIEW_MODE_GUIDELINES[mode],
+    rulesSection,
+    optionalSection(outputShapeSection, includeOutputShape),
+    optionalSection({
+      title: 'Custom Review Rules (Additional Focus)',
+      level: 3,
+      content: customContent ?? '',
+    }, Boolean(customContent)),
+  ])
 }
 
 /**
@@ -141,76 +179,94 @@ function createCommitMessageSystemContent(
   options?: { outputMode?: 'message-only' | 'guideline-only' },
 ): string {
   const outputMode = options?.outputMode ?? 'message-only'
-
-  // 构建提交类型列表
-  const typeList = COMMIT_TYPES.map(({ type, description, emoji }) => {
-    const prefix = enableEmoji ? `${emoji} ` : ''
-    return `- ${prefix}**${type}**: ${description}`
-  }).join('\n')
-
-  // emoji 格式说明（如果启用）
-  const emojiGuidelines = enableEmoji
-    ? `
-Use the emoji shown for the chosen type as the prefix.`
-    : ''
-
   const emojiHint = enableEmoji ? '<emoji> ' : ''
+  const languageNote = language.includes('Chinese') ? ', add spaces between Chinese/English/numbers' : ''
+  const customContent = customPrompt?.trim()
+  const intro
+    = outputMode === 'message-only'
+      ? 'Commit message generator. Return ONLY the final commit message.'
+      : 'Commit message generator guidelines for crafting the final commit message.'
 
-  const intro = outputMode === 'message-only'
-    ? 'Commit message generator. Return ONLY the final commit message.'
-    : 'Commit message generator guidelines for crafting the final commit message.'
-
-  // 主要提示词内容
-  let content = `${intro}
-
-## Types
-${typeList}${emojiGuidelines}
-
-## Format
-${emojiHint}<type>[scope]: <subject>
+  const formatSection: MarkdownSection = {
+    title: 'Format',
+    level: 3,
+    content: `${emojiHint}<type>[scope]: <subject>
 [body]
 [BREAKING CHANGE: <desc>]
 
 - Subject: imperative, ≤${COMMIT_FORMAT.MAX_SUBJECT_LENGTH} chars, no period
 - Scope: optional, clarifies module/package
 - Body: "- " bullets, ≤${COMMIT_FORMAT.MAX_BODY_LINE_LENGTH} chars/line, explain why/how; skip if obvious
-- Breaking: add footer if backward incompatible
-
-## Rules
-- Pick most specific type (priority: feat > fix > refactor > perf > docs/test/style)
-- Empty diff → chore
-- Revert: revert: <original type>(<scope>): <original subject>
-- Write in ${language}${language.includes('Chinese') ? ', add spaces between Chinese/English/numbers' : ''}
-- Keep types (feat/fix/etc), scope, identifiers, paths in English`
-
-  // 如果有自定义提示词，添加到末尾
-  if (customPrompt && customPrompt.trim()) {
-    content += `\n\n## Custom Rules (Override All Above)\n\n${customPrompt.trim()}`
+- Breaking: add footer if backward incompatible`,
   }
 
-  return content
+  const rulesSection: MarkdownSection = {
+    title: 'Rules',
+    level: 3,
+    content: bulletList([
+      'Pick most specific type (priority: feat > fix > refactor > perf > docs/test/style)',
+      'Empty diff → chore',
+      'Revert: revert: <original type>(<scope>): <original subject>',
+      `Language: ${language}${languageNote}`,
+      'Keep types (feat/fix/etc), scope, identifiers, paths in English',
+    ]),
+  }
+
+  const typesSection: MarkdownSection = {
+    title: 'Types',
+    level: 3,
+    content: enableEmoji
+      ? `${renderCommitTypes(true)}
+
+Use the emoji shown for the chosen type as the prefix.`
+      : renderCommitTypes(false),
+  }
+
+  return renderSections([
+    { content: intro },
+    typesSection,
+    formatSection,
+    rulesSection,
+    optionalSection({
+      title: 'Custom Rules (Override All Above)',
+      level: 3,
+      content: customContent ?? '',
+    }, Boolean(customContent)),
+  ])
 }
 
 /**
  * 生成统一的代码审查 + commit 消息提示词
  * @param diff Git diff 内容
  * @param mode 审查模式
+ * @param options 可选配置
+ * @param options.includeReview 是否包含代码审查流程，默认 true
  * @returns 聊天消息数组
  */
 export async function generateReviewAndCommitPrompt(
   diff: string,
   mode: ReviewMode,
+  options: { includeReview?: boolean } = {},
 ): Promise<ChatCompletionMessageParam[]> {
+  const includeReview = options.includeReview ?? true
   const formatConfig = config.getFormatConfig()
   const commitConfig = config.getCommitConfig()
   const reviewConfig = config.getReviewConfig()
 
-  const reviewGuidelines = createCodeReviewSystemContent(
-    formatConfig.outputLanguage,
-    mode,
-    reviewConfig.customPrompt,
-    { includeOutputShape: false },
-  )
+  const reviewGuidelines = includeReview
+    ? createCodeReviewSystemContent(
+        formatConfig.outputLanguage,
+        mode,
+        reviewConfig.customPrompt,
+        { includeOutputShape: false },
+      )
+    : `Review is disabled. Always return the review object as:
+{
+  "passed": true,
+  "severity": "info",
+  "issues": [],
+  "suggestions": []
+}`
 
   const commitGuidelines = createCommitMessageSystemContent(
     formatConfig.outputLanguage,
@@ -219,15 +275,46 @@ export async function generateReviewAndCommitPrompt(
     { outputMode: 'guideline-only' },
   )
 
-  const systemContent = `Review git diff and generate Conventional Commit message.
+  const reviewSection = includeReview
+    ? renderSections([
+        { title: 'Task 1 — Code Review', level: 2, content: reviewGuidelines },
+        { title: 'Task 2 — Commit Message', level: 2, content: commitGuidelines },
+      ])
+    : renderSections([
+        { content: 'Review is disabled. Only craft the commit message.' },
+        { title: 'Commit Message', level: 2, content: commitGuidelines },
+      ])
 
-### Task 1 — Code Review
-${reviewGuidelines}
+  const severityList = bulletList([
+    '"error": critical issues (syntax, security, data loss) → passed=false',
+    '"warning": major issues (logic, error handling, resources) → passed=false',
+    '"info": minor issues (code smells, style) → passed=false in strict mode only',
+    'passed=true → severity="info", empty arrays',
+  ])
 
-### Task 2 — Commit Message
-${commitGuidelines}
+  const disabledReviewJson = `{
+  "review": {
+    "passed": true,
+    "severity": "info",
+    "issues": [],
+    "suggestions": []
+  }
+}`
 
-### Output
+  const outputConstraints = includeReview
+    ? renderSections([{ title: 'Severity Rules', level: 2, content: severityList }])
+    : renderSections([
+        { title: 'Severity Rules', level: 2, content: 'Review is disabled. Always set:' },
+        { content: disabledReviewJson },
+      ])
+
+  const systemContent = `# Code Review & Commit Message Generator
+
+You are tasked with reviewing git diff changes and generating a Conventional Commit message.
+
+${reviewSection}
+
+## Output Format
 Return json (double quotes, no markdown):
 
 {
@@ -240,11 +327,7 @@ Return json (double quotes, no markdown):
   "commitMessage": "feat(auth): add OAuth2 support"
 }
 
-Severity rules:
-- "error": critical issues (syntax, security, data loss) → passed=false
-- "warning": major issues (logic, error handling, resources) → passed=false
-- "info": minor issues (code smells, style) → passed=false in strict mode only
-- passed=true → severity="info", empty arrays`
+${outputConstraints}`
 
   const trimmedDiff = diff.trim() || '[empty diff provided]'
 

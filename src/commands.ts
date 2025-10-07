@@ -61,6 +61,7 @@ async function reviewAndCommit(context: ExtensionContext) {
     // 获取 review 配置
     const reviewConfig = config.getReviewConfig()
     const reviewMode = reviewConfig.mode
+    const reviewEnabled = reviewConfig.enabled
 
     // 执行代码审查并生成提交信息
     const { review: reviewResult, commitMessage } = await ProgressHandler.withProgress(
@@ -73,11 +74,16 @@ async function reviewAndCommit(context: ExtensionContext) {
         })
 
         // 生成 prompt 并调用 API
-        logger.info('Starting combined review and commit generation', { mode: reviewMode })
+        logger.info('Starting combined review and commit generation', {
+          mode: reviewMode,
+          reviewEnabled,
+        })
 
-        const prompts = await generateReviewAndCommitPrompt(diff, reviewMode)
+        if (!reviewEnabled) {
+          logger.info('Code review disabled via configuration, skipping review step')
+        }
 
-        logger.debug('Generated combined review+commit prompts', { prompts })
+        const prompts = await generateReviewAndCommitPrompt(diff, reviewMode, { includeReview: reviewEnabled })
 
         const apiResult = await ChatGPTAPI(prompts, { signal: controller.signal })
 
@@ -112,19 +118,23 @@ async function reviewAndCommit(context: ExtensionContext) {
         // 解析 API 响应（JSON mode 保证返回合法 JSON）
         try {
           const parsed = JSON.parse(apiResult.content.trim())
-          const review = parsed.review ?? {
+          const defaultReview = {
             passed: true,
-            severity: 'info',
-            issues: [],
-            suggestions: [],
+            severity: 'info' as const,
+            issues: [] as string[],
+            suggestions: [] as string[],
           }
+          const review = parsed.review ?? defaultReview
           const commitMessage = (parsed.commitMessage ?? '').trim()
 
           if (!commitMessage) {
             logger.warn('Response missing commitMessage')
           }
 
-          return { review, commitMessage }
+          return {
+            review: reviewEnabled ? review : defaultReview,
+            commitMessage,
+          }
         }
         catch (error) {
           logger.error('Failed to parse JSON response', error)
@@ -135,7 +145,7 @@ async function reviewAndCommit(context: ExtensionContext) {
     )
 
     // 如果 review 不通过，询问用户是否继续
-    if (!reviewResult.passed) {
+    if (reviewEnabled && !reviewResult.passed) {
       const shouldContinue = await showReviewResultAndAskToContinue(reviewResult)
       if (!shouldContinue) {
         logger.info('User cancelled commit after review')

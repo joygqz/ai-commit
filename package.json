@@ -95,132 +95,119 @@
         "title": "%command.resetTokenStats.title%"
       }
     ],
-    "configuration": [
-      {
-        "title": "Commit Genie",
-        "properties": {
-          "commit-genie.service.baseURL": {
-            "default": "https://api.deepseek.com",
-            "markdownDescription": "%configuration.service.baseURL.description%",
-            "type": "string",
-            "order": 0
-          },
-          "commit-genie.service.apiKey": {
-            "default": "",
-            "markdownDescription": "%configuration.service.apiKey.description%",
-            "type": "string",
-            "order": 1
-          },
-          "commit-genie.service.model": {
-            "default": "deepseek-chat",
-            "markdownDescription": "%configuration.service.model.description%",
-            "type": "string",
-            "order": 2
-          }
-        }
-      },
-      {
-        "title": "Format",
-        "properties": {
-          "commit-genie.format.outputLanguage": {
-            "default": "Simplified Chinese",
-            "markdownDescription": "%configuration.format.outputLanguage.description%",
-            "enum": [
-              "Simplified Chinese",
-              "Traditional Chinese",
-              "Japanese",
-              "Korean",
-              "Czech",
-              "German",
-              "French",
-              "Italian",
-              "Dutch",
-              "Portuguese",
-              "Vietnamese",
-              "English",
-              "Spanish",
-              "Swedish",
-              "Russian",
-              "Bahasa",
-              "Polish",
-              "Turkish",
-              "Thai"
-            ],
-            "enumDescriptions": [
-              "简体中文",
-              "繁體中文",
-              "にほんご",
-              "한국어",
-              "česky",
-              "Deutsch",
-              "française",
-              "italiano",
-              "Nederlands",
-              "português",
-              "tiếng Việt",
-              "english",
-              "español",
-              "Svenska",
-              "русский",
-              "bahasa",
-              "Polski",
-              "Turkish",
-              "ไทย"
-            ],
-            "type": "string",
-            "order": 0
-          }
-        }
-      },
-      {
-        "title": "Review",
-        "properties": {
-          "commit-genie.review.mode": {
-            "default": "standard",
-            "markdownDescription": "%configuration.review.mode.description%",
-            "type": "string",
-            "enum": [
-              "off",
-              "lenient",
-              "standard",
-              "strict"
-            ],
-            "enumDescriptions": [
-              "%configuration.review.mode.off%",
-              "%configuration.review.mode.lenient%",
-              "%configuration.review.mode.standard%",
-              "%configuration.review.mode.strict%"
-            ],
-            "order": 0
-          },
-          "commit-genie.review.customPrompt": {
-            "default": "",
-            "markdownDescription": "%configuration.review.customPrompt.description%",
-            "type": "string",
-            "editPresentation": "multilineText",
-            "order": 1
-          }
-        }
-      },
-      {
-        "title": "Commit",
-        "properties": {
-          "commit-genie.commit.enableEmojiPrefix": {
-            "default": false,
-            "markdownDescription": "%configuration.commit.enableEmojiPrefix.description%",
-            "type": "boolean",
-            "order": 0
-          },
-          "commit-genie.commit.customPrompt": {
-            "default": "",
-            "markdownDescription": "%configuration.commit.customPrompt.description%",
-            "type": "string",
-            "editPresentation": "multilineText",
-            "order": 1
-          }
+    "configuration": {
+      "title": "Commit Genie",
+      "properties": {
+        "commit-genie.service.baseURL": {
+          "default": "https://api.deepseek.com",
+          "markdownDescription": "%configuration.service.baseURL.description%",
+          "type": "string",
+          "order": 0
+        },
+        "commit-genie.service.apiKey": {
+          "default": "",
+          "markdownDescription": "%configuration.service.apiKey.description%",
+          "type": "string",
+          "order": 1
+        },
+        "commit-genie.service.model": {
+          "default": "deepseek-chat",
+          "markdownDescription": "%configuration.service.model.description%",
+          "type": "string",
+          "order": 2
+        },
+        "commit-genie.format.outputLanguage": {
+          "default": "Simplified Chinese",
+          "markdownDescription": "%configuration.format.outputLanguage.description%",
+          "enum": [
+            "Simplified Chinese",
+            "Traditional Chinese",
+            "Japanese",
+            "Korean",
+            "Czech",
+            "German",
+            "French",
+            "Italian",
+            "Dutch",
+            "Portuguese",
+            "Vietnamese",
+            "English",
+            "Spanish",
+            "Swedish",
+            "Russian",
+            "Bahasa",
+            "Polish",
+            "Turkish",
+            "Thai"
+          ],
+          "enumDescriptions": [
+            "简体中文",
+            "繁體中文",
+            "にほんご",
+            "한국어",
+            "česky",
+            "Deutsch",
+            "française",
+            "italiano",
+            "Nederlands",
+            "português",
+            "tiếng Việt",
+            "english",
+            "español",
+            "Svenska",
+            "русский",
+            "bahasa",
+            "Polski",
+            "Turkish",
+            "ไทย"
+          ],
+          "type": "string",
+          "order": 10
+        },
+        "commit-genie.review.enabled": {
+          "default": true,
+          "markdownDescription": "%configuration.review.enabled.description%",
+          "type": "boolean",
+          "order": 20
+        },
+        "commit-genie.review.mode": {
+          "default": "standard",
+          "markdownDescription": "%configuration.review.mode.description%",
+          "type": "string",
+          "enum": [
+            "lenient",
+            "standard",
+            "strict"
+          ],
+          "enumDescriptions": [
+            "%configuration.review.mode.lenient%",
+            "%configuration.review.mode.standard%",
+            "%configuration.review.mode.strict%"
+          ],
+          "order": 21
+        },
+        "commit-genie.review.customPrompt": {
+          "default": "",
+          "markdownDescription": "%configuration.review.customPrompt.description%",
+          "type": "string",
+          "editPresentation": "multilineText",
+          "order": 22
+        },
+        "commit-genie.commit.enableEmojiPrefix": {
+          "default": false,
+          "markdownDescription": "%configuration.commit.enableEmojiPrefix.description%",
+          "type": "boolean",
+          "order": 30
+        },
+        "commit-genie.commit.customPrompt": {
+          "default": "",
+          "markdownDescription": "%configuration.commit.customPrompt.description%",
+          "type": "string",
+          "editPresentation": "multilineText",
+          "order": 31
         }
       }
-    ],
+    },
     "menus": {
       "scm/title": [
         {
