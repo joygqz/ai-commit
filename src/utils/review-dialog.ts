@@ -25,7 +25,9 @@ export async function showReviewResultAndAskToContinue(review: CodeReviewResult)
   // 根据严重程度生成标题
   const title = review.severity === 'error'
     ? `❌ ${l10n.t('Code review found errors')}`
-    : `⚠️ ${l10n.t('Code review found warnings')}`
+    : review.severity === 'warning'
+      ? `⚠️ ${l10n.t('Code review found warnings')}`
+      : `ℹ️ ${l10n.t('Code review found suggestions')}`
 
   const message = `${title}${issuesText}${suggestionsText}`
   const continueButton = l10n.t('Continue anyway')

@@ -1,9 +1,8 @@
 import type * as vscode from 'vscode'
-import { commands, workspace } from 'vscode'
+import { commands } from 'vscode'
 import * as Commands from './commands'
-import { COMMANDS, EXTENSION_ID } from './utils/constants'
+import { COMMANDS } from './utils/constants'
 import { logger } from './utils/logger'
-import { clearOpenAICache } from './utils/openai'
 import { tokenTracker } from './utils/token-tracker'
 
 /**
@@ -16,18 +15,6 @@ export function activate(context: vscode.ExtensionContext) {
   // 初始化 Token 状态栏并加载持久化数据
   const statusBarItem = tokenTracker.initialize(context)
   context.subscriptions.push(statusBarItem)
-
-  /**
-   * 监听配置变更
-   */
-  context.subscriptions.push(
-    workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration(`${EXTENSION_ID}.service`)) {
-        logger.debug('Service configuration changed, clearing OpenAI cache')
-        clearOpenAICache()
-      }
-    }),
-  )
 
   // 注册命令
   context.subscriptions.push(

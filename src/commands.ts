@@ -74,27 +74,44 @@ async function reviewAndCommit(context: ExtensionContext) {
 
         // 生成 prompt 并调用 API
         logger.info('Starting combined review and commit generation', { mode: reviewMode })
+
         const prompts = await generateReviewAndCommitPrompt(diff, reviewMode)
+
+        logger.debug('Generated combined review+commit prompts', { prompts })
+
         const apiResult = await ChatGPTAPI(prompts, { signal: controller.signal })
+
         logger.debug('Combined review+commit response received', {
-          contentLength: apiResult.content.length,
+          content: apiResult.content,
           hasUsage: !!apiResult.usage,
         })
 
-        // 解析 API 响应
-        try {
-          let jsonStr = apiResult.content.trim()
+        // 记录 token 使用信息
+        if (apiResult.usage) {
+          const usage = apiResult.usage
+          const parts: string[] = []
 
-          // 移除可能的 Markdown 代码块标记
-          if (jsonStr.includes('```')) {
-            const startIdx = jsonStr.indexOf('{')
-            const endIdx = jsonStr.lastIndexOf('}')
-            if (startIdx !== -1 && endIdx !== -1) {
-              jsonStr = jsonStr.slice(startIdx, endIdx + 1)
-            }
+          // 基础 token 信息
+          parts.push(`Token Usage: ${usage.totalTokens} total`)
+          parts.push(`(${usage.promptTokens} prompt + ${usage.completionTokens} completion)`)
+
+          // 缓存信息
+          if (usage.cachedTokens && usage.cachedTokens > 0) {
+            const cacheHitRate = ((usage.cachedTokens / usage.promptTokens) * 100).toFixed(1)
+            const cacheMissTokens = usage.promptTokens - usage.cachedTokens
+            parts.push(`| Cache Hit: ${usage.cachedTokens} tokens (${cacheHitRate}%)`)
+            parts.push(`Miss: ${cacheMissTokens} tokens`)
           }
 
-          const parsed = JSON.parse(jsonStr)
+          logger.info(parts.join(' '))
+
+          // 更新状态栏显示
+          tokenTracker.updateUsage(usage)
+        }
+
+        // 解析 API 响应（JSON mode 保证返回合法 JSON）
+        try {
+          const parsed = JSON.parse(apiResult.content.trim())
           const review = parsed.review ?? {
             passed: true,
             severity: 'info',
@@ -104,22 +121,14 @@ async function reviewAndCommit(context: ExtensionContext) {
           const commitMessage = (parsed.commitMessage ?? '').trim()
 
           if (!commitMessage) {
-            logger.warn('Combined response missing commitMessage; falling back to empty string')
+            logger.warn('Response missing commitMessage')
           }
 
           return { review, commitMessage }
         }
         catch (error) {
-          logger.error('Failed to parse combined review+commit response', error)
-          return {
-            review: {
-              passed: true,
-              severity: 'info',
-              issues: [],
-              suggestions: [],
-            },
-            commitMessage: '',
-          }
+          logger.error('Failed to parse JSON response', error)
+          throw new Error(l10n.t('Invalid response format from API. Please try again.'))
         }
       },
       true,

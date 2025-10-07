@@ -241,9 +241,6 @@ class TokenTracker {
     this.totalTokens += usage.totalTokens
     this.totalPromptTokens += usage.promptTokens
     this.totalCachedTokens += usage.cachedTokens || 0
-
-    // 错误已在 savePersistedData 中记录，这里静默处理不影响主流程继续执行
-    this.savePersistedData().catch(() => {})
   }
 
   /**
@@ -285,8 +282,7 @@ class TokenTracker {
     }
 
     const avgTokens = Math.round(this.totalTokens / this.operationCount)
-    // 缓存命中率计算：缓存的 token 数 / 总 prompt token 数
-    // 因为缓存只针对 prompt tokens，不包括 completion tokens
+    // 缓存命中率
     const overallCacheRate = this.totalPromptTokens > 0
       ? ((this.totalCachedTokens / this.totalPromptTokens) * 100).toFixed(1)
       : '0'

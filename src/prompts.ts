@@ -54,44 +54,21 @@ const COMMIT_TYPES = [
 function getReviewModeGuidelines(mode: ReviewMode): string {
   switch (mode) {
     case 'lenient':
-      return `## LENIENT — CRITICAL Only
-
-Report when visible in diff:
-- Syntax/runtime errors, undefined vars/props, wrong operators
-- Security risks: hardcoded secrets, SQL concat, HTML injection
-- Fatal bugs: infinite loops, missing await, unhandled rejection
-
-Rule: No evidence or uncertain → pass. Only critical issues set passed=false (severity="error").`
+      return `## LENIENT Mode
+Report ONLY when visible: syntax errors, undefined usage, security leaks (hardcoded secrets, SQL injection), fatal bugs (infinite loops, missing await).
+Result: passed=false + severity="error" only for critical issues.`
 
     case 'standard':
-      return `## STANDARD — CRITICAL + MAJOR
-
-Critical (visible):
-- Syntax/runtime errors, type mismatches, undefined usage
-- Security leaks: exposed credentials, injection vectors
-- Data loss risks: unsafe deletes, broken migrations
-
-Major (visible):
-- Logic mistakes: wrong formulas, incorrect branching
-- Error handling regressions: lost errors, ignored rejections
-- Resource leaks: unclosed files, dangling connections
-- Breaking changes: removed APIs, incompatible signatures
-
-Rule: Doubt → pass. Raise only when certain. Severity="error" for critical, "warning" for major.
-Result: passed=false when any are reported.`
+      return `## STANDARD Mode
+Critical (severity="error"): syntax/type errors, security leaks, data loss risks.
+Major (severity="warning"): logic errors, error handling gaps, resource leaks.
+Result: passed=false when any reported.`
 
     case 'strict':
-      return `## STRICT — Everything Verifiable
-
-Critical/Major: Same as standard mode.
-
-Minor (visible):
-- Code smells: magic numbers, duplicate code, dead blocks
-- Type issues: \`any\`, missing null/undefined guards
-- Bad practice: hardcoded paths, stray console.log, empty catch
-- Excessive complexity: >100 line functions, >4 nest levels
-
-Rule: Report only what diff proves. Any finding sets passed=false; severity matches level.`
+      return `## STRICT Mode
+Critical/Major: same as standard.
+Minor (severity="info"): code smells, magic numbers, \`any\` type, hardcoded paths, console.log, >100 line functions, >4 nest levels.
+Result: passed=false for any finding.`
 
     default:
       return ''
@@ -116,23 +93,17 @@ function createCodeReviewSystemContent(
   const includeOutputShape = options?.includeOutputShape ?? true
   const modeGuidelines = getReviewModeGuidelines(mode)
 
-  let content = `Code reviewer for git diff changes.
-
-## Context Limit
-- Input is ONLY git diff (lines with +/-). Full files are unseen.
-- Do NOT assume hidden code; judge only what you see.
+  let content = `Review git diff changes (lines with +/- only).
 
 ${modeGuidelines}
 
-## Review Principles
-- Evidence only: flag issues visible in diff lines.
-- No assumptions: missing context/imports ≠ error.
-- Uncertain? Pass. Absence of proof → no report.
-- Scope: critique the change, not untouched code.
-
-Language: ${language}. For Chinese, add spaces between Chinese/English/numbers.
-
-Empty diff → pass with empty arrays.`
+Rules:
+- Judge ONLY visible diff lines, not hidden code
+- Missing imports/context ≠ error
+- Uncertain → pass (absence of proof = no report)
+- Keep issues/suggestions concise (1 line each)
+- Language: ${language}${language.includes('Chinese') ? ', add spaces between Chinese/English/numbers' : ''}
+- Empty diff → passed=true, empty arrays`
 
   if (includeOutputShape) {
     content += `
@@ -198,25 +169,19 @@ ${typeList}${emojiGuidelines}
 ## Format
 ${emojiHint}<type>[scope]: <subject>
 [body]
-[BREAKING CHANGE: <description>]
+[BREAKING CHANGE: <desc>]
 
-Subject: Imperative, ≤${COMMIT_FORMAT.MAX_SUBJECT_LENGTH} chars, no period.
-Scope: Optional; include when it clarifies packages/modules.
-Body: "- " bullets, ≤${COMMIT_FORMAT.MAX_BODY_LINE_LENGTH} chars each, explain why/how; skip if obvious.
-Breaking: Add footer when backward incompatible.
-Language: Follow the language rules section.
+- Subject: imperative, ≤${COMMIT_FORMAT.MAX_SUBJECT_LENGTH} chars, no period
+- Scope: optional, clarifies module/package
+- Body: "- " bullets, ≤${COMMIT_FORMAT.MAX_BODY_LINE_LENGTH} chars/line, explain why/how; skip if obvious
+- Breaking: add footer if backward incompatible
 
 ## Rules
-1. Choose the most specific type. Mixed changes priority: feat > fix > refactor > perf > docs/test/style.
-2. Keep one responsibility per commit.
-3. Empty diff → chore.
-4. Revert: revert: <original type>(<scope>): <original subject>.
-5. Test-only changes: test(<scope>): summarize coverage.
-
-## Language Rules
-- Use ${language} for scope, subject, body bullets, and breaking change text.
-- Keep commit types, code identifiers, and filenames verbatim; you may add ${language} clarification in parentheses.
-- Avoid other languages except inside code/config quotes; for Chinese, insert spaces between Chinese, English, and numbers.`
+- Pick most specific type (priority: feat > fix > refactor > perf > docs/test/style)
+- Empty diff → chore
+- Revert: revert: <original type>(<scope>): <original subject>
+- Write in ${language}${language.includes('Chinese') ? ', add spaces between Chinese/English/numbers' : ''}
+- Keep types (feat/fix/etc), scope, identifiers, paths in English`
 
   // 如果有自定义提示词，添加到末尾
   if (customPrompt && customPrompt.trim()) {
@@ -254,7 +219,7 @@ export async function generateReviewAndCommitPrompt(
     { outputMode: 'guideline-only' },
   )
 
-  const systemContent = `You are an expert assistant that must review a git diff and craft a Conventional Commit message in a single response.
+  const systemContent = `Review git diff and generate Conventional Commit message.
 
 ### Task 1 — Code Review
 ${reviewGuidelines}
@@ -262,22 +227,24 @@ ${reviewGuidelines}
 ### Task 2 — Commit Message
 ${commitGuidelines}
 
-### Output JSON
+### Output
+Return json (double quotes, no markdown):
+
 {
   "review": {
-    "passed": boolean,
-    "severity": "error" | "warning" | "info",
-    "issues": string[],
-    "suggestions": string[]
+    "passed": true,
+    "severity": "info",
+    "issues": [],
+    "suggestions": []
   },
-  "commitMessage": string
+  "commitMessage": "feat(auth): add OAuth2 support"
 }
 
-Rules:
-- The review field must follow Task 1 guidance and only use information visible in the diff.
-- The commitMessage must follow Task 2 guidance, include emoji when requested, and stay within length limits.
-- Always return raw JSON without Markdown code fences or commentary.
-- Trim trailing whitespace in the commit message.`
+Severity rules:
+- "error": critical issues (syntax, security, data loss) → passed=false
+- "warning": major issues (logic, error handling, resources) → passed=false
+- "info": minor issues (code smells, style) → passed=false in strict mode only
+- passed=true → severity="info", empty arrays`
 
   const trimmedDiff = diff.trim() || '[empty diff provided]'
 

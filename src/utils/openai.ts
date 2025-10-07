@@ -2,114 +2,18 @@ import type { ChatCompletionMessageParam } from 'openai/resources'
 import OpenAI from 'openai'
 import { config } from './config'
 import { API_CONFIG } from './constants'
-import { logger } from './logger'
-import { tokenTracker } from './token-tracker'
 
 /**
- * OpenAI 客户端缓存
- */
-let cachedClient: OpenAI | null = null
-let cachedConfigKey: string | null = null
-
-/**
- * 获取 OpenAI 配置
- * @returns 服务配置对象
- */
-function getOpenAIConfig() {
-  return config.getServiceConfig()
-}
-
-/**
- * 生成配置键用于缓存比较
- * @param apiKey API 密钥
- * @param baseURL 基础 URL
- * @returns 配置键字符串
- */
-function generateConfigKey(apiKey: string, baseURL: string): string {
-  return `${apiKey}:${baseURL}`
-}
-
-function linkAbortSignals(signals: Array<AbortSignal | undefined>): { signal: AbortSignal, dispose: () => void } {
-  const validSignals = signals.filter((signal): signal is AbortSignal => Boolean(signal))
-
-  if (validSignals.length === 0) {
-    const controller = new AbortController()
-    return { signal: controller.signal, dispose: () => {} }
-  }
-
-  if (validSignals.length === 1) {
-    return { signal: validSignals[0], dispose: () => {} }
-  }
-
-  const anyFn = (AbortSignal as typeof AbortSignal & { any?: ((signals: AbortSignal[]) => AbortSignal) | undefined }).any
-
-  if (typeof anyFn === 'function') {
-    return { signal: anyFn.call(AbortSignal, validSignals), dispose: () => {} }
-  }
-
-  const controller = new AbortController()
-  let cleanedUp = false
-
-  function cleanup() {
-    if (cleanedUp) {
-      return
-    }
-    cleanedUp = true
-    validSignals.forEach(signal => signal.removeEventListener('abort', onAbort))
-  }
-
-  function onAbort() {
-    if (!controller.signal.aborted) {
-      controller.abort()
-    }
-    cleanup()
-  }
-
-  for (const signal of validSignals) {
-    if (signal.aborted) {
-      controller.abort()
-      cleanup()
-      return { signal: controller.signal, dispose: () => {} }
-    }
-    signal.addEventListener('abort', onAbort)
-  }
-
-  return {
-    signal: controller.signal,
-    dispose: cleanup,
-  }
-}
-
-/**
- * 创建 OpenAI API 客户端实例（带缓存）
+ * 创建 OpenAI API 客户端实例
  * @returns OpenAI 客户端实例
  */
 export function createOpenAIApi(): OpenAI {
-  const serviceConfig = getOpenAIConfig()
-  const configKey = generateConfigKey(serviceConfig.apiKey, serviceConfig.baseURL)
+  const serviceConfig = config.getServiceConfig()
 
-  // 如果配置未改变，返回缓存的客户端
-  if (cachedClient && cachedConfigKey === configKey) {
-    return cachedClient
-  }
-
-  // 配置改变或首次创建，创建新客户端
-  cachedClient = new OpenAI({
+  return new OpenAI({
     apiKey: serviceConfig.apiKey,
     baseURL: serviceConfig.baseURL,
   })
-  cachedConfigKey = configKey
-
-  return cachedClient
-}
-
-/**
- * 清除 OpenAI 客户端缓存
- * 当配置更改时应调用此函数
- */
-export function clearOpenAICache(): void {
-  cachedClient = null
-  cachedConfigKey = null
 }
 
 /**
@@ -120,31 +24,6 @@ export interface TokenUsage {
   completionTokens: number
   totalTokens: number
   cachedTokens?: number
-}
-
-/**
- * 记录 token 使用信息
- * @param usage Token 使用统计
- */
-function recordTokenUsage(usage: TokenUsage): void {
-  const parts: string[] = []
-
-  // 基础 token 信息
-  parts.push(`Token Usage: ${usage.totalTokens} total`)
-  parts.push(`(${usage.promptTokens} prompt + ${usage.completionTokens} completion)`)
-
-  // 缓存信息
-  if (usage.cachedTokens && usage.cachedTokens > 0) {
-    const cacheHitRate = ((usage.cachedTokens / usage.promptTokens) * 100).toFixed(1)
-    const cacheMissTokens = usage.promptTokens - usage.cachedTokens
-    parts.push(`| Cache Hit: ${usage.cachedTokens} tokens (${cacheHitRate}%)`)
-    parts.push(`Miss: ${cacheMissTokens} tokens`)
-  }
-
-  logger.info(parts.join(' '))
-
-  // 更新状态栏显示
-  tokenTracker.updateUsage(usage)
 }
 
 /**
@@ -167,15 +46,14 @@ export async function ChatGPTStreamAPI(
   const { model } = config.getServiceConfig()
   const temperature = API_CONFIG.DEFAULT_TEMPERATURE
 
-  // 创建超时信号
+  // 创建超时控制器
   const timeoutController = new AbortController()
   const timeoutId = setTimeout(() => timeoutController.abort(), timeout)
 
-  // 合并用户信号和超时信号
-  const { signal: combinedSignal, dispose: disposeCombinedSignal } = linkAbortSignals([
-    signal,
-    timeoutController.signal,
-  ])
+  // 如果用户提供了信号，监听它的中止事件
+  if (signal) {
+    signal.addEventListener('abort', () => timeoutController.abort(), { once: true })
+  }
 
   try {
     // 创建流式聊天完成请求
@@ -185,7 +63,7 @@ export async function ChatGPTStreamAPI(
       temperature,
       stream: true,
       stream_options: { include_usage: true },
-    }, { signal: combinedSignal })
+    }, { signal: timeoutController.signal })
 
     let fullContent = ''
     let usage: TokenUsage | undefined
@@ -193,7 +71,7 @@ export async function ChatGPTStreamAPI(
     try {
       // 迭代处理流式响应
       for await (const chunk of stream) {
-        if (combinedSignal?.aborted) {
+        if (timeoutController.signal.aborted) {
           break
         }
         const content = chunk.choices[0]?.delta?.content || ''
@@ -203,7 +81,6 @@ export async function ChatGPTStreamAPI(
         }
 
         // 捕获最后一个 chunk 中的 usage 信息
-        disposeCombinedSignal()
         if (chunk.usage) {
           const rawUsage = chunk.usage as any
           usage = {
@@ -217,15 +94,10 @@ export async function ChatGPTStreamAPI(
     }
     catch (error) {
       // 如果是中止操作，返回已接收的内容
-      if (combinedSignal?.aborted) {
+      if (timeoutController.signal.aborted) {
         return { content: fullContent, usage }
       }
       throw error
-    }
-
-    // 记录 token 使用信息
-    if (usage) {
-      recordTokenUsage(usage)
     }
 
     return { content: fullContent, usage }
@@ -254,15 +126,14 @@ export async function ChatGPTAPI(
   const { model } = config.getServiceConfig()
   const temperature = API_CONFIG.DEFAULT_TEMPERATURE
 
-  // 创建超时信号
+  // 创建超时控制器
   const timeoutController = new AbortController()
   const timeoutId = setTimeout(() => timeoutController.abort(), timeout)
 
-  // 合并用户信号和超时信号
-  const { signal: combinedSignal, dispose: disposeCombinedSignal } = linkAbortSignals([
-    signal,
-    timeoutController.signal,
-  ])
+  // 如果用户提供了信号，监听它的中止事件
+  if (signal) {
+    signal.addEventListener('abort', () => timeoutController.abort(), { once: true })
+  }
 
   try {
     // 创建聊天完成请求
@@ -271,7 +142,8 @@ export async function ChatGPTAPI(
       messages: messages as ChatCompletionMessageParam[],
       temperature,
       stream: false,
-    }, { signal: combinedSignal })
+      response_format: { type: 'json_object' },
+    }, { signal: timeoutController.signal })
 
     // 提取 token 使用情况
     let usage: TokenUsage | undefined
@@ -291,11 +163,6 @@ export async function ChatGPTAPI(
       }
     }
 
-    // 记录 token 使用信息
-    if (usage) {
-      recordTokenUsage(usage)
-    }
-
     return {
       content: response.choices[0]?.message?.content || '',
       usage,
@@ -304,7 +171,6 @@ export async function ChatGPTAPI(
   finally {
     // 清理超时定时器
     clearTimeout(timeoutId)
-    disposeCombinedSignal()
   }
 }
 
