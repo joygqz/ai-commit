@@ -76,17 +76,33 @@ CRITICAL: ALL text output (review issues, suggestions, commit message) MUST be i
 
 ## Task 1 — Code Review
 
-Review ONLY what's visible in the diff. Check for:
-  - obvious syntax errors (missing brackets, quotes, semicolons, commas)
-  - clear type mismatches visible in the diff code
+CAREFULLY examine every line in the diff for syntax errors.
+
+Check for these visible errors:
+  - Brackets: missing/extra/mismatched ( ) [ ] { }
+  - Quotes: missing/extra/mismatched " ' \`
+  - Punctuation: missing/extra semicolons, commas, colons, periods
+  - Operators: typos like == = (single equals in condition), + - * / % & | misuse
+  - Keywords: typos like fucntion, cosnt, retrun, improt, exoprt, calss, udefined, nul
+  - Strings: unterminated strings, wrong quote types, unescaped quotes
+  - Comments: unclosed /* or mismatched comment markers
+  - Regex: unclosed regex /pattern or wrong flags
+  - Template literals: wrong \` usage or \${ without }
+  - JSX/TSX: unclosed tags <div> without </div>, wrong self-closing />
+  - Type annotations: missing : in TypeScript, wrong <> generic syntax
+  - Arrow functions: => vs = confusion, missing parentheses
+  - Duplicate: duplicate keys in objects, duplicate case in switch
+  - Return: return outside function (visible in diff)
+  - Break/continue: outside loop (visible in diff)
 
 Rules:
-- Report ONLY errors you can directly see in the diff code
-- When in doubt or lacking context, pass the review (set passed=true)
-- DO NOT report: undefined variables/functions (you can't see full context), code style, logic bugs, performance, code smells, potential issues
-- Set passed=false ONLY when you see clear, obvious syntax errors
-- Default behavior: passed=true, issues=[], suggestions=[]
-- Each issue MUST include short description and affected files/symbols
+- Scan EACH line of the diff code carefully for syntax mistakes
+- Report errors you can DIRECTLY see in the diff (no guessing)
+- When lacking context or uncertain, pass the review (set passed=true)
+- DO NOT report: undefined variables/functions (you can't see imports/definitions), code style, logic bugs, performance, code smells, potential issues
+- Set passed=false ONLY for clear syntax errors in the diff
+- Default when no errors found: passed=true, issues=[], suggestions=[]
+- Each issue MUST include: short description + affected file/line
 - Write ALL descriptions in ${formatConfig.outputLanguage}${reviewCustomPrompt
   ? `
 
@@ -137,7 +153,19 @@ ${commitCustomPrompt}`
 
 ## Output Format
 
-Return JSON (no markdown fences):
+TypeScript type definition (for your understanding):
+\`\`\`typescript
+interface Output {
+  review: {
+    passed: boolean;           // true = no errors, false = has errors
+    issues: string[];          // array of plain text strings describing errors
+    suggestions: string[];     // array of plain text strings with suggestions
+  };
+  commitMessage: string;       // single string, may contain \\n for body
+}
+\`\`\`
+
+Return JSON matching above type (no markdown fences):
 
 Simple change example:
 {
