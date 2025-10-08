@@ -58,11 +58,6 @@ async function reviewAndCommit(context: ExtensionContext) {
       throw new Error(l10n.t('Unable to find SCM input box.'))
     }
 
-    // 获取 review 配置
-    const reviewConfig = config.getReviewConfig()
-    const reviewMode = reviewConfig.mode
-    const reviewEnabled = reviewConfig.enabled
-
     // 执行代码审查并生成提交信息
     const { review: reviewResult, commitMessage } = await ProgressHandler.withProgress(
       '',
@@ -74,16 +69,9 @@ async function reviewAndCommit(context: ExtensionContext) {
         })
 
         // 生成 prompt 并调用 API
-        logger.info('Starting combined review and commit generation', {
-          mode: reviewMode,
-          reviewEnabled,
-        })
+        logger.info('Starting combined review and commit generation')
 
-        if (!reviewEnabled) {
-          logger.info('Code review disabled via configuration, skipping review step')
-        }
-
-        const prompts = await generateReviewAndCommitPrompt(diff, reviewMode, { includeReview: reviewEnabled })
+        const prompts = await generateReviewAndCommitPrompt(diff)
 
         const apiResult = await ChatGPTAPI(prompts, { signal: controller.signal })
 
@@ -120,7 +108,6 @@ async function reviewAndCommit(context: ExtensionContext) {
           const parsed = JSON.parse(apiResult.content.trim())
           const defaultReview = {
             passed: true,
-            severity: 'info' as const,
             issues: [] as string[],
             suggestions: [] as string[],
           }
@@ -132,7 +119,7 @@ async function reviewAndCommit(context: ExtensionContext) {
           }
 
           return {
-            review: reviewEnabled ? review : defaultReview,
+            review,
             commitMessage,
           }
         }
@@ -145,7 +132,7 @@ async function reviewAndCommit(context: ExtensionContext) {
     )
 
     // 如果 review 不通过，询问用户是否继续
-    if (reviewEnabled && !reviewResult.passed) {
+    if (!reviewResult.passed) {
       const shouldContinue = await showReviewResultAndAskToContinue(reviewResult)
       if (!shouldContinue) {
         logger.info('User cancelled commit after review')

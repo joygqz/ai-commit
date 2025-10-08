@@ -117,30 +117,9 @@
           "order": 2
         },
         "commit-genie.format.outputLanguage": {
-          "default": "Simplified Chinese",
+          "default": "简体中文",
           "markdownDescription": "%configuration.format.outputLanguage.description%",
           "enum": [
-            "Simplified Chinese",
-            "Traditional Chinese",
-            "Japanese",
-            "Korean",
-            "Czech",
-            "German",
-            "French",
-            "Italian",
-            "Dutch",
-            "Portuguese",
-            "Vietnamese",
-            "English",
-            "Spanish",
-            "Swedish",
-            "Russian",
-            "Bahasa",
-            "Polish",
-            "Turkish",
-            "Thai"
-          ],
-          "enumDescriptions": [
             "简体中文",
             "繁體中文",
             "にほんご",
@@ -152,46 +131,24 @@
             "Nederlands",
             "português",
             "tiếng Việt",
-            "english",
+            "English",
             "español",
             "Svenska",
             "русский",
             "bahasa",
             "Polski",
-            "Turkish",
+            "Türkçe",
             "ไทย"
           ],
           "type": "string",
           "order": 10
-        },
-        "commit-genie.review.enabled": {
-          "default": true,
-          "markdownDescription": "%configuration.review.enabled.description%",
-          "type": "boolean",
-          "order": 20
-        },
-        "commit-genie.review.mode": {
-          "default": "standard",
-          "markdownDescription": "%configuration.review.mode.description%",
-          "type": "string",
-          "enum": [
-            "lenient",
-            "standard",
-            "strict"
-          ],
-          "enumDescriptions": [
-            "%configuration.review.mode.lenient%",
-            "%configuration.review.mode.standard%",
-            "%configuration.review.mode.strict%"
-          ],
-          "order": 21
         },
         "commit-genie.review.customPrompt": {
           "default": "",
           "markdownDescription": "%configuration.review.customPrompt.description%",
           "type": "string",
           "editPresentation": "multilineText",
-          "order": 22
+          "order": 20
         },
         "commit-genie.commit.enableEmojiPrefix": {
           "default": false,

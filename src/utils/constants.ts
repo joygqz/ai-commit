@@ -29,7 +29,7 @@ export const API_CONFIG = {
   /** 默认请求超时时间（毫秒） */
   DEFAULT_TIMEOUT: 60000,
   /** 流式输出的温度参数 */
-  DEFAULT_TEMPERATURE: 1,
+  DEFAULT_TEMPERATURE: 0,
 } as const
 
 /**
