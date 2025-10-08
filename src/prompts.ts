@@ -74,6 +74,12 @@ function optionalSection(options: MarkdownSection, predicate: boolean): Markdown
   return predicate ? options : undefined
 }
 
+function languageRequirement(language: string): string {
+  const needsSpacing = /Chinese/i.test(language)
+  const spacingHint = needsSpacing ? ' Add spaces between Chinese and English words/numbers.' : ''
+  return `Output language: ${language}.${spacingHint} Write ALL review findings (issues/suggestions) and commit messages in this language. Keep type keywords (feat/fix/etc), code identifiers, file paths, and technical terms in English.`
+}
+
 const REVIEW_MODE_GUIDELINES: Record<ReviewMode, MarkdownSection> = {
   lenient: {
     title: 'LENIENT Mode',
@@ -117,7 +123,6 @@ function createCodeReviewSystemContent(
   options?: { includeOutputShape?: boolean },
 ): string {
   const includeOutputShape = options?.includeOutputShape ?? true
-  const languageNote = language.includes('Chinese') ? ', add spaces between Chinese/English/numbers' : ''
   const customContent = customPrompt?.trim()
 
   const overviewSection: MarkdownSection = {
@@ -134,7 +139,7 @@ function createCodeReviewSystemContent(
       'Missing imports/context ≠ error',
       'Uncertain → pass (absence of proof = no report)',
       'Keep issues/suggestions concise (1 line each)',
-      `Language: ${language}${languageNote}`,
+      languageRequirement(language),
       'Empty diff → passed=true, empty arrays',
     ]),
   }
@@ -180,7 +185,6 @@ function createCommitMessageSystemContent(
 ): string {
   const outputMode = options?.outputMode ?? 'message-only'
   const emojiHint = enableEmoji ? '<emoji> ' : ''
-  const languageNote = language.includes('Chinese') ? ', add spaces between Chinese/English/numbers' : ''
   const customContent = customPrompt?.trim()
   const intro
     = outputMode === 'message-only'
@@ -207,8 +211,7 @@ function createCommitMessageSystemContent(
       'Pick most specific type (priority: feat > fix > refactor > perf > docs/test/style)',
       'Empty diff → chore',
       'Revert: revert: <original type>(<scope>): <original subject>',
-      `Language: ${language}${languageNote}`,
-      'Keep types (feat/fix/etc), scope, identifiers, paths in English',
+      languageRequirement(language),
     ]),
   }
 
