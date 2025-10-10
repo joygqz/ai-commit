@@ -7,11 +7,6 @@
   "configuration.service.baseURL.description": "Base URL of the AI service API endpoint.",
   "configuration.service.model.description": "AI model to use for generating commit messages. Run [Commit Genie: Select Available Model](command:commit-genie.selectAvailableModel) to choose from available options.",
   "configuration.format.outputLanguage.description": "Language for all AI-generated content (commit messages and code reviews).",
-  "configuration.review.enabled.description": "Toggle AI-powered code review before generating commit messages.",
-  "configuration.review.mode.description": "Code review strictness level before generating commit messages.",
-  "configuration.review.mode.lenient": "Lenient: Only block critical issues (security, crashes, data loss)",
-  "configuration.review.mode.standard": "Standard: Block critical and major issues (bugs, bad practices) - Recommended",
-  "configuration.review.mode.strict": "Strict: Block any issues including minor ones (style, documentation)",
   "configuration.review.customPrompt.description": "Custom prompt to append to the code review system message. Use this to add specific review rules or focus areas.",
   "configuration.commit.enableEmojiPrefix.description": "Add emoji prefix before commit type (e.g., ✨ feat, 🐛 fix).",
   "configuration.commit.customPrompt.description": "Custom prompt to append to the commit message generation system message. Examples: enforce Jira ticket numbers, use specific format, follow team conventions."
