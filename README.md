@@ -5,78 +5,77 @@
 [![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
 [![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/joygqz.commit-genie?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie&ssr=false#review-details)
 
-AI-powered commit message generator with optional code review for VS Code.
+AI 驱动的提交消息生成器，支持代码审查的 VS Code 扩展。
 
-## ✨ Features
+## ✨ 特性
 
-- 🤖 **AI-Powered** - Compatible with OpenAI, DeepSeek, and other OpenAI-compatible APIs
-- 🔍 **Code Review** - Optional pre-commit review (off/lenient/standard/strict)
-- 🌐 **Multi-Language** - Generate messages in 19+ languages
-- ⚡ **Real-time** - Streaming generation with cancel support
-- 🎨 **Customizable** - Emoji support, custom prompts, model selection
+- 🤖 **AI 驱动** - 兼容 OpenAI、DeepSeek 等 OpenAI 兼容 API
+- 🔍 **代码审查** - 提交前自动检测语法错误
+- 🌐 **多语言** - 支持 19+ 种语言生成提交消息
+- ⚡ **实时生成** - 流式生成，支持取消操作
+- 🎨 **高度自定义** - 支持 Emoji、自定义提示、模型选择
 
-## 🚀 Quick Start
+## 🚀 快速开始
 
-1. Install from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie)
-2. Configure API (Settings):
-   - `commit-genie.service.apiKey` - Your API key
-   - `commit-genie.service.baseURL` - API endpoint (default: `https://api.deepseek.com`)
-3. Select Model: Run `Commit Genie: Select Available Model`
-4. Stage changes and click the ✨ icon in Source Control
+1. 从 [VS Code 市场](https://marketplace.visualstudio.com/items?itemName=joygqz.commit-genie) 安装
+2. 配置 API（设置）：
+   - `commit-genie.service.apiKey` - 你的 API 密钥
+   - `commit-genie.service.baseURL` - API 端点（默认：`https://api.deepseek.com`）
+3. 选择模型：运行 `Commit Genie: 选择可用模型`
+4. 暂存更改并点击源代码管理中的 ✨ 图标
 
-## 📋 Usage
+## 📋 使用方法
 
-1. **Stage changes** in Source Control
-2. **Click** the ✨ icon or run `Commit Genie: Review and Commit`
-3. **Review** (if enabled) - AI checks for issues, you can continue or fix
-4. **Commit** - AI generates message in real-time, edit if needed
+1. **暂存更改** 在源代码管理中
+2. **点击** ✨ 图标或运行 `Commit Genie: 审查并提交`
+3. **审查** - AI 检查语法错误，如果发现问题可以继续或修复
+4. **提交** - AI 实时生成消息，可根据需要编辑
 
-**Commands:**
-- `Commit Genie: Review and Commit` - Generate commit message with optional review
-- `Commit Genie: Select Available Model` - Browse and switch AI models
-- `Commit Genie: Show Token Usage Statistics` - View token usage stats
-- `Commit Genie: Reset Token Usage Statistics` - Clear all token statistics
+**命令：**
+- `Commit Genie: 审查并提交` - 生成提交消息并进行审查
+- `Commit Genie: 选择可用模型` - 浏览和切换 AI 模型
+- `Commit Genie: 显示 Token 使用统计` - 查看 Token 使用统计
+- `Commit Genie: 重置 Token 使用统计` - 清除所有 Token 统计
 
-## ⚙️ Configuration
+## ⚙️ 配置
 
-### Required Settings
+### 必需设置
 
 ```jsonc
 {
-  "commit-genie.service.apiKey": "sk-...", // Your API key
-  "commit-genie.service.baseURL": "https://api.deepseek.com", // API endpoint
-  "commit-genie.service.model": "deepseek-chat" // Model name
+  "commit-genie.service.apiKey": "sk-...", // 你的 API 密钥
+  "commit-genie.service.baseURL": "https://api.deepseek.com", // API 端点
+  "commit-genie.service.model": "deepseek-chat" // 模型名称
 }
 ```
 
-**Supported Providers:** DeepSeek, OpenAI, or any OpenAI-compatible API
+**支持的服务商：** DeepSeek、OpenAI 或任何兼容 OpenAI 的 API
 
-### Optional Settings
+### 可选设置
 
-**Format:**
-- `format.outputLanguage` - Message language (default: Simplified Chinese)
+**格式：**
+- `format.outputLanguage` - 消息语言（默认：简体中文）
+  - 支持：简体中文、繁體中文、English、日本語、한국어 以及其他 14 种语言
 
-**Review:**
-- `review.enabled` - Enable AI review before generating commit messages (default: `true`)
-- `review.mode` - Review strictness: `lenient` / `standard` / `strict` (default: `standard`)
-  - `lenient` - Critical only (syntax, security, crashes)
-  - `standard` - Critical + major (logic, error handling)
-  - `strict` - All issues (including code quality)
-- `review.customPrompt` - Custom review instructions
+**审查：**
+- `review.customPrompt` - 额外的审查指令（默认：空）
+  - AI 会自动检查 diff 中可见的语法错误
+  - 如有需要，可在此添加自定义要求
 
-**Commit:**
-- `commit.enableEmojiPrefix` - Add emoji (e.g., ✨ feat, 🐛 fix) (default: `false`)
-- `commit.customPrompt` - Custom commit instructions
+**提交：**
+- `commit.enableEmojiPrefix` - 添加 emoji 前缀（例如：✨ feat、🐛 fix）（默认：`false`）
+- `commit.customPrompt` - 额外的提交消息指导（默认：空）
+  - 自动遵循 Conventional Commits 格式
+  - 如有需要，可在此添加项目特定要求
 
-## 🌍 Supported Languages
+## 🌍 支持的语言
 
 English, 简体中文, 繁體中文, 日本語, 한국어, Deutsch, Français, Italiano, Nederlands, Português, Tiếng Việt, Español, Svenska, Русский, Bahasa, Polski, Türkçe, ไทย, Čeština
 
-## 📝 License
+## 💖 支持
 
-[MIT License](LICENSE)
+如果这个项目对你的工作流程有帮助，可以考虑请我喝杯咖啡
 
----
+[![赞助](https://img.shields.io/badge/Sponsor-Support_Author-946ce6?style=for-the-badge&logo=github-sponsors)](https://afdian.com/a/joygqz)
 
-**Enjoying Commit Genie?**
-⭐ [Star on GitHub](https://github.com/joygqz/commit-genie) • 💬 [Report Issues](https://github.com/joygqz/commit-genie/issues) • 📝 [Changelog](CHANGELOG.md)
+你的支持让我保持动力来维护和改进这个项目！
