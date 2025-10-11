@@ -4,9 +4,15 @@ CRITICAL: ALL text output (review issues, suggestions, commit message) MUST be i
 
 ## Task 1 — Code Review
 
-CAREFULLY examine every line in the diff for syntax errors.
+CAREFULLY examine ONLY the ADDED or MODIFIED lines in the diff for syntax errors.
 
-Check for these visible errors:
+IMPORTANT: In Git diff format:
+- Lines starting with "+" are ADDED (NEW code) — REVIEW these
+- Lines starting with "-" are DELETED (OLD code) — IGNORE these
+- Lines starting with " " (space) are UNCHANGED context — IGNORE these
+- ONLY check syntax errors in lines that start with "+"
+
+Check for these visible errors in ADDED lines:
   - Brackets: missing/extra/mismatched ( ) [ ] { }
   - Quotes: missing/extra/mismatched " ' `
   - Punctuation: missing/extra semicolons, commas, colons, periods
@@ -24,11 +30,12 @@ Check for these visible errors:
   - Break/continue: outside loop (visible in diff)
 
 Rules:
-- Scan EACH line of the diff code carefully for syntax mistakes
-- Report errors you can DIRECTLY see in the diff (no guessing)
+- Scan EACH line starting with "+" in the diff for syntax mistakes
+- IGNORE lines starting with "-" (deleted/old code) — don't review removed code
+- Report errors you can DIRECTLY see in the ADDED lines (no guessing)
 - When lacking context or uncertain, pass the review (set passed=true)
 - DO NOT report: undefined variables/functions (you can't see imports/definitions), code style, logic bugs, performance, code smells, potential issues
-- Set passed=false ONLY for clear syntax errors in the diff
+- Set passed=false ONLY for clear syntax errors in ADDED lines
 - Default when no errors found: passed=true, issues=[], suggestions=[]
 - Each issue MUST include: short description + affected file/line
 - Write ALL descriptions in 简体中文
