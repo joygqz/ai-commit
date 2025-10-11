@@ -21,7 +21,7 @@
   "Cache Hit Rate: {0}%": "缓存命中率：{0}%",
   "Cumulative Statistics": "累计统计",
   "Total Operations: {0}": "总操作次数：{0}",
-  "Average Tokens per Operation: {0}": "平均每次操作：{0} Token",
+  "Average Tokens per Operation: {0}": "平均每次操作 Token：{0}",
   "Overall Cache Hit Rate: {0}%": "总体缓存命中率：{0}%",
   "Usage Statistics": "使用统计",
   "Press ESC to close": "按 ESC 关闭",
