@@ -190,6 +190,9 @@
     "ext:publish": "vsce publish",
     "release": "bumpp -x \"pnpm run changelog\" -a"
   },
+  "extensionDependencies": [
+    "vscode.git"
+  ],
   "devDependencies": {
     "@antfu/eslint-config": "^5.4.1",
     "@types/mocha": "^10.0.10",
